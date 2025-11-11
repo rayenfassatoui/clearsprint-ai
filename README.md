@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database Setup (Drizzle + Neon)
+
+1. Copy `.env.local.example` to `.env.local` and keep `DATABASE_URL` in sync with your Neon connection string.
+2. Define your tables in `lib/db/schema.ts` using the Drizzle `pgTable` helpers.
+3. Generate SQL migrations with `bun run db:generate`.
+4. Apply migrations to Neon using `bun run db:push`.
+5. Inspect and query data locally with `bun run db:studio` (launches the Drizzle Studio UI).
+
+The runtime database client lives in `lib/db/index.ts` and reuses Neon HTTP connections for serverless-friendly performance. Update the schema exports as you add tables so the rest of the app can import them.
+
 ## Getting Started
 
 First, run the development server:
