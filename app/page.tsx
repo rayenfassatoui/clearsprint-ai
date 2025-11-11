@@ -191,6 +191,30 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Feature Showcase with Image */}
+          <div className="relative rounded-3xl overflow-hidden border border-emerald-500/20 bg-linear-to-br from-emerald-500/5 to-teal-500/5 p-1">
+            <div className="relative rounded-2xl overflow-hidden h-80 bg-zinc-900">
+              <Image
+                src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=500&fit=crop"
+                alt="Équipe collaborative utilisant ClearSprint"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-linear-to-r from-[#040b08]/95 via-[#040b08]/60 to-transparent" />
+              <div className="relative z-10 h-full flex items-center px-12">
+                <div className="max-w-xl space-y-4">
+                  <h3 className="text-2xl font-semibold text-white">
+                    Pilotez vos projets avec confiance
+                  </h3>
+                  <p className="text-sm text-zinc-300 leading-relaxed">
+                    Transformez la complexité en clarté. ClearSprint vous donne une vue d'ensemble complète de vos sprints, vous permettant d'anticiper les obstacles et de maintenir votre équipe sur la bonne voie.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section className="space-y-12">
@@ -262,7 +286,7 @@ export default function Home() {
             <div className="group relative rounded-2xl overflow-hidden border border-teal-600/20 bg-linear-to-br from-teal-500/5 to-emerald-500/5 p-1 hover:border-teal-500/40 transition-all duration-500">
               <div className="relative rounded-xl overflow-hidden h-64 bg-zinc-900">
                 <Image
-                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop"
                   alt="Équipe de développement collaborant"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -277,7 +301,7 @@ export default function Home() {
             <div className="group relative rounded-2xl overflow-hidden border border-emerald-600/20 bg-linear-to-br from-emerald-500/5 to-teal-500/5 p-1 hover:border-emerald-500/40 transition-all duration-500">
               <div className="relative rounded-xl overflow-hidden h-64 bg-zinc-900">
                 <Image
-                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                  src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop"
                   alt="Sprint planning réussi"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -292,7 +316,7 @@ export default function Home() {
             <div className="group relative rounded-2xl overflow-hidden border border-cyan-600/20 bg-linear-to-br from-cyan-500/5 to-emerald-500/5 p-1 hover:border-cyan-500/40 transition-all duration-500">
               <div className="relative rounded-xl overflow-hidden h-64 bg-zinc-900">
                 <Image
-                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                  src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop"
                   alt="Suivi des performances"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
