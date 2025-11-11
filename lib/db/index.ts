@@ -9,7 +9,7 @@ if (!connectionString) {
   throw new Error('DATABASE_URL is not set in the environment.');
 }
 
-// Cache connections when running in edge/serverless environments to avoid cold starts.
+// Cache connections when running in edge/serverless environments to avoid cold starts
 neonConfig.fetchConnectionCache = true;
 
 const sql = neon(connectionString);
