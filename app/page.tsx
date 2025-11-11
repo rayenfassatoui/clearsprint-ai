@@ -79,6 +79,14 @@ export default function Home() {
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-[60vh] bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.03),transparent_70%)]" />
       <div className="pointer-events-none absolute top-96 left-1/4 h-96 w-96 rounded-full bg-emerald-500/1.5 blur-3xl" />
 
+      {/* Additional smaller green blobs throughout */}
+      <div className="pointer-events-none absolute top-[20%] right-[10%] h-48 w-48 rounded-full bg-teal-500/2 blur-2xl" />
+      <div className="pointer-events-none absolute top-[35%] left-[8%] h-32 w-32 rounded-full bg-emerald-400/2.5 blur-2xl" />
+      <div className="pointer-events-none absolute top-[55%] right-[15%] h-40 w-40 rounded-full bg-cyan-500/2 blur-2xl" />
+      <div className="pointer-events-none absolute top-[70%] left-[12%] h-36 w-36 rounded-full bg-emerald-500/1.5 blur-xl" />
+      <div className="pointer-events-none absolute top-[85%] right-[8%] h-44 w-44 rounded-full bg-teal-400/2 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-[10%] left-[18%] h-32 w-32 rounded-full bg-emerald-600/1.5 blur-xl" />
+
       {/* Dotted Surface Effect - positioned slightly below center */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 top-[40%]">
