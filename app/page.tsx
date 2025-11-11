@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -251,8 +252,62 @@ export default function Home() {
           ))}
         </section>
 
-        <section className="relative mt-12 rounded-3xl border border-zinc-800 bg-linear-to-r from-white/3 via-white/2 to-white/3 p-12 backdrop-blur-sm overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.05),transparent_60%)] pointer-events-none" />
+        <section className="space-y-8 pt-12">
+          <div className="text-center space-y-3">
+            <h2 className="text-2xl font-semibold text-white">Conçu pour les équipes modernes</h2>
+            <p className="text-sm text-zinc-400">Des organisations du monde entier transforment leur gestion de sprints</p>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="group relative rounded-2xl overflow-hidden border border-teal-600/20 bg-linear-to-br from-teal-500/5 to-emerald-500/5 p-1 hover:border-teal-500/40 transition-all duration-500">
+              <div className="relative rounded-xl overflow-hidden h-64 bg-zinc-900">
+                <Image
+                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                  alt="Équipe de développement collaborant"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-[#040b08] via-transparent to-transparent opacity-50" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="text-sm font-semibold text-white">Collaboration en temps réel</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative rounded-2xl overflow-hidden border border-emerald-600/20 bg-linear-to-br from-emerald-500/5 to-teal-500/5 p-1 hover:border-emerald-500/40 transition-all duration-500">
+              <div className="relative rounded-xl overflow-hidden h-64 bg-zinc-900">
+                <Image
+                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                  alt="Sprint planning réussi"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-[#040b08] via-transparent to-transparent opacity-50" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="text-sm font-semibold text-white">Planification intelligente</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative rounded-2xl overflow-hidden border border-cyan-600/20 bg-linear-to-br from-cyan-500/5 to-emerald-500/5 p-1 hover:border-cyan-500/40 transition-all duration-500">
+              <div className="relative rounded-xl overflow-hidden h-64 bg-zinc-900">
+                <Image
+                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop"
+                  alt="Suivi des performances"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-[#040b08] via-transparent to-transparent opacity-50" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <p className="text-sm font-semibold text-white">Analyse en direct</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative mt-12 rounded-3xl border border-emerald-600/30 bg-linear-to-r from-emerald-500/5 via-teal-500/3 to-cyan-500/5 p-12 backdrop-blur-sm overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" />
           
           <div className="relative z-10 max-w-2xl mx-auto text-center space-y-8">
             <div className="space-y-4">
@@ -274,7 +329,7 @@ export default function Home() {
               <Button
                 asChild
                 variant="outline"
-                className="border-zinc-700 bg-transparent text-zinc-300 hover:bg-white/5 hover:text-white hover:scale-105 text-sm font-medium px-8 py-3"
+                className="border-teal-500/50 bg-teal-500/5 text-teal-300 hover:bg-teal-500/15 hover:text-teal-200 hover:scale-105 text-sm font-medium px-8 py-3"
               >
                 <Link href="#">Voir la démo</Link>
               </Button>
