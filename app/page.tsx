@@ -30,11 +30,11 @@ const featureHighlights = [
 ];
 
 const LogoMark = () => (
-  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30 shadow-[0_0_35px_rgba(16,185,129,0.35)]">
+  <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/30 shadow-[0_0_45px_rgba(16,185,129,0.4)]">
     <svg
       viewBox="0 0 1024 1024"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-9 w-9"
+      className="h-12 w-12"
       fill="currentColor"
       aria-hidden
     >
@@ -49,109 +49,109 @@ export default function Home() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.12),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(15,118,110,0.2),_transparent_60%)]" />
       <div className="pointer-events-none absolute inset-20 rounded-full bg-emerald-500/5 blur-3xl" />
 
-      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-16 px-6 py-16 md:px-10 lg:gap-24 lg:py-24">
-        <header className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-4">
+      <main className="relative z-10 mx-auto flex min-h-screen w-full flex-col gap-24 px-8 py-24 md:px-12 lg:gap-32 lg:py-32">
+        <header className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex items-start gap-6">
             <LogoMark />
-            <div className="space-y-2">
-              <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-300">
+            <div className="space-y-3 pt-1">
+              <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs">
                 ClearSprint AI
               </Badge>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-zinc-400 leading-relaxed max-w-xs">
                 Espace de travail intelligent pour des équipes collaboratives livrant dans les délais.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-sm text-zinc-400">
-            <Sparkles className="h-4 w-4 text-emerald-400" aria-hidden />
-            Optimisé pour la feuille de route de lancement sur 45 jours
+          <div className="flex items-center gap-3 text-xs text-zinc-500 whitespace-nowrap">
+            <Sparkles className="h-4 w-4 text-emerald-400 shrink-0" aria-hidden />
+            <span>Optimisé pour la feuille de route de lancement sur 45 jours</span>
           </div>
         </header>
 
-        <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div className="space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
+        <section className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+          <div className="space-y-10">
+            <div className="space-y-8">
+              <h1 className="text-balance text-5xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl tracking-tight">
                 Orchestrez chaque sprint avec un partenaire IA conçu pour les équipes collaboratives.
               </h1>
-              <p className="text-pretty text-lg text-zinc-400 sm:text-xl">
+              <p className="text-pretty text-base text-zinc-400 sm:text-lg leading-relaxed">
                 Centralisez vos projets, automatisez la priorisation et gardez une longueur d'avance sur les risques grâce à des analyses prédictives qui maintiennent votre équipe alignée, productive et à l'heure.
               </p>
             </div>
 
-            <div className="flex flex-col gap-4 sm:flex-row">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <Button
                 asChild
-                className="bg-emerald-500 text-black shadow-[0_20px_45px_-18px_rgba(16,185,129,0.7)] transition hover:bg-emerald-400"
+                className="bg-emerald-500 text-black shadow-[0_20px_45px_-18px_rgba(16,185,129,0.7)] transition hover:bg-emerald-400 text-sm font-medium px-6 py-2.5"
               >
                 <Link href="#">Lancer un projet</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="border-emerald-500/30 bg-transparent text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200"
+                className="border-emerald-500/30 bg-transparent text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200 text-sm font-medium px-6 py-2.5"
               >
                 <Link href="#">Voir le backlog produit</Link>
               </Button>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-emerald-500/10 bg-white/5 px-5 py-4 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <p className="text-xs uppercase tracking-widest text-emerald-300">Synchronisation temps réel</p>
-                <p className="mt-1 text-2xl font-semibold">Vue partagée</p>
-                <p className="mt-1 text-sm text-zinc-400">Les mises à jour sont diffusées instantanément sur chaque appareil.</p>
+            <div className="grid gap-6 sm:grid-cols-3">
+              <div className="rounded-3xl border border-emerald-500/10 bg-white/5 px-8 py-8 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm hover:bg-white/8 transition">
+                <p className="text-xs uppercase tracking-widest text-emerald-300 font-medium">Synchronisation temps réel</p>
+                <p className="mt-4 text-xl font-semibold leading-snug">Vue partagée</p>
+                <p className="mt-3 text-xs text-zinc-400 leading-relaxed">Les mises à jour sont diffusées instantanément sur chaque appareil.</p>
               </div>
-              <div className="rounded-2xl border border-emerald-500/10 bg-white/5 px-5 py-4 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <p className="text-xs uppercase tracking-widest text-emerald-300">Relances IA</p>
-                <p className="mt-1 text-2xl font-semibold">Zéro échéance manquée</p>
-                <p className="mt-1 text-sm text-zinc-400">Des rappels personnalisés anticipent les risques avant qu'ils ne surviennent.</p>
+              <div className="rounded-3xl border border-emerald-500/10 bg-white/5 px-8 py-8 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm hover:bg-white/8 transition">
+                <p className="text-xs uppercase tracking-widest text-emerald-300 font-medium">Relances IA</p>
+                <p className="mt-4 text-xl font-semibold leading-snug">Zéro échéance manquée</p>
+                <p className="mt-3 text-xs text-zinc-400 leading-relaxed">Des rappels personnalisés anticipent les risques avant qu'ils ne surviennent.</p>
               </div>
-              <div className="rounded-2xl border border-emerald-500/10 bg-white/5 px-5 py-4 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <p className="text-xs uppercase tracking-widest text-emerald-300">Analytique</p>
-                <p className="mt-1 text-2xl font-semibold">Clarté des performances</p>
-                <p className="mt-1 text-sm text-zinc-400">Des tableaux de bord révèlent le débit, la charge et les goulets d'étranglement à venir.</p>
+              <div className="rounded-3xl border border-emerald-500/10 bg-white/5 px-8 py-8 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-sm hover:bg-white/8 transition">
+                <p className="text-xs uppercase tracking-widest text-emerald-300 font-medium">Analytique</p>
+                <p className="mt-4 text-xl font-semibold leading-snug">Clarté des performances</p>
+                <p className="mt-3 text-xs text-zinc-400 leading-relaxed">Des tableaux de bord révèlent le débit, la charge et les goulets d'étranglement à venir.</p>
               </div>
             </div>
           </div>
 
-          <Card className="border-emerald-500/15 bg-white/5 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-white">Feuille de route prête au lancement</CardTitle>
-              <CardDescription className="text-zinc-400">
+          <Card className="border-emerald-500/15 bg-white/5 backdrop-blur rounded-3xl sticky top-8">
+            <CardHeader className="pb-6">
+              <CardTitle className="text-white text-lg">Feuille de route prête au lancement</CardTitle>
+              <CardDescription className="text-zinc-400 text-xs">
                 Conçue autour de la fenêtre de livraison de 45 jours décrite dans le cahier des charges.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-zinc-300">
-              <div className="flex items-start gap-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-4">
-                <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
+            <CardContent className="space-y-5 text-xs text-zinc-300">
+              <div className="flex items-start gap-4 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-5 hover:bg-emerald-500/10 transition">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300 font-semibold text-sm">
                   1
                 </span>
-                <div>
-                  <p className="font-medium text-white">Sprint 1 — Fondations</p>
-                  <p className="text-sm text-zinc-400">
+                <div className="space-y-1.5">
+                  <p className="font-semibold text-white text-sm">Sprint 1 — Fondations</p>
+                  <p className="text-zinc-400 leading-relaxed">
                     Un hub projets & tâches avec gestion des rôles fournit une source unique de vérité avant le jour 15.
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-4">
-                <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
+              <div className="flex items-start gap-4 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-5 hover:bg-emerald-500/10 transition">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300 font-semibold text-sm">
                   2
                 </span>
-                <div>
-                  <p className="font-medium text-white">Sprint 2 — Intelligence</p>
-                  <p className="text-sm text-zinc-400">
+                <div className="space-y-1.5">
+                  <p className="font-semibold text-white text-sm">Sprint 2 — Intelligence</p>
+                  <p className="text-zinc-400 leading-relaxed">
                     Synchronisation temps réel, priorisation IA et rappels prédictifs sont déployés entre les jours 16 et 25.
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5 p-4">
-                <span className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300">
+              <div className="flex items-start gap-4 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-5 hover:bg-emerald-500/10 transition">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-300 font-semibold text-sm">
                   3
                 </span>
-                <div>
-                  <p className="font-medium text-white">Sprint 3 — Finition & lancement</p>
-                  <p className="text-sm text-zinc-400">
+                <div className="space-y-1.5">
+                  <p className="font-semibold text-white text-sm">Sprint 3 — Finition & lancement</p>
+                  <p className="text-zinc-400 leading-relaxed">
                     Finitions UI, tests et déploiement assurent une mise en production maîtrisée avant le jour 45.
                   </p>
                 </div>
@@ -160,34 +160,34 @@ export default function Home() {
           </Card>
         </section>
 
-        <section className="grid gap-6 rounded-3xl border border-emerald-500/15 bg-white/5 p-8 backdrop-blur lg:grid-cols-3">
+        <section className="grid gap-8 rounded-3xl border border-emerald-500/15 bg-white/5 p-12 backdrop-blur lg:grid-cols-3">
           {featureHighlights.map((feature) => (
             <Card
               key={feature.title}
-              className="border border-emerald-500/10 bg-transparent p-0 shadow-none"
+              className="border border-emerald-500/10 bg-transparent p-0 shadow-none hover:bg-white/5 transition rounded-2xl"
             >
-              <CardHeader className="px-6 pb-2">
-                <CardTitle className="text-lg text-white">
+              <CardHeader className="px-0 pb-3">
+                <CardTitle className="text-base text-white leading-snug">
                   {feature.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="px-6 pb-6 text-sm text-zinc-400">
+              <CardContent className="px-0 pb-0 text-xs text-zinc-400 leading-relaxed">
                 {feature.description}
               </CardContent>
             </Card>
           ))}
         </section>
 
-        <footer className="flex flex-col gap-4 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>
+        <footer className="flex flex-col gap-6 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between pt-8 border-t border-emerald-500/10">
+          <p className="leading-relaxed">
             Conçu pour les chefs de projet internes, les collaborateurs et les équipes pilotées par l'IA.
           </p>
           <Link
             href="#"
-            className="inline-flex items-center gap-2 text-emerald-300 transition hover:text-emerald-200"
+            className="inline-flex items-center gap-2 text-emerald-300 transition hover:text-emerald-200 whitespace-nowrap"
           >
-            Découvrir le cahier des charges complet
-            <ArrowRight className="h-4 w-4" aria-hidden />
+            Découvrir le cahier des charges
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </footer>
       </main>
