@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DottedSurface } from "@/components/ui/dotted-surface";
 
 const capabilities = [
   {
@@ -77,6 +78,17 @@ export default function Home() {
       {/* Selective gradient overlays - only in specific regions */}
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-[60vh] bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.03),transparent_70%)]" />
       <div className="pointer-events-none absolute top-96 left-1/4 h-96 w-96 rounded-full bg-emerald-500/1.5 blur-3xl" />
+
+      {/* Dotted Surface Effect - positioned slightly below center */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 top-[40%]">
+          <DottedSurface />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-0 size-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.15),transparent_50%)] blur-3xl"
+          />
+        </div>
+      </div>
 
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-24 px-8 py-24 md:px-12 lg:gap-32 lg:py-32">
         <header className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
