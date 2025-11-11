@@ -74,7 +74,7 @@ const LogoMark = () => (
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#040b08] font-sans text-zinc-100">
+    <div className="relative min-h-screen overflow-hidden font-sans text-zinc-100">
       {/* Selective gradient overlays - only in specific regions */}
       <div className="pointer-events-none absolute top-0 left-0 right-0 h-[60vh] bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.03),transparent_70%)]" />
       <div className="pointer-events-none absolute top-96 left-1/4 h-96 w-96 rounded-full bg-emerald-500/1.5 blur-3xl" />
