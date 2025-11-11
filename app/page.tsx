@@ -13,19 +13,19 @@ import {
 
 const featureHighlights = [
   {
-    title: "AI task prioritisation",
+    title: "Priorisation intelligente des tâches",
     description:
-      "Let ClearSprint learn from each sprint to surface what needs attention next and flag emerging blockers before they slow momentum.",
+      "ClearSprint apprend de chaque sprint pour mettre en avant ce qui nécessite votre attention et signaler les blocages émergents avant qu'ils ne freinent l'équipe.",
   },
   {
-    title: "Predictive reminders",
+    title: "Rappels prédictifs",
     description:
-      "Adaptive notifications anticipate delays, nudging owners when habits suggest a deadline might slip.",
+      "Des notifications adaptatives anticipent les retards et relancent les responsables quand leurs habitudes laissent présager un glissement d'échéance.",
   },
   {
-    title: "Live performance intelligence",
+    title: "Intelligence de performance en direct",
     description:
-      "Real-time dashboards unlock clarity on throughput, capacity, and risk so leaders can rebalance work instantly.",
+      "Des tableaux de bord en temps réel offrent une vision claire du flux, de la capacité et des risques pour rééquilibrer la charge instantanément.",
   },
 ];
 
@@ -58,14 +58,14 @@ export default function Home() {
                 ClearSprint AI
               </Badge>
               <p className="text-sm text-zinc-400">
-                Intelligent workspace for collaborative teams delivering on time.
+                Espace de travail intelligent pour des équipes collaboratives livrant dans les délais.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 text-sm text-zinc-400">
             <Sparkles className="h-4 w-4 text-emerald-400" aria-hidden />
-            Optimised for the 45-day launch roadmap
+            Optimisé pour la feuille de route de lancement sur 45 jours
           </div>
         </header>
 
@@ -73,10 +73,10 @@ export default function Home() {
           <div className="space-y-8">
             <div className="space-y-6">
               <h1 className="text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
-                Orchestrate every sprint with an AI partner built for collaborative teams.
+                Orchestrez chaque sprint avec un partenaire IA conçu pour les équipes collaboratives.
               </h1>
               <p className="text-pretty text-lg text-zinc-400 sm:text-xl">
-                Centralise projects, automate prioritisation, and stay ahead of risk with predictive insights that keep your team aligned, productive, and on schedule.
+                Centralisez vos projets, automatisez la priorisation et gardez une longueur d'avance sur les risques grâce à des analyses prédictives qui maintiennent votre équipe alignée, productive et à l'heure.
               </p>
             </div>
 
@@ -85,41 +85,41 @@ export default function Home() {
                 asChild
                 className="bg-emerald-500 text-black shadow-[0_20px_45px_-18px_rgba(16,185,129,0.7)] transition hover:bg-emerald-400"
               >
-                <Link href="#">Start a project</Link>
+                <Link href="#">Lancer un projet</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 className="border-emerald-500/30 bg-transparent text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200"
               >
-                <Link href="#">View product backlog</Link>
+                <Link href="#">Voir le backlog produit</Link>
               </Button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border border-emerald-500/10 bg-white/5 px-5 py-4 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <p className="text-xs uppercase tracking-widest text-emerald-300">Real-time sync</p>
-                <p className="mt-1 text-2xl font-semibold">Shared view</p>
-                <p className="mt-1 text-sm text-zinc-400">Updates broadcast across every device instantly.</p>
+                <p className="text-xs uppercase tracking-widest text-emerald-300">Synchronisation temps réel</p>
+                <p className="mt-1 text-2xl font-semibold">Vue partagée</p>
+                <p className="mt-1 text-sm text-zinc-400">Les mises à jour sont diffusées instantanément sur chaque appareil.</p>
               </div>
               <div className="rounded-2xl border border-emerald-500/10 bg-white/5 px-5 py-4 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <p className="text-xs uppercase tracking-widest text-emerald-300">AI nudges</p>
-                <p className="mt-1 text-2xl font-semibold">Zero missed deadlines</p>
-                <p className="mt-1 text-sm text-zinc-400">Personalised reminders anticipate risk before it happens.</p>
+                <p className="text-xs uppercase tracking-widest text-emerald-300">Relances IA</p>
+                <p className="mt-1 text-2xl font-semibold">Zéro échéance manquée</p>
+                <p className="mt-1 text-sm text-zinc-400">Des rappels personnalisés anticipent les risques avant qu'ils ne surviennent.</p>
               </div>
               <div className="rounded-2xl border border-emerald-500/10 bg-white/5 px-5 py-4 text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <p className="text-xs uppercase tracking-widest text-emerald-300">Analytics</p>
-                <p className="mt-1 text-2xl font-semibold">Performance clarity</p>
-                <p className="mt-1 text-sm text-zinc-400">Dashboards expose throughput, load, and emerging bottlenecks.</p>
+                <p className="text-xs uppercase tracking-widest text-emerald-300">Analytique</p>
+                <p className="mt-1 text-2xl font-semibold">Clarté des performances</p>
+                <p className="mt-1 text-sm text-zinc-400">Des tableaux de bord révèlent le débit, la charge et les goulets d'étranglement à venir.</p>
               </div>
             </div>
           </div>
 
           <Card className="border-emerald-500/15 bg-white/5 backdrop-blur">
             <CardHeader>
-              <CardTitle className="text-white">Launch-ready roadmap</CardTitle>
+              <CardTitle className="text-white">Feuille de route prête au lancement</CardTitle>
               <CardDescription className="text-zinc-400">
-                Designed around the 45-day delivery window outlined in the project charter.
+                Conçue autour de la fenêtre de livraison de 45 jours décrite dans le cahier des charges.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-zinc-300">
@@ -128,9 +128,9 @@ export default function Home() {
                   1
                 </span>
                 <div>
-                  <p className="font-medium text-white">Sprint 1 — Foundation</p>
+                  <p className="font-medium text-white">Sprint 1 — Fondations</p>
                   <p className="text-sm text-zinc-400">
-                    Project & task hubs with role-based access deliver a single source of truth by day 15.
+                    Un hub projets & tâches avec gestion des rôles fournit une source unique de vérité avant le jour 15.
                   </p>
                 </div>
               </div>
@@ -141,7 +141,7 @@ export default function Home() {
                 <div>
                   <p className="font-medium text-white">Sprint 2 — Intelligence</p>
                   <p className="text-sm text-zinc-400">
-                    Real-time sync, AI prioritisation, and predictive reminders activate during days 16–25.
+                    Synchronisation temps réel, priorisation IA et rappels prédictifs sont déployés entre les jours 16 et 25.
                   </p>
                 </div>
               </div>
@@ -150,9 +150,9 @@ export default function Home() {
                   3
                 </span>
                 <div>
-                  <p className="font-medium text-white">Sprint 3 — Polish & launch</p>
+                  <p className="font-medium text-white">Sprint 3 — Finition & lancement</p>
                   <p className="text-sm text-zinc-400">
-                    UI refinements, testing, and deployment close the loop for a confident rollout by day 45.
+                    Finitions UI, tests et déploiement assurent une mise en production maîtrisée avant le jour 45.
                   </p>
                 </div>
               </div>
@@ -180,13 +180,13 @@ export default function Home() {
 
         <footer className="flex flex-col gap-4 text-sm text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            Built for internal project leads, collaborators, and AI-driven productivity teams.
+            Conçu pour les chefs de projet internes, les collaborateurs et les équipes pilotées par l'IA.
           </p>
           <Link
             href="#"
             className="inline-flex items-center gap-2 text-emerald-300 transition hover:text-emerald-200"
           >
-            Explore the full requirements
+            Découvrir le cahier des charges complet
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </footer>
