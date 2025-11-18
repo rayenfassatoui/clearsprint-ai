@@ -11,7 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DottedSurface } from "@/components/ui/dotted-surface";
+
+import BackgroundEffects from "@/components/decorations/BackgroundEffects";
 
 const capabilities = [
   {
@@ -90,12 +91,15 @@ export default function Home() {
       {/* Dotted Surface Effect - positioned slightly below center */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 top-[40%]">
-          <DottedSurface />
+          {/* <DottedSurface /> */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute left-1/2 top-0 size-full -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.15),transparent_50%)] blur-3xl"
           />
         </div>
+
+        {/* Decorative interactive layers placed above the background but behind content */}
+        <BackgroundEffects particleCount={400} particleBaseSize={1} />
       </div>
 
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-24 px-8 py-24 md:px-12 lg:gap-32 lg:py-32">
