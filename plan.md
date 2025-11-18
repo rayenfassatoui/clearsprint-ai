@@ -69,7 +69,7 @@ export const tickets = pgTable('tickets', { id: serial('id').primaryKey(), proje
 
 ### Epic 3: Doc Upload + Storage (Priority 2)
 - [ ] 3.1 shadcn Dropzone component in /dashboard.
-- [ ] 3.2 Server Action: uploadDoc() → vercel-blob.put(file) → store URL in new project row.
+- [ ] 3.2 Server Action: uploadDoc() →S3 compliant api (minio).put(file) → store URL in new project row.
 - [ ] 3.3 PDF/TXT extract: fetch URL → pdf-parse or text() → store raw_text in projects.
 
 ### Epic 4: AI Backlog Generation (Priority 2)

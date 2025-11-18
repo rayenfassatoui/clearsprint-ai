@@ -84,6 +84,21 @@ lib/
 	db/            # Drizzle database client & schema definitions
 	utils.ts       # Utility helpers shared across the app
 public/          # Static assets served verbatim
+
+### Core Modules (Epic 3)
+
+- **`lib/s3.ts`**: S3-compliant storage client (Minio/AWS). Handles file uploads and retrieval.
+- **`actions/upload.server.ts`**: Server Actions for handling file uploads and text extraction.
+  - `uploadDoc(formData)`: Uploads file to S3 and extracts text using `pdf2json`.
+- **`components/dropzone.tsx`**: Drag-and-drop file upload component with "Paste Text" mode.
+- **`app/upload-test/page.tsx`**: Test page for verifying upload and extraction functionality.
+
+### Key Dependencies
+
+- **`@aws-sdk/client-s3`**: For S3 interactions.
+- **`pdf2json`**: For robust PDF text extraction.
+- **`react-dropzone`**: For handling file drops.
+- **`shadcn/ui`**: For UI components (Switch, Button, Textarea, etc.).
 ```
 
 ## UI & UX Guidelines
