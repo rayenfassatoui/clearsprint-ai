@@ -104,14 +104,19 @@ export default function Home() {
             </div>
           </div>
 
-          <div className='flex items-center gap-3 text-xs text-zinc-500 whitespace-nowrap'>
-            <Sparkles
-              className='h-4 w-4 text-emerald-400 shrink-0'
-              aria-hidden
-            />
-            <span>
-              Optimisé pour la feuille de route de lancement sur 45 jours
-            </span>
+          <div className='flex items-center gap-6'>
+            <div className='flex items-center gap-3 text-xs text-zinc-500 whitespace-nowrap hidden sm:flex'>
+              <Sparkles
+                className='h-4 w-4 text-emerald-400 shrink-0'
+                aria-hidden
+              />
+              <span>
+                Optimisé pour la feuille de route de lancement sur 45 jours
+              </span>
+            </div>
+            <Button asChild variant="ghost" className="text-zinc-400 hover:text-white hover:bg-white/5">
+              <Link href="/auth/signin">Se connecter</Link>
+            </Button>
           </div>
         </header>
 
@@ -137,7 +142,7 @@ export default function Home() {
                   asChild
                   className='bg-emerald-500 text-black shadow-[0_20px_45px_-18px_rgba(16,185,129,0.7)] transition hover:bg-emerald-400 hover:scale-105 text-sm font-medium px-6 py-2.5'
                 >
-                  <Link href='#'>Lancer un projet</Link>
+                  <Link href='/auth/signin'>Lancer un projet</Link>
                 </Button>
                 <Button
                   asChild
@@ -435,7 +440,7 @@ export default function Home() {
                 asChild
                 className='bg-emerald-500 text-black shadow-[0_20px_45px_-18px_rgba(16,185,129,0.7)] transition hover:bg-emerald-400 hover:scale-105 text-sm font-medium px-8 py-3'
               >
-                <Link href='#'>Commencer maintenant</Link>
+                <Link href='/auth/signin'>Commencer maintenant</Link>
               </Button>
               <Button
                 asChild

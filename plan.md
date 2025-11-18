@@ -56,16 +56,16 @@ export const tickets = pgTable('tickets', { id: serial('id').primaryKey(), proje
 ## 8. Implementation Plan
 
 ### Epic 1: Project Setup + Auth (Priority 1)
-- [ ] 1.1 npx create-next-app@latest --ts --app clearsprint-ai; add drizzle.config.ts, tailwind.config.js.
-- [ ] 1.2 Install deps: drizzle-orm, better-auth, @shadcn/ui, @dnd-kit/core, openai, pdf-parse, vercel-blob, zod, sonner.
-- [ ] 1.3 Setup Drizzle: schema.ts, db.ts (Neon connection), migrations.
-- [ ] 1.4 Integrate better-auth: auth.ts config (email/password), /auth/signin page.
-- [ ] 1.5 Basic layout: /app/layout.tsx (shadcn Sidebar, Navbar).
+- [x] 1.1 npx create-next-app@latest --ts --app clearsprint-ai; add drizzle.config.ts, tailwind.config.js.
+- [x] 1.2 Install deps: drizzle-orm, better-auth, @shadcn/ui, @dnd-kit/core, openai, pdf-parse, vercel-blob, zod, sonner.
+- [x] 1.3 Setup Drizzle: schema.ts, db.ts (Neon connection), migrations.
+- [x] 1.4 Integrate better-auth: auth.ts config (email/password), /auth/signin page.
+- [x] 1.5 Basic layout: /app/layout.tsx (shadcn Sidebar, Navbar).
 
 ### Epic 2: Jira OAuth Connect (Priority 1)
-- [ ] 2.1 Extend better-auth with Jira OAuth provider (clientId/secret from env).
-- [ ] 2.2 Server Action: connectJira() → store tokens in jira_tokens table.
-- [ ] 2.3 Dashboard button: "Connect Jira" → redirect OAuth → toast success.
+- [x] 2.1 Extend better-auth with Jira OAuth provider (clientId/secret from env).
+- [x] 2.2 Server Action: connectJira() → store tokens in jira_tokens table. (Handled by better-auth social provider)
+- [x] 2.3 Dashboard button: "Connect Jira" → redirect OAuth → toast success.
 
 ### Epic 3: Doc Upload + Storage (Priority 2)
 - [ ] 3.1 shadcn Dropzone component in /dashboard.
