@@ -8,12 +8,7 @@ import { SyncWithJiraModal } from '@/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
 import { RefreshCw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+
 import {
   Card,
   CardContent,
@@ -79,40 +74,26 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <GenerateButton projectId={project.id} className="w-full" />
 
             <div className="flex gap-1 shrink-0">
-              <TooltipProvider>
-                <GeneralAiEditDialog
-                  projectId={project.id}
-                  trigger={
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
-                          <Sparkles className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>General AI Edit</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  }
-                />
+              <GeneralAiEditDialog
+                projectId={project.id}
+                tooltip="General AI Edit"
+                trigger={
+                  <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
+                    <Sparkles className="h-4 w-4" />
+                  </Button>
+                }
+              />
 
-                <SyncWithJiraModal
-                  projectId={project.id}
-                  projectTitle={project.name || 'Untitled'}
-                  trigger={
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
-                          <RefreshCw className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Sync with Jira</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  }
-                />
-              </TooltipProvider>
+              <SyncWithJiraModal
+                projectId={project.id}
+                projectTitle={project.name || 'Untitled'}
+                tooltip="Sync with Jira"
+                trigger={
+                  <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                }
+              />
             </div>
           </CardFooter>
         </Card>

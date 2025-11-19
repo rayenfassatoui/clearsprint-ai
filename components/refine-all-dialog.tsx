@@ -14,15 +14,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import { Textarea } from '@/components/ui/textarea';
 
 interface GeneralAiEditDialogProps {
   projectId: number;
   trigger?: React.ReactNode;
+  tooltip?: string;
 }
 
-export function GeneralAiEditDialog({ projectId, trigger }: GeneralAiEditDialogProps) {
+export function GeneralAiEditDialog({ projectId, trigger, tooltip }: GeneralAiEditDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
@@ -48,18 +55,35 @@ export function GeneralAiEditDialog({ projectId, trigger }: GeneralAiEditDialogP
     }
   };
 
+  const triggerButton = trigger ? (
+    trigger
+  ) : (
+    <Button variant="outline" size="sm" className="ml-2">
+      <Sparkles className="mr-2 h-4 w-4" />
+      General AI Edit
+    </Button>
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
-          <Button variant="outline" size="sm" className="ml-2">
-            <Sparkles className="mr-2 h-4 w-4" />
-            General AI Edit
-          </Button>
-        )}
-      </DialogTrigger>
+      {tooltip ? (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                {triggerButton}
+              </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tooltip}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <DialogTrigger asChild>
+          {triggerButton}
+        </DialogTrigger>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>General AI Edit (Auto Pilot)</DialogTitle>

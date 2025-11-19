@@ -24,16 +24,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export function SyncWithJiraModal({
   projectId,
   projectTitle,
   trigger,
+  tooltip,
 }: {
   projectId: number;
   projectTitle: string;
   trigger?: React.ReactNode;
+  tooltip?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [sites, setSites] = useState<any[]>([]);
@@ -108,18 +117,35 @@ export function SyncWithJiraModal({
     setProcessing(false);
   }
 
+  const triggerButton = trigger ? (
+    trigger
+  ) : (
+    <Button variant="outline" size="sm">
+      <RefreshCw className="mr-2 h-4 w-4" />
+      Sync with Jira
+    </Button>
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
-          <Button variant="outline" size="sm">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Sync with Jira
-          </Button>
-        )}
-      </DialogTrigger>
+      {tooltip ? (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                {triggerButton}
+              </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tooltip}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <DialogTrigger asChild>
+          {triggerButton}
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Sync &quot;{projectTitle}&quot; with Jira</DialogTitle>
