@@ -219,7 +219,7 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Full Width Roadmap Card */}
+          {/* Full Width Roadmap Cards */}
           <Card className="border-emerald-500/15 bg-white/5 backdrop-blur rounded-3xl w-full">
             <CardHeader className="pb-6">
               <CardTitle className="text-white text-lg">
