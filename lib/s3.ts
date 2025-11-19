@@ -24,7 +24,7 @@ export const s3Client = new S3Client({
 export async function uploadFileToS3(
   fileBuffer: Buffer,
   fileName: string,
-  contentType: string
+  contentType: string,
 ): Promise<string> {
   const key = `${Date.now()}-${fileName}`;
 
@@ -43,7 +43,7 @@ export async function uploadFileToS3(
       if (error instanceof Error && error.name === 'NoSuchBucket') {
         console.log(`Bucket ${S3_BUCKET_NAME} does not exist. Creating...`);
         await s3Client.send(
-          new CreateBucketCommand({ Bucket: S3_BUCKET_NAME })
+          new CreateBucketCommand({ Bucket: S3_BUCKET_NAME }),
         );
         // Retry upload
         await s3Client.send(command);

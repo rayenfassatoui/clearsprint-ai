@@ -30,7 +30,7 @@ export async function getProjectTickets(projectId: number) {
 }
 
 export async function updateTicketOrder(
-  updates: { id: number; parentId: number | null; orderIndex: number }[]
+  updates: { id: number; parentId: number | null; orderIndex: number }[],
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -62,7 +62,7 @@ export async function updateTicketOrder(
 
 export async function updateTicket(
   ticketId: number,
-  data: { title?: string; description?: string }
+  data: { title?: string; description?: string },
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),

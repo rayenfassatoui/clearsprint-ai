@@ -6,7 +6,13 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/db/schema';
 import { uploadFileToS3 } from '@/lib/s3';
-import { PdfData, PdfError, PdfPage, PdfText, PdfTextRun } from '@/lib/types';
+import type {
+  PdfData,
+  PdfError,
+  PdfPage,
+  PdfText,
+  PdfTextRun,
+} from '@/lib/types';
 
 export async function uploadDoc(formData: FormData) {
   const session = await auth.api.getSession({
@@ -76,7 +82,7 @@ export async function uploadDoc(formData: FormData) {
                 return page.Texts.map((text: PdfText) => {
                   // R is an array of text runs, usually just one
                   return text.R.map((run: PdfTextRun) =>
-                    decodeURIComponent(run.T)
+                    decodeURIComponent(run.T),
                   ).join(' ');
                 }).join(' ');
               }).join('\n\n');

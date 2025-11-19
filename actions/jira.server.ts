@@ -65,7 +65,7 @@ export async function getJiraProjectsList(cloudId: string) {
 export async function pushToJira(
   projectId: number,
   cloudId: string,
-  jiraProjectKey: string
+  jiraProjectKey: string,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -127,7 +127,7 @@ export async function pushToJira(
 
         // Find children tasks
         const tasks = allTickets.filter(
-          (t) => t.parentId === epic.id && t.type === 'task'
+          (t) => t.parentId === epic.id && t.type === 'task',
         );
 
         for (const task of tasks) {
@@ -164,7 +164,7 @@ export async function pushToJira(
 
           // Find subtasks
           const subtasks = allTickets.filter(
-            (t) => t.parentId === task.id && t.type === 'subtask'
+            (t) => t.parentId === task.id && t.type === 'subtask',
           );
 
           for (const subtask of subtasks) {
@@ -195,7 +195,7 @@ export async function pushToJira(
             const subtaskRes = await createJiraIssue(
               cloudId,
               token,
-              subtaskData
+              subtaskData,
             );
             await db
               .update(tickets)

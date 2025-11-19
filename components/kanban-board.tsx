@@ -60,7 +60,7 @@ export function KanbanBoard({ projectId }: { projectId: number }) {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   useEffect(() => {
@@ -129,7 +129,7 @@ export function KanbanBoard({ projectId }: { projectId: number }) {
             id: t.id,
             parentId: t.parentId,
             orderIndex: i,
-          }))
+          })),
         ).then((res) => {
           if (!res.success) toast.error('Failed to save order');
         });
@@ -149,13 +149,13 @@ export function KanbanBoard({ projectId }: { projectId: number }) {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className='space-y-4'>
+      <div className="space-y-4">
         {loading ? (
-          <div className='p-4'>
+          <div className="p-4">
             <KanbanBoardSkeleton />
           </div>
         ) : (
-          <div className='space-y-4'>
+          <div className="space-y-4">
             <TicketList
               tickets={tickets}
               parentId={null}
@@ -167,7 +167,7 @@ export function KanbanBoard({ projectId }: { projectId: number }) {
       </div>
       <DragOverlay>
         {activeId ? (
-          <div className='opacity-80'>
+          <div className="opacity-80">
             <TicketItemOverlay
               ticket={tickets.find((t) => t.id === activeId)!}
             />
@@ -240,7 +240,7 @@ function SortableTicketItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className='group'>
+    <div ref={setNodeRef} style={style} className="group">
       <TicketItemContent
         ticket={ticket}
         isDragging={isDragging}
@@ -316,45 +316,45 @@ function TicketItemContent({
       className={cn(
         'flex items-start p-3 rounded-lg border bg-white shadow-sm hover:shadow-md transition-all',
         isDragging && 'shadow-xl ring-2 ring-primary rotate-1',
-        isEditing && 'ring-2 ring-primary'
+        isEditing && 'ring-2 ring-primary',
       )}
     >
       <div
         {...dragHandleProps}
-        className='cursor-grab p-1 mr-2 text-gray-400 hover:text-gray-600 mt-0.5'
+        className="cursor-grab p-1 mr-2 text-gray-400 hover:text-gray-600 mt-0.5"
       >
-        <GripVertical className='h-4 w-4' />
+        <GripVertical className="h-4 w-4" />
       </div>
 
       <div
         className={cn(
           'px-2 py-0.5 rounded text-[10px] font-bold uppercase mr-3 mt-1',
-          typeColors[ticket.type || 'task']
+          typeColors[ticket.type || 'task'],
         )}
       >
         {ticket.type}
       </div>
 
-      <div className='flex-1 min-w-0 space-y-1'>
+      <div className="flex-1 min-w-0 space-y-1">
         {isEditing ? (
-          <div className='space-y-2'>
+          <div className="space-y-2">
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className='h-8 font-medium'
+              className="h-8 font-medium"
             />
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className='text-xs min-h-[60px]'
+              className="text-xs min-h-[60px]"
             />
-            <div className='flex space-x-2'>
-              <Button size='sm' onClick={handleSave} disabled={saving}>
+            <div className="flex space-x-2">
+              <Button size="sm" onClick={handleSave} disabled={saving}>
                 Save
               </Button>
               <Button
-                size='sm'
-                variant='ghost'
+                size="sm"
+                variant="ghost"
                 onClick={() => setIsEditing(false)}
               >
                 Cancel
@@ -363,11 +363,11 @@ function TicketItemContent({
           </div>
         ) : (
           <>
-            <h4 className='text-sm font-medium leading-tight'>
+            <h4 className="text-sm font-medium leading-tight">
               {ticket.title}
             </h4>
             {ticket.description && (
-              <p className='text-xs text-muted-foreground line-clamp-2'>
+              <p className="text-xs text-muted-foreground line-clamp-2">
                 {ticket.description}
               </p>
             )}
@@ -376,35 +376,35 @@ function TicketItemContent({
       </div>
 
       {!isEditing && onUpdate && (
-        <div className='flex items-center opacity-0 group-hover:opacity-100 transition-opacity ml-2'>
+        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity ml-2">
           <TicketTweakDialog
             ticketId={ticket.id}
             onSuccess={onUpdate}
             trigger={
               <Button
-                variant='ghost'
-                size='icon'
-                className='h-6 w-6 text-purple-500 hover:text-purple-600 hover:bg-purple-50'
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-purple-500 hover:text-purple-600 hover:bg-purple-50"
               >
-                <Sparkles className='h-3 w-3' />
+                <Sparkles className="h-3 w-3" />
               </Button>
             }
           />
           <Button
-            variant='ghost'
-            size='icon'
-            className='h-6 w-6'
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
             onClick={() => setIsEditing(true)}
           >
-            <Edit2 className='h-3 w-3' />
+            <Edit2 className="h-3 w-3" />
           </Button>
           <Button
-            variant='ghost'
-            size='icon'
-            className='h-6 w-6 text-red-500 hover:text-red-600'
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-red-500 hover:text-red-600"
             onClick={handleDelete}
           >
-            <Trash2 className='h-3 w-3' />
+            <Trash2 className="h-3 w-3" />
           </Button>
         </div>
       )}

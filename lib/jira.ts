@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { account } from '@/lib/db/schema';
-import { JiraIssueData } from '@/lib/types';
+import type { JiraIssueData } from '@/lib/types';
 
 const ATLASSIAN_TOKEN_URL = 'https://auth.atlassian.com/oauth/token';
 const ATLASSIAN_API_URL = 'https://api.atlassian.com';
@@ -83,7 +83,7 @@ export async function getJiraResources(accessToken: string) {
     `${ATLASSIAN_API_URL}/oauth/token/accessible-resources`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    },
   );
   if (!res.ok) throw new Error('Failed to fetch Jira resources');
   return res.json();
@@ -94,7 +94,7 @@ export async function getJiraProjects(cloudId: string, accessToken: string) {
     `${ATLASSIAN_API_URL}/ex/jira/${cloudId}/rest/api/3/project`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    },
   );
   if (!res.ok) throw new Error('Failed to fetch Jira projects');
   return res.json();
@@ -103,7 +103,7 @@ export async function getJiraProjects(cloudId: string, accessToken: string) {
 export async function createJiraIssue(
   cloudId: string,
   accessToken: string,
-  issueData: JiraIssueData
+  issueData: JiraIssueData,
 ) {
   const res = await fetch(
     `${ATLASSIAN_API_URL}/ex/jira/${cloudId}/rest/api/3/issue`,
@@ -114,7 +114,7 @@ export async function createJiraIssue(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(issueData),
-    }
+    },
   );
 
   if (!res.ok) {

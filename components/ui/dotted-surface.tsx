@@ -64,7 +64,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
       60,
       window.innerWidth / window.innerHeight,
       1,
-      10000
+      10000,
     );
     camera.position.set(0, 355, 1220);
 
@@ -103,7 +103,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
     geometry.setAttribute(
       'position',
-      new THREE.Float32BufferAttribute(positions, 3)
+      new THREE.Float32BufferAttribute(positions, 3),
     );
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
@@ -195,7 +195,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
         if (containerRef.current && sceneRef.current.renderer.domElement) {
           containerRef.current.removeChild(
-            sceneRef.current.renderer.domElement
+            sceneRef.current.renderer.domElement,
           );
         }
       }

@@ -1,26 +1,26 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/lib/db";
-import * as schema from "./db/schema";
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { db } from '@/lib/db';
+import * as schema from './db/schema';
 
 export const auth = betterAuth({
-	database: drizzleAdapter(db, {
-		provider: "pg",
-		schema: schema,
-	}),
-	emailAndPassword: {
-		enabled: true,
-	},
-	socialProviders: {
-		atlassian: {
-			clientId: process.env.ATLASSIAN_CLIENT_ID as string,
-			clientSecret: process.env.ATLASSIAN_CLIENT_SECRET as string,
-			scope: [
-				"read:jira-user",
-				"read:jira-work",
-				"write:jira-work",
-				"offline_access",
-			],
-		},
-	},
+  database: drizzleAdapter(db, {
+    provider: 'pg',
+    schema: schema,
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    atlassian: {
+      clientId: process.env.ATLASSIAN_CLIENT_ID as string,
+      clientSecret: process.env.ATLASSIAN_CLIENT_SECRET as string,
+      scope: [
+        'read:jira-user',
+        'read:jira-work',
+        'write:jira-work',
+        'offline_access',
+      ],
+    },
+  },
 });
