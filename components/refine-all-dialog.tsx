@@ -15,27 +15,27 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-interface RefineAllDialogProps {
+import { Textarea } from '@/components/ui/textarea';
+
+interface GeneralAiEditDialogProps {
   projectId: number;
 }
 
-export function RefineAllDialog({ projectId }: RefineAllDialogProps) {
+export function GeneralAiEditDialog({ projectId }: GeneralAiEditDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [prompt, setPrompt] = useState('');
   const router = useRouter();
 
   const handleRefineAll = async () => {
     setLoading(true);
     try {
-      // For now, "Refine All" will re-trigger the generation process.
-      // In a more advanced version, this could take current tickets as context.
-      // But per requirements "Server Action re-gen entire project".
-
-      const result = await generateBacklog(projectId);
+      const result = await generateBacklog(projectId, prompt);
 
       if (result.success) {
         toast.success('Project refined successfully!');
         setIsOpen(false);
+        setPrompt('');
         router.refresh();
       } else {
         toast.error(result.error);
@@ -51,21 +51,30 @@ export function RefineAllDialog({ projectId }: RefineAllDialogProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="ml-2">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Refine All
+          <Sparkles className="mr-2 h-4 w-4" />
+          General AI Edit
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Refine Entire Project</DialogTitle>
+          <DialogTitle>General AI Edit (Auto Pilot)</DialogTitle>
         </DialogHeader>
-        <div className="py-4">
-          <p className="text-muted-foreground">
-            This will re-analyze your document and regenerate the entire
-            backlog. Existing tickets might be replaced or duplicated if not
-            carefully managed. (Current implementation re-generates from scratch
-            based on the document).
+        <div className="py-4 space-y-4">
+          <p className="text-muted-foreground text-sm">
+            Describe how you want to change the entire backlog. The AI will regenerate tickets based on your instructions and the original document.
           </p>
+          <Textarea
+            placeholder="e.g., 'Make all user stories follow the Gherkin syntax' or 'Focus more on security requirements'"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            className="min-h-[100px]"
+          />
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-md border border-yellow-200 dark:border-yellow-800">
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 flex items-center">
+              <RefreshCw className="w-3 h-3 mr-2" />
+              Warning: This will regenerate all tickets. Existing manual edits might be lost.
+            </p>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => setIsOpen(false)}>
@@ -77,7 +86,7 @@ export function RefineAllDialog({ projectId }: RefineAllDialogProps) {
             ) : (
               <Sparkles className="mr-2 h-4 w-4" />
             )}
-            {loading ? 'Refining...' : 'Confirm Refine'}
+            {loading ? 'Refining...' : 'Start Auto Pilot'}
           </Button>
         </DialogFooter>
       </DialogContent>

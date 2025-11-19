@@ -62,7 +62,7 @@ export async function updateTicketOrder(
 
 export async function updateTicket(
   ticketId: number,
-  data: { title?: string; description?: string },
+  data: { title?: string; description?: string; type?: 'epic' | 'task' | 'subtask' },
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),

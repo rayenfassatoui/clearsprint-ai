@@ -5,7 +5,7 @@ import { ArrowRight, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { GenerateButton } from '@/components/generate-button';
 import { PushToJiraModal } from '@/components/push-to-jira-modal';
-import { RefineAllDialog } from '@/components/refine-all-dialog';
+import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
 import {
   Card,
   CardContent,
@@ -70,7 +70,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           >
             <GenerateButton projectId={project.id} />
             <div className="flex gap-2">
-              <RefineAllDialog projectId={project.id} />
+              <GeneralAiEditDialog projectId={project.id} />
               <PushToJiraModal
                 projectId={project.id}
                 projectTitle={project.name || 'Untitled'}

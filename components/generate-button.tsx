@@ -7,12 +7,15 @@ import { toast } from 'sonner';
 import { generateBacklog } from '@/actions/generate.server';
 import { GenerationLoadingState } from '@/components/generation-loading-state';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface GenerateButtonProps {
   projectId: number;
+  className?: string;
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
 }
 
-export function GenerateButton({ projectId }: GenerateButtonProps) {
+export function GenerateButton({ projectId, className, variant = 'secondary' }: GenerateButtonProps) {
   const [status, setStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle');
@@ -50,13 +53,16 @@ export function GenerateButton({ projectId }: GenerateButtonProps) {
     <>
       <GenerationLoadingState status={status} />
       <Button
-        variant="secondary"
-        size="sm"
+        variant={variant}
+        size={variant === 'default' ? 'lg' : 'sm'}
         onClick={handleGenerate}
         disabled={status === 'loading'}
-        className="transition-all duration-300 hover:bg-primary hover:text-primary-foreground"
+        className={cn(
+          "transition-all duration-300 hover:bg-primary hover:text-primary-foreground",
+          className
+        )}
       >
-        <Sparkles className="mr-2 h-4 w-4" />
+        <Sparkles className={cn("mr-2", variant === 'default' ? "h-5 w-5" : "h-4 w-4")} />
         Generate
       </Button>
     </>

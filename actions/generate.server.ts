@@ -34,7 +34,7 @@ const BacklogSchema = z.object({
   epics: z.array(EpicSchema),
 });
 
-export async function generateBacklog(projectId: number) {
+export async function generateBacklog(projectId: number, prompt?: string) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -59,12 +59,19 @@ export async function generateBacklog(projectId: number) {
 
   // 2. Call OpenAI
   try {
-    const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: `You are a senior product manager. Analyze the provided Product Requirements Document (PRD) text and generate a structured Jira backlog.
+    const systemPrompt = prompt
+      ? `You are a senior product manager. Refine the backlog based on the provided PRD and the user's specific request.
+         
+         User Request: "${prompt}"
+         
+         Output a JSON object with a list of "epics".
+         Each "epic" has a "title", "description", and a list of "tasks".
+         Each "task" has a "title", "description", and a list of "subtasks".
+         Each "subtask" has a "title" and "description".
+         
+         Keep descriptions concise but informative.
+         Ensure the hierarchy is logical.`
+      : `You are a senior product manager. Analyze the provided Product Requirements Document (PRD) text and generate a structured Jira backlog.
           
           Output a JSON object with a list of "epics".
           Each "epic" has a "title", "description", and a list of "tasks".
@@ -72,7 +79,14 @@ export async function generateBacklog(projectId: number) {
           Each "subtask" has a "title" and "description".
           
           Keep descriptions concise but informative.
-          Ensure the hierarchy is logical.`,
+          Ensure the hierarchy is logical.`;
+
+    const completion = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt,
         },
         {
           role: 'user',

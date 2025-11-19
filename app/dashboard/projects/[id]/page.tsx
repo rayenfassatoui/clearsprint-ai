@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { GenerateButton } from '@/components/generate-button';
 import { KanbanBoard } from '@/components/kanban-board';
 import { PushToJiraModal } from '@/components/push-to-jira-modal';
-import { RefineAllDialog } from '@/components/refine-all-dialog';
+import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
+import { EmptyProjectState } from '@/components/empty-project-state';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/db/schema';
+import { getProjectTickets } from '@/actions/tickets.server';
 
 export default async function ProjectPage({
   params,
@@ -36,6 +38,9 @@ export default async function ProjectPage({
     return <div>Project not found</div>;
   }
 
+  const ticketsResult = await getProjectTickets(projectId);
+  const tickets = ticketsResult.success ? ticketsResult.tickets : [];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -51,17 +56,29 @@ export default async function ProjectPage({
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <GenerateButton projectId={projectId} />
-          <RefineAllDialog projectId={projectId} />
-          <PushToJiraModal
-            projectId={projectId}
-            projectTitle={project.name || 'Untitled'}
-          />
+          {tickets && tickets.length > 0 && (
+            <>
+              <GenerateButton projectId={projectId} />
+              <GeneralAiEditDialog projectId={projectId} />
+              <PushToJiraModal
+                projectId={projectId}
+                projectTitle={project.name || 'Untitled'}
+              />
+            </>
+          )}
         </div>
       </div>
 
       <div className="bg-muted/30 p-6 rounded-xl border min-h-[calc(100vh-200px)]">
-        <KanbanBoard projectId={projectId} />
+        {!tickets || tickets.length === 0 ? (
+          <EmptyProjectState
+            projectId={projectId}
+            docUrl={project.docUrl}
+            docName={project.name}
+          />
+        ) : (
+          <KanbanBoard projectId={projectId} initialTickets={tickets} />
+        )}
       </div>
     </div>
   );

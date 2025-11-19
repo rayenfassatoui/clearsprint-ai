@@ -35,6 +35,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Ticket {
   id: number;
@@ -47,9 +53,15 @@ interface Ticket {
   jiraId: string | null;
 }
 
-export function KanbanBoard({ projectId }: { projectId: number }) {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [loading, setLoading] = useState(true);
+export function KanbanBoard({
+  projectId,
+  initialTickets = [],
+}: {
+  projectId: number;
+  initialTickets?: Ticket[];
+}) {
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [loading, setLoading] = useState(initialTickets.length === 0);
   const [activeId, setActiveId] = useState<number | null>(null);
 
   const sensors = useSensors(
@@ -64,9 +76,14 @@ export function KanbanBoard({ projectId }: { projectId: number }) {
   );
 
   useEffect(() => {
-    loadTickets();
+    if (initialTickets.length === 0) {
+      loadTickets();
+    } else {
+      setTickets(initialTickets);
+      setLoading(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
+  }, [projectId, initialTickets]);
 
   async function loadTickets() {
     setLoading(true);
@@ -305,6 +322,17 @@ function TicketItemContent({
     }
   };
 
+  const handleTypeChange = async (newType: 'epic' | 'task' | 'subtask') => {
+    if (!onUpdate || ticket.type === newType) return;
+    const res = await updateTicket(ticket.id, { type: newType });
+    if (res.success) {
+      toast.success('Type updated');
+      onUpdate();
+    } else {
+      toast.error(res.error);
+    }
+  };
+
   const typeColors = {
     epic: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800',
     task: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800',
@@ -314,69 +342,91 @@ function TicketItemContent({
   return (
     <div
       className={cn(
-        'flex items-start p-3 rounded-lg border bg-card text-card-foreground shadow-sm hover:shadow-md transition-all',
-        isDragging && 'shadow-xl ring-2 ring-primary rotate-1',
-        isEditing && 'ring-2 ring-primary',
+        'group relative flex items-start p-4 rounded-xl border bg-card text-card-foreground transition-all duration-200',
+        'hover:shadow-md hover:border-primary/20',
+        isDragging ? 'shadow-2xl ring-2 ring-primary rotate-1 scale-105 z-50' : 'shadow-sm',
+        isEditing && 'ring-2 ring-primary shadow-lg',
       )}
     >
       <div
         {...dragHandleProps}
-        className="cursor-grab p-1 mr-2 text-muted-foreground hover:text-foreground mt-0.5"
+        className="cursor-grab p-1.5 mr-3 text-muted-foreground/40 hover:text-foreground transition-colors mt-0.5 rounded-md hover:bg-muted"
       >
-        <GripVertical className="h-4 w-4" />
+        <GripVertical className="h-5 w-5" />
       </div>
 
-      <div
-        className={cn(
-          'px-2 py-0.5 rounded text-[10px] font-bold uppercase mr-3 mt-1 border',
-          typeColors[ticket.type || 'task'],
-        )}
-      >
-        {ticket.type}
-      </div>
+      <div className="flex-1 min-w-0 space-y-2">
+        <div className="flex items-center mb-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  'px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border shadow-sm cursor-pointer hover:opacity-80 transition-opacity',
+                  typeColors[ticket.type || 'task'],
+                )}
+              >
+                {ticket.type}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => handleTypeChange('epic')}>
+                Epic
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleTypeChange('task')}>
+                Task
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleTypeChange('subtask')}>
+                Subtask
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {ticket.jiraId && (
+            <span className="ml-2 text-[10px] text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">
+              {ticket.jiraId}
+            </span>
+          )}
+        </div>
 
-      <div className="flex-1 min-w-0 space-y-1">
         {isEditing ? (
-          <div className="space-y-2">
+          <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="h-8 font-medium"
+              className="font-semibold text-base h-10"
+              placeholder="Ticket Title"
+              autoFocus
             />
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="text-xs min-h-[60px]"
+              className="text-sm min-h-[80px] resize-none"
+              placeholder="Description..."
             />
-            <div className="flex space-x-2">
-              <Button size="sm" onClick={handleSave} disabled={saving}>
-                Save
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setIsEditing(false)}
-              >
+            <div className="flex space-x-2 justify-end pt-2">
+              <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>
                 Cancel
+              </Button>
+              <Button size="sm" onClick={handleSave} disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </div>
         ) : (
-          <>
-            <h4 className="text-sm font-medium leading-tight">
+          <div className="space-y-1.5">
+            <h4 className="text-base font-semibold leading-snug tracking-tight text-foreground/90">
               {ticket.title}
             </h4>
             {ticket.description && (
-              <p className="text-xs text-muted-foreground line-clamp-2">
+              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
                 {ticket.description}
               </p>
             )}
-          </>
+          </div>
         )}
       </div>
 
       {!isEditing && onUpdate && (
-        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+        <div className="absolute top-3 right-3 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0">
           <TicketTweakDialog
             ticketId={ticket.id}
             onSuccess={onUpdate}
@@ -384,27 +434,27 @@ function TicketItemContent({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-purple-500 hover:text-purple-600 hover:bg-purple-50"
+                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
               >
-                <Sparkles className="h-3 w-3" />
+                <Sparkles className="h-4 w-4" />
               </Button>
             }
           />
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={() => setIsEditing(true)}
           >
-            <Edit2 className="h-3 w-3" />
+            <Edit2 className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 text-red-500 hover:text-red-600"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
             onClick={handleDelete}
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       )}
