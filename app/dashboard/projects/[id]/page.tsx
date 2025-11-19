@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { GenerateButton } from '@/components/generate-button';
 import { KanbanBoard } from '@/components/kanban-board';
-import { PushToJiraModal } from '@/components/push-to-jira-modal';
+import { SyncWithJiraModal } from '@/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
 import { EmptyProjectState } from '@/components/empty-project-state';
 import { Button } from '@/components/ui/button';
@@ -60,7 +60,7 @@ export default async function ProjectPage({
             <>
               <GenerateButton projectId={projectId} />
               <GeneralAiEditDialog projectId={projectId} />
-              <PushToJiraModal
+              <SyncWithJiraModal
                 projectId={projectId}
                 projectTitle={project.name || 'Untitled'}
               />

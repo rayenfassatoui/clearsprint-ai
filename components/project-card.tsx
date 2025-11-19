@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { GenerateButton } from '@/components/generate-button';
-import { PushToJiraModal } from '@/components/push-to-jira-modal';
+import { SyncWithJiraModal } from '@/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
 import {
   Card,
@@ -71,7 +71,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <GenerateButton projectId={project.id} />
             <div className="flex gap-2">
               <GeneralAiEditDialog projectId={project.id} />
-              <PushToJiraModal
+              <SyncWithJiraModal
                 projectId={project.id}
                 projectTitle={project.name || 'Untitled'}
               />

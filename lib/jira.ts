@@ -129,6 +129,7 @@ export async function getJiraIssues(
       'created',
       'updated',
       'parent',
+      'subtasks',
     ],
   };
 

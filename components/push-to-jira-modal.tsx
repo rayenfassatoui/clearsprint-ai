@@ -1,12 +1,13 @@
 'use client';
 
-import { Loader2, UploadCloud } from 'lucide-react';
+import { Loader2, RefreshCw, Download, UploadCloud } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
   getJiraProjectsList,
   getJiraSites,
-  pushToJira,
+  importFromJira,
+  syncToJira,
 } from '@/actions/jira.server';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,8 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export function PushToJiraModal({
+export function SyncWithJiraModal({
   projectId,
   projectTitle,
 }: {
@@ -37,7 +39,7 @@ export function PushToJiraModal({
   const [projects, setProjects] = useState<any[]>([]);
   const [selectedProjectKey, setSelectedProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [pushing, setPushing] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -76,31 +78,47 @@ export function PushToJiraModal({
     setLoading(false);
   }
 
-  async function handlePush() {
+  async function handleSync() {
     if (!selectedSiteId || !selectedProjectKey) return;
-    setPushing(true);
-    const res = await pushToJira(projectId, selectedSiteId, selectedProjectKey);
+    setProcessing(true);
+    const res = await syncToJira(projectId, selectedSiteId, selectedProjectKey);
     if (res.success) {
-      toast.success(`Successfully pushed ${res.pushedCount} tickets to Jira!`);
+      toast.success(`Successfully synced ${res.syncedCount} tickets to Jira!`);
       setIsOpen(false);
     } else {
       toast.error(res.error);
     }
-    setPushing(false);
+    setProcessing(false);
+  }
+
+  async function handleImport() {
+    if (!selectedSiteId || !selectedProjectKey) return;
+    setProcessing(true);
+    const res = await importFromJira(projectId, selectedSiteId, selectedProjectKey);
+    if (res.success) {
+      toast.success(`Successfully imported ${res.importedCount} tickets from Jira!`);
+      setIsOpen(false);
+      // Optional: Refresh page or data
+      window.location.reload();
+    } else {
+      toast.error(res.error);
+    }
+    setProcessing(false);
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <UploadCloud className="mr-2 h-4 w-4" />
-          Push to Jira
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Sync with Jira
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Push &quot;{projectTitle}&quot; to Jira</DialogTitle>
+          <DialogTitle>Sync &quot;{projectTitle}&quot; with Jira</DialogTitle>
         </DialogHeader>
+
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Select Jira Site</label>
@@ -144,14 +162,40 @@ export function PushToJiraModal({
             </div>
           )}
 
-          <Button
-            className="w-full"
-            onClick={handlePush}
-            disabled={pushing || !selectedProjectKey}
-          >
-            {pushing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            {pushing ? 'Pushing...' : 'Push to Jira'}
-          </Button>
+          <Tabs defaultValue="import" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="import">Import from Jira</TabsTrigger>
+              <TabsTrigger value="sync">Sync to Jira</TabsTrigger>
+            </TabsList>
+            <TabsContent value="import" className="space-y-4 pt-4">
+              <div className="text-sm text-muted-foreground">
+                Import tickets from the selected Jira project into ClearSprint AI.
+                Existing tickets will be updated.
+              </div>
+              <Button
+                className="w-full"
+                onClick={handleImport}
+                disabled={processing || !selectedProjectKey}
+              >
+                {processing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                {processing ? 'Importing...' : 'Import from Jira'}
+              </Button>
+            </TabsContent>
+            <TabsContent value="sync" className="space-y-4 pt-4">
+              <div className="text-sm text-muted-foreground">
+                Sync local tickets to the selected Jira project.
+                New tickets will be created in Jira, and existing ones updated.
+              </div>
+              <Button
+                className="w-full"
+                onClick={handleSync}
+                disabled={processing || !selectedProjectKey}
+              >
+                {processing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+                {processing ? 'Syncing...' : 'Sync to Jira'}
+              </Button>
+            </TabsContent>
+          </Tabs>
         </div>
       </DialogContent>
     </Dialog>
