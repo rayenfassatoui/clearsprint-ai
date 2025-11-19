@@ -29,9 +29,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 export function SyncWithJiraModal({
   projectId,
   projectTitle,
+  trigger,
 }: {
   projectId: number;
   projectTitle: string;
+  trigger?: React.ReactNode;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [sites, setSites] = useState<any[]>([]);
@@ -109,10 +111,14 @@ export function SyncWithJiraModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Sync with Jira
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="outline" size="sm">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Sync with Jira
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

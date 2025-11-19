@@ -19,9 +19,10 @@ import { Textarea } from '@/components/ui/textarea';
 
 interface GeneralAiEditDialogProps {
   projectId: number;
+  trigger?: React.ReactNode;
 }
 
-export function GeneralAiEditDialog({ projectId }: GeneralAiEditDialogProps) {
+export function GeneralAiEditDialog({ projectId, trigger }: GeneralAiEditDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
@@ -50,10 +51,14 @@ export function GeneralAiEditDialog({ projectId }: GeneralAiEditDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-2">
-          <Sparkles className="mr-2 h-4 w-4" />
-          General AI Edit
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button variant="outline" size="sm" className="ml-2">
+            <Sparkles className="mr-2 h-4 w-4" />
+            General AI Edit
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

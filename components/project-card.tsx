@@ -6,6 +6,14 @@ import Link from 'next/link';
 import { GenerateButton } from '@/components/generate-button';
 import { SyncWithJiraModal } from '@/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
+import { RefreshCw, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   Card,
   CardContent,
@@ -32,7 +40,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         href={`/dashboard/projects/${project.id}`}
         className="block group h-full"
       >
-        <Card className="h-full flex flex-col group-hover:border-primary/50 group-hover:shadow-lg transition-all duration-300 overflow-hidden relative">
+        <Card className="h-full min-h-[220px] flex flex-col group-hover:border-primary/50 group-hover:shadow-lg transition-all duration-300 overflow-hidden relative">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           <CardHeader className="pb-2 relative z-10">
@@ -62,19 +70,49 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </CardContent>
 
           <CardFooter
-            className="flex justify-between pt-4 border-t bg-muted/20 relative z-10"
+            className="flex justify-between items-center pt-4 border-t bg-muted/20 relative z-10 gap-2"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
             }}
           >
-            <GenerateButton projectId={project.id} />
-            <div className="flex gap-2">
-              <GeneralAiEditDialog projectId={project.id} />
-              <SyncWithJiraModal
-                projectId={project.id}
-                projectTitle={project.name || 'Untitled'}
-              />
+            <GenerateButton projectId={project.id} className="w-full" />
+
+            <div className="flex gap-1 shrink-0">
+              <TooltipProvider>
+                <GeneralAiEditDialog
+                  projectId={project.id}
+                  trigger={
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
+                          <Sparkles className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>General AI Edit</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  }
+                />
+
+                <SyncWithJiraModal
+                  projectId={project.id}
+                  projectTitle={project.name || 'Untitled'}
+                  trigger={
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
+                          <RefreshCw className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Sync with Jira</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  }
+                />
+              </TooltipProvider>
             </div>
           </CardFooter>
         </Card>
