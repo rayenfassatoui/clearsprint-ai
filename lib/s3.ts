@@ -1,8 +1,8 @@
 import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
   CreateBucketCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
 } from '@aws-sdk/client-s3';
 
 const S3_ENDPOINT = process.env.S3_ENDPOINT || 'https://s3.ashref.tn';
@@ -33,15 +33,14 @@ export async function uploadFileToS3(
     Key: key,
     Body: fileBuffer,
     ContentType: contentType,
-   
   });
 
   try {
     // Ensure bucket exists
     try {
       await s3Client.send(command);
-    } catch (error: any) {
-      if (error.name === 'NoSuchBucket') {
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NoSuchBucket') {
         console.log(`Bucket ${S3_BUCKET_NAME} does not exist. Creating...`);
         await s3Client.send(
           new CreateBucketCommand({ Bucket: S3_BUCKET_NAME })

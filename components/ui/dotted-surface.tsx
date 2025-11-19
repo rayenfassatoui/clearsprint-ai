@@ -1,191 +1,212 @@
 'use client';
-import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
-import React, { useEffect, useRef } from 'react';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { cn } from '@/lib/utils';
 
 type DottedSurfaceProps = Omit<React.ComponentProps<'div'>, 'ref'>;
 
 export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
-	const { theme } = useTheme();
+  const { theme } = useTheme();
 
-	const containerRef = useRef<HTMLDivElement>(null);
-	const sceneRef = useRef<{
-		scene: THREE.Scene;
-		camera: THREE.PerspectiveCamera;
-		renderer: THREE.WebGLRenderer;
-		particles: THREE.Points[];
-		animationId: number;
-		count: number;
-	} | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<{
+    scene: THREE.Scene;
+    camera: THREE.PerspectiveCamera;
+    renderer: THREE.WebGLRenderer;
+    particles: THREE.Points[];
+    animationId: number;
+    count: number;
+  } | null>(null);
 
-	useEffect(() => {
-		if (!containerRef.current) return;
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-		const SEPARATION = 150;
-		const AMOUNTX = 40;
-		const AMOUNTY = 60;
+    // Define updateDimensions here or ensure it's accessible
+    // For this context, we'll assume it's meant to update the Three.js scene dimensions
+    // This function will be called by the ResizeObserver
+    const updateDimensions = () => {
+      if (sceneRef.current) {
+        const { camera, renderer } = sceneRef.current;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+    };
 
-		// Scene setup
-		const scene = new THREE.Scene();
-		scene.fog = new THREE.Fog(0xffffff, 2000, 10000);
+    const observer = new ResizeObserver((entries) => {
+      if (!entries.length) return;
+      updateDimensions();
+    });
 
-		const camera = new THREE.PerspectiveCamera(
-			60,
-			window.innerWidth / window.innerHeight,
-			1,
-			10000,
-		);
-		camera.position.set(0, 355, 1220);
+    observer.observe(container);
 
-		const renderer = new THREE.WebGLRenderer({
-			alpha: true,
-			antialias: true,
-		});
-		renderer.setPixelRatio(window.devicePixelRatio);
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		renderer.setClearColor(scene.fog.color, 0);
+    return () => {
+      observer.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-		containerRef.current.appendChild(renderer.domElement);
+  useEffect(() => {
+    if (!containerRef.current) return;
 
-		// Create particles
-		const particles: THREE.Points[] = [];
-		const positions: number[] = [];
-		const colors: number[] = [];
+    const SEPARATION = 150;
+    const AMOUNTX = 40;
+    const AMOUNTY = 60;
 
-		// Create geometry for all particles
-		const geometry = new THREE.BufferGeometry();
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0xffffff, 2000, 10000);
 
-		for (let ix = 0; ix < AMOUNTX; ix++) {
-			for (let iy = 0; iy < AMOUNTY; iy++) {
-				const x = ix * SEPARATION - (AMOUNTX * SEPARATION) / 2;
-				const y = 0; // Will be animated
-				const z = iy * SEPARATION - (AMOUNTY * SEPARATION) / 2;
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      1,
+      10000
+    );
+    camera.position.set(0, 355, 1220);
 
-				positions.push(x, y, z);
-				if (theme === 'dark') {
-					colors.push(200, 200, 200);
-				} else {
-					colors.push(0, 0, 0);
-				}
-			}
-		}
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+    });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(scene.fog.color, 0);
 
-		geometry.setAttribute(
-			'position',
-			new THREE.Float32BufferAttribute(positions, 3),
-		);
-		geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    containerRef.current.appendChild(renderer.domElement);
 
-		// Create material
-		const material = new THREE.PointsMaterial({
-			size: 8,
-			vertexColors: true,
-			transparent: true,
-			opacity: 0.8,
-			sizeAttenuation: true,
-		});
+    // Create particles
+    const particles: THREE.Points[] = [];
+    const positions: number[] = [];
+    const colors: number[] = [];
 
-		// Create points object
-		const points = new THREE.Points(geometry, material);
-		scene.add(points);
+    // Create geometry for all particles
+    const geometry = new THREE.BufferGeometry();
 
-		let count = 0;
-		let animationId = 0;
+    for (let ix = 0; ix < AMOUNTX; ix++) {
+      for (let iy = 0; iy < AMOUNTY; iy++) {
+        const x = ix * SEPARATION - (AMOUNTX * SEPARATION) / 2;
+        const y = 0; // Will be animated
+        const z = iy * SEPARATION - (AMOUNTY * SEPARATION) / 2;
 
-		// Animation function
-		const animate = () => {
-			animationId = requestAnimationFrame(animate);
+        positions.push(x, y, z);
+        if (theme === 'dark') {
+          colors.push(200, 200, 200);
+        } else {
+          colors.push(0, 0, 0);
+        }
+      }
+    }
 
-			const positionAttribute = geometry.attributes.position;
-			const positions = positionAttribute.array as Float32Array;
+    geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(positions, 3)
+    );
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-			let i = 0;
-			for (let ix = 0; ix < AMOUNTX; ix++) {
-				for (let iy = 0; iy < AMOUNTY; iy++) {
-					const index = i * 3;
+    // Create material
+    const material = new THREE.PointsMaterial({
+      size: 8,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      sizeAttenuation: true,
+    });
 
-					// Animate Y position with sine waves
-					positions[index + 1] =
-						Math.sin((ix + count) * 0.3) * 50 +
-						Math.sin((iy + count) * 0.5) * 50;
+    // Create points object
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
 
-					i++;
-				}
-			}
+    let count = 0;
+    let animationId = 0;
 
-			positionAttribute.needsUpdate = true;
+    // Animation function
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
 
-			// Update point sizes based on wave
-			const customMaterial = material as THREE.PointsMaterial & {
-				uniforms?: any;
-			};
-			if (!customMaterial.uniforms) {
-				// For dynamic size changes, we'd need a custom shader
-				// For now, keeping constant size for performance
-			}
+      const positionAttribute = geometry.attributes.position;
+      const positions = positionAttribute.array as Float32Array;
 
-			renderer.render(scene, camera);
-			count += 0.1;
-		};
+      let i = 0;
+      for (let ix = 0; ix < AMOUNTX; ix++) {
+        for (let iy = 0; iy < AMOUNTY; iy++) {
+          const index = i * 3;
 
-		// Handle window resize
-		const handleResize = () => {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize(window.innerWidth, window.innerHeight);
-		};
+          // Animate Y position with sine waves
+          positions[index + 1] =
+            Math.sin((ix + count) * 0.3) * 50 +
+            Math.sin((iy + count) * 0.5) * 50;
 
-		window.addEventListener('resize', handleResize);
+          i++;
+        }
+      }
 
-		// Start animation
-		animate();
+      positionAttribute.needsUpdate = true;
 
-		// Store references
-		sceneRef.current = {
-			scene,
-			camera,
-			renderer,
-			particles: [points],
-			animationId,
-			count,
-		};
+      renderer.render(scene, camera);
+      count += 0.1;
+    };
 
-		// Cleanup function
-		return () => {
-			window.removeEventListener('resize', handleResize);
+    // Handle window resize
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
 
-			if (sceneRef.current) {
-				cancelAnimationFrame(sceneRef.current.animationId);
+    window.addEventListener('resize', handleResize);
 
-				// Clean up Three.js objects
-				sceneRef.current.scene.traverse((object) => {
-					if (object instanceof THREE.Points) {
-						object.geometry.dispose();
-						if (Array.isArray(object.material)) {
-							object.material.forEach((material) => material.dispose());
-						} else {
-							object.material.dispose();
-						}
-					}
-				});
+    // Start animation
+    animate();
 
-				sceneRef.current.renderer.dispose();
+    // Store references
+    sceneRef.current = {
+      scene,
+      camera,
+      renderer,
+      particles: [points],
+      animationId,
+      count,
+    };
 
-				if (containerRef.current && sceneRef.current.renderer.domElement) {
-					containerRef.current.removeChild(
-						sceneRef.current.renderer.domElement,
-					);
-				}
-			}
-		};
-	}, [theme]);
+    // Cleanup function
+    return () => {
+      window.removeEventListener('resize', handleResize);
 
-	return (
-		<div
-			ref={containerRef}
-			className={cn('pointer-events-none fixed inset-0 -z-1', className)}
-			{...props}
-		/>
-	);
+      if (sceneRef.current) {
+        cancelAnimationFrame(sceneRef.current.animationId);
+
+        // Clean up Three.js objects
+        sceneRef.current.scene.traverse((object) => {
+          if (object instanceof THREE.Points) {
+            object.geometry.dispose();
+            if (Array.isArray(object.material)) {
+              object.material.forEach((material) => material.dispose());
+            } else {
+              object.material.dispose();
+            }
+          }
+        });
+
+        sceneRef.current.renderer.dispose();
+
+        if (containerRef.current && sceneRef.current.renderer.domElement) {
+          containerRef.current.removeChild(
+            sceneRef.current.renderer.domElement
+          );
+        }
+      }
+    };
+  }, [theme]);
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn('pointer-events-none fixed inset-0 -z-1', className)}
+      {...props}
+    />
+  );
 }

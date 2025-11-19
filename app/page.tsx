@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/card';
 
 import BackgroundEffects from '@/components/decorations/BackgroundEffects';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 const capabilities = [
   {
@@ -80,7 +82,11 @@ const LogoMark = () => (
   </div>
 );
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   return (
     <div className='relative min-h-screen overflow-hidden font-sans text-zinc-100'>
       {/* Selective gradient overlays - only in specific regions */}
@@ -114,9 +120,30 @@ export default function Home() {
                 Optimisé pour la feuille de route de lancement sur 45 jours
               </span>
             </div>
-            <Button asChild variant="ghost" className="text-zinc-400 hover:text-white hover:bg-white/5">
-              <Link href="/auth/signin">Se connecter</Link>
-            </Button>
+            {session ? (
+              <Button
+                asChild
+                className='bg-emerald-500 text-black hover:bg-emerald-400'
+              >
+                <Link href='/dashboard'>Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant='ghost'
+                  className='text-zinc-400 hover:text-white hover:bg-white/5'
+                >
+                  <Link href='/auth/signin'>Se connecter</Link>
+                </Button>
+                <Button
+                  asChild
+                  className='bg-emerald-500 text-black hover:bg-emerald-400'
+                >
+                  <Link href='/auth/signup'>S'inscrire</Link>
+                </Button>
+              </>
+            )}
           </div>
         </header>
 

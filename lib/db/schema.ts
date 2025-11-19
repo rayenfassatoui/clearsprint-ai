@@ -1,4 +1,12 @@
-import { pgTable, serial, text, integer, timestamp, boolean } from 'drizzle-orm/pg-core';
+import {
+	boolean,
+	integer,
+	json,
+	pgTable,
+	serial,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core";
 
 // Better-Auth Tables
 export const user = pgTable("user", {
@@ -8,7 +16,7 @@ export const user = pgTable("user", {
 	emailVerified: boolean("email_verified").notNull(),
 	image: text("image"),
 	createdAt: timestamp("created_at").notNull(),
-	updatedAt: timestamp("updated_at").notNull()
+	updatedAt: timestamp("updated_at").notNull(),
 });
 
 export const session = pgTable("session", {
@@ -19,14 +27,18 @@ export const session = pgTable("session", {
 	updatedAt: timestamp("updated_at").notNull(),
 	ipAddress: text("ip_address"),
 	userAgent: text("user_agent"),
-	userId: text("user_id").notNull().references(()=> user.id)
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id),
 });
 
 export const account = pgTable("account", {
 	id: text("id").primaryKey(),
 	accountId: text("account_id").notNull(),
 	providerId: text("provider_id").notNull(),
-	userId: text("user_id").notNull().references(()=> user.id),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id),
 	accessToken: text("access_token"),
 	refreshToken: text("refresh_token"),
 	idToken: text("id_token"),
@@ -35,7 +47,7 @@ export const account = pgTable("account", {
 	scope: text("scope"),
 	password: text("password"),
 	createdAt: timestamp("created_at").notNull(),
-	updatedAt: timestamp("updated_at").notNull()
+	updatedAt: timestamp("updated_at").notNull(),
 });
 
 export const verification = pgTable("verification", {
@@ -44,33 +56,49 @@ export const verification = pgTable("verification", {
 	value: text("value").notNull(),
 	expiresAt: timestamp("expires_at").notNull(),
 	createdAt: timestamp("created_at"),
-	updatedAt: timestamp("updated_at")
+	updatedAt: timestamp("updated_at"),
 });
 
 // App Specific Tables
-export const jiraTokens = pgTable('jira_tokens', {
-  id: serial('id').primaryKey(),
-  userId: text('user_id').references(() => user.id),
-  accessToken: text('access_token'),
-  refreshToken: text('refresh_token'),
-  instanceUrl: text('instance_url')
+export const jiraTokens = pgTable("jira_tokens", {
+	id: serial("id").primaryKey(),
+	userId: text("user_id").references(() => user.id),
+	accessToken: text("access_token"),
+	refreshToken: text("refresh_token"),
+	instanceUrl: text("instance_url"),
 });
 
-export const projects = pgTable('projects', {
-  id: serial('id').primaryKey(),
-  userId: text('user_id').references(() => user.id),
-  name: text('name'),
-  docUrl: text('doc_url'),
-  jiraProjectKey: text('jira_project_key')
+export const projects = pgTable("projects", {
+	id: serial("id").primaryKey(),
+	userId: text("user_id").references(() => user.id),
+	name: text("name"),
+	docUrl: text("doc_url"),
+	rawText: text("raw_text"),
+	jiraProjectKey: text("jira_project_key"),
 });
 
-export const tickets = pgTable('tickets', {
-  id: serial('id').primaryKey(),
-  projectId: integer('project_id').references(() => projects.id),
-  type: text('type').$type<'epic'|'task'|'subtask'>(),
-  title: text('title'),
-  description: text('description'),
-  parentId: integer('parent_id'),
-  orderIndex: integer('order_index'),
-  jiraId: text('jira_id')
+export const tickets = pgTable("tickets", {
+	id: serial("id").primaryKey(),
+	projectId: integer("project_id").references(() => projects.id),
+	type: text("type").$type<"epic" | "task" | "subtask">(),
+	title: text("title"),
+	description: text("description"),
+	parentId: integer("parent_id"),
+	orderIndex: integer("order_index"),
+	jiraId: text("jira_id"),
+});
+
+export const ticketHistory = pgTable("ticket_history", {
+	id: serial("id").primaryKey(),
+	ticketId: integer("ticket_id").references(() => tickets.id, {
+		onDelete: "cascade",
+	}),
+	userId: text("user_id").references(() => user.id),
+	changeType: text("change_type").$type<
+		"create" | "update" | "delete" | "ai_tweak"
+	>(),
+	previousValue: json("previous_value"),
+	newValue: json("new_value"),
+	prompt: text("prompt"),
+	createdAt: timestamp("created_at").defaultNow(),
 });
