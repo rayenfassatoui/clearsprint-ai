@@ -5,11 +5,15 @@ import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { tickets } from '@/lib/db/schema';
+import type { JiraIssueUpdateData } from '@/types';
 import {
   createJiraIssue,
+  getJiraIssue,
+  getJiraIssues,
   getJiraProjects,
   getJiraResources,
   getValidJiraToken,
+  updateJiraIssue,
 } from '@/lib/jira';
 
 export async function getJiraSites() {
@@ -65,7 +69,7 @@ export async function getJiraProjectsList(cloudId: string) {
 export async function pushToJira(
   projectId: number,
   cloudId: string,
-  jiraProjectKey: string,
+  jiraProjectKey: string
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -127,7 +131,7 @@ export async function pushToJira(
 
         // Find children tasks
         const tasks = allTickets.filter(
-          (t) => t.parentId === epic.id && t.type === 'task',
+          (t) => t.parentId === epic.id && t.type === 'task'
         );
 
         for (const task of tasks) {
@@ -164,7 +168,7 @@ export async function pushToJira(
 
           // Find subtasks
           const subtasks = allTickets.filter(
-            (t) => t.parentId === task.id && t.type === 'subtask',
+            (t) => t.parentId === task.id && t.type === 'subtask'
           );
 
           for (const subtask of subtasks) {
@@ -195,7 +199,7 @@ export async function pushToJira(
             const subtaskRes = await createJiraIssue(
               cloudId,
               token,
-              subtaskData,
+              subtaskData
             );
             await db
               .update(tickets)
@@ -215,6 +219,111 @@ export async function pushToJira(
     console.error('Push to Jira error:', error);
     return {
       error: error instanceof Error ? error.message : 'Failed to push to Jira',
+    };
+  }
+}
+
+/**
+ * Get Jira issues (work items) for a specific cloud/site
+ * Optionally filter with JQL
+ */
+export async function getJiraIssuesList(
+  cloudId: string,
+  jql?: string,
+  maxResults = 50,
+  startAt = 0
+) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: 'Unauthorized' };
+  }
+
+  try {
+    const token = await getValidJiraToken(session.user.id);
+    if (!token) return { error: 'Could not retrieve Jira token' };
+
+    const result = await getJiraIssues(
+      cloudId,
+      token,
+      jql,
+      maxResults,
+      startAt
+    );
+    return { success: true, ...result };
+  } catch (error) {
+    console.error('Jira issues error:', error);
+    return {
+      error:
+        error instanceof Error ? error.message : 'Failed to fetch Jira issues',
+    };
+  }
+}
+
+/**
+ * Get a single Jira issue by key or ID
+ */
+export async function getSingleJiraIssue(
+  cloudId: string,
+  issueIdOrKey: string
+) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: 'Unauthorized' };
+  }
+
+  try {
+    const token = await getValidJiraToken(session.user.id);
+    if (!token) return { error: 'Could not retrieve Jira token' };
+
+    const issue = await getJiraIssue(cloudId, token, issueIdOrKey);
+    return { success: true, issue };
+  } catch (error) {
+    console.error('Jira issue error:', error);
+    return {
+      error:
+        error instanceof Error ? error.message : 'Failed to fetch Jira issue',
+    };
+  }
+}
+
+/**
+ * Update a Jira issue
+ */
+export async function updateJiraIssueAction(
+  cloudId: string,
+  issueIdOrKey: string,
+  updateData: JiraIssueUpdateData
+) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: 'Unauthorized' };
+  }
+
+  try {
+    const token = await getValidJiraToken(session.user.id);
+    if (!token) return { error: 'Could not retrieve Jira token' };
+
+    const result = await updateJiraIssue(
+      cloudId,
+      token,
+      issueIdOrKey,
+      updateData
+    );
+    return { success: true, ...result };
+  } catch (error) {
+    console.error('Update Jira issue error:', error);
+    return {
+      error:
+        error instanceof Error ? error.message : 'Failed to update Jira issue',
     };
   }
 }

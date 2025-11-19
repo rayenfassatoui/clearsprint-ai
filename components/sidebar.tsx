@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import {
-  FolderOpen,
+  BeakerIcon,
+  FolderKanban,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -12,17 +13,46 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { UserProfile } from '@/components/user-profile';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  projects: { id: number; name: string | null }[];
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string | null;
+  };
 }
 
-export function Sidebar({ className, projects }: SidebarProps) {
+const navigation = [
+  {
+    name: 'Dashboard',
+    href: '/dashboard',
+    icon: LayoutDashboard,
+  },
+  {
+    name: 'Projects',
+    href: '/dashboard/projects-list',
+    icon: FolderKanban,
+  },
+  {
+    name: 'Settings',
+    href: '/dashboard/settings',
+    icon: Settings,
+  },
+  {
+    name: 'Test Jira API',
+    href: '/dashboard/test',
+    icon: BeakerIcon,
+  },
+];
+
+export function Sidebar({ className, user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -39,28 +69,33 @@ export function Sidebar({ className, projects }: SidebarProps) {
   }
 
   const NavItem = ({ href, icon: Icon, label, isActive }: NavItemProps) => (
-    <Link href={href} className="block w-full">
-      <div className="relative group">
+    <Link href={href} className='block w-full'>
+      <div className='relative group'>
         {isActive && (
           <motion.div
-            layoutId="activeNav"
-            className="absolute inset-0 bg-primary/10 rounded-lg"
+            layoutId='activeNav'
+            className='absolute inset-0 bg-primary/10 rounded-lg'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{
+              type: 'spring',
+              stiffness: 380,
+              damping: 30,
+            }}
           />
         )}
         <Button
-          variant="ghost"
+          variant='ghost'
           className={cn(
             'w-full justify-start relative z-10 transition-all duration-200',
             isActive
               ? 'text-primary font-medium'
-              : 'text-muted-foreground hover:text-foreground',
+              : 'text-muted-foreground hover:text-foreground'
           )}
         >
           <Icon className={cn('mr-2 h-4 w-4', isActive && 'text-primary')} />
-          <span className="truncate">{label}</span>
+          <span className='truncate'>{label}</span>
         </Button>
       </div>
     </Link>
@@ -69,101 +104,85 @@ export function Sidebar({ className, projects }: SidebarProps) {
   return (
     <div
       className={cn(
-        'pb-12 h-full flex flex-col bg-card/50 backdrop-blur-xl border-r border-border/50',
-        className,
+        'h-full flex flex-col bg-card/50 backdrop-blur-xl border-r border-border/50',
+        className
       )}
     >
-      <div className="space-y-4 py-4 flex-1">
-        <div className="px-3 py-2">
-          <div className="flex items-center px-4 mb-6 gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-primary" />
-            </div>
-            <h2 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-              ClearSprint AI
-            </h2>
+      {/* Header */}
+      <div className='px-3 py-4'>
+        <div className='flex items-center px-4 gap-2'>
+          <div className='h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center'>
+            <Sparkles className='h-4 w-4 text-primary' />
           </div>
-          <div className="space-y-1">
-            <NavItem
-              href="/dashboard"
-              icon={LayoutDashboard}
-              label="Dashboard"
-              isActive={pathname === '/dashboard'}
-            />
-          </div>
-        </div>
-        <div className="px-3 py-2">
-          <h2 className="mb-2 px-4 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-            Projects
+          <h2 className='text-lg font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/60'>
+            ClearSprint AI
           </h2>
-          <ScrollArea className="h-[300px] px-1">
-            <div className="space-y-1">
-              {projects.map((project) => (
-                <NavItem
-                  key={project.id}
-                  href={`/dashboard/projects/${project.id}`}
-                  icon={FolderOpen}
-                  label={project.name || 'Untitled Project'}
-                  isActive={pathname === `/dashboard/projects/${project.id}`}
-                />
-              ))}
-              {projects.length === 0 && (
-                <div className="px-4 py-8 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    No projects yet.
-                  </p>
-                  <p className="text-xs text-muted-foreground/50 mt-1">
-                    Create one to get started.
-                  </p>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
         </div>
       </div>
 
-      <div className="px-3 py-4 mt-auto border-t border-border/50 bg-background/50">
-        <div className="space-y-1">
-          <div className="px-4 py-2 flex items-center justify-between rounded-lg hover:bg-accent/50 transition-colors">
-            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <Settings className="h-4 w-4" />
-              <span>Theme</span>
-            </div>
-            <ThemeToggle />
-          </div>
-          <Button
-            variant="ghost"
-            className="w-full justify-start text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
-            onClick={handleSignOut}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+      <Separator className='mx-3' />
+
+      {/* Navigation */}
+      <div className='flex-1 px-3 py-4'>
+        <div className='space-y-1'>
+          {navigation.map((item) => (
+            <NavItem
+              key={item.name}
+              href={item.href}
+              icon={item.icon}
+              label={item.name}
+              isActive={
+                pathname === item.href ||
+                (item.href !== '/dashboard' && pathname.startsWith(item.href))
+              }
+            />
+          ))}
         </div>
+      </div>
+
+      {/* Footer */}
+      <div className='px-3 py-4 mt-auto border-t border-border/50 bg-background/50 space-y-3'>
+        {/* Theme Toggle */}
+        <div className='px-4 py-2 flex items-center justify-between rounded-lg hover:bg-accent/50 transition-colors'>
+          <div className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
+            <Settings className='h-4 w-4' />
+            <span>Theme</span>
+          </div>
+          <ThemeToggle />
+        </div>
+
+        {/* User Profile */}
+        <UserProfile user={user} />
+
+        {/* Sign Out */}
+        <Button
+          variant='ghost'
+          className='w-full justify-start text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors'
+          onClick={handleSignOut}
+        >
+          <LogOut className='mr-2 h-4 w-4' />
+          Sign Out
+        </Button>
       </div>
     </div>
   );
 }
 
-export function MobileNav({
-  projects,
-}: {
-  projects: { id: number; name: string | null }[];
-}) {
+export function MobileNav({ user }: { user: SidebarProps['user'] }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden hover:bg-accent/50"
+          variant='ghost'
+          size='icon'
+          className='md:hidden hover:bg-accent/50'
         >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle Menu</span>
+          <Menu className='h-5 w-5' />
+          <span className='sr-only'>Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0 p-0 w-72">
-        <Sidebar projects={projects} className="border-none" />
+      <SheetContent side='left' className='pr-0 p-0 w-72'>
+        <Sidebar user={user} className='border-none' />
       </SheetContent>
     </Sheet>
   );

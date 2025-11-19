@@ -1,145 +1,316 @@
-<div align="center">
-
 # ClearSprint AI
 
-An intelligent sprint workspace that pairs a marketing-grade landing experience with a production-ready Next.js stack.
+> AI-powered sprint planning and Jira integration for collaborative teams
 
-</div>
+A modern Next.js application that transforms PRDs into actionable sprint tickets with intelligent AI analysis and seamless Jira synchronization.
 
-## Overview
+## Features
 
-ClearSprint AI is a full-stack Next.js application that showcases an AI-assisted delivery workflow. The current build focuses on a polished marketing experience with dark-mode first visuals, reusable Shadcn/UI components, and a Drizzle ORM foundation ready to back real product data.
-
-## Feature Highlights
-
-- Hero and feature storytelling built with motion-rich, responsive Shadcn components engineered with Tailwind CSS v4 utilities.
-- Mobile-first layout with dark mode baked in via `next-themes`, fluid typography, and OKLCH-driven color tokens.
-- Database access layer prewired for Drizzle ORM on Neon, including connection caching for edge/serverless runtimes.
-- Component library scaffold (`components/ui`) mirroring the Shadcn collection for rapid interface composition.
-- Strict TypeScript configuration and server-first app router architecture aligned with Next.js 16 best practices.
+- **AI-Powered Planning**: Upload PRDs and get intelligent sprint breakdowns
+- **Jira Integration**: Two-way sync with Jira projects and issues
+- **Modern UI**: Beautiful, responsive interface with dark mode support
+- **Type-Safe**: Full TypeScript coverage with strict typing
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Better-auth with email/password and OAuth
+- **File Storage**: S3-compatible storage (Minio, AWS S3, Cloudflare R2)
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 (App Router, Server Components by default)
-- **Language**: TypeScript (strict)
-- **Styling**: Tailwind CSS v4, Shadcn/UI primitives, OKLCH design tokens
-- **State & Forms**: React 19, `react-hook-form`, Zod-ready validation layer
-- **Database**: Drizzle ORM targeting Neon (Serverless Postgres)
-- **Tooling**: Drizzle Kit CLI, `next-themes`, Lucide icons, Embla Carousel, Recharts, Three.js (for future immersive modules)
-
-## Requirements
-
-- Node.js >= 20.11 (align with Next.js 16 baseline)
-- pnpm 9 / npm 10 / bun 1.1 (choose your package manager consistently)
-- Neon Postgres project (or any Postgres-compatible instance) for database features
-
-## Quick Start
-
-```bash
-git clone https://github.com/rayenfassatoui/clearsprint-ai.git
-cd clearsprint-ai
-
-# Install deps (choose one)
-pnpm install
-# npm install
-# bun install
-
-cp .env.local.example .env.local
-# Update DATABASE_URL with your Neon connection string
-
-pnpm dev
-# npm run dev
-# bun dev
-```
-
-Visit `http://localhost:3000` in your browser. Hot reload applies to both React components and Tailwind styles.
-
-## Environment Variables
-
-| Name | Required | Description |
-| ---- | -------- | ----------- |
-| `DATABASE_URL` | yes (for DB features) | Postgres connection string for Drizzle/Neon. Used by `lib/db/index.ts` to instantiate the HTTP driver. |
-
-Add additional variables beside `DATABASE_URL` as features expand (e.g., auth providers, analytics). Never commit secrets.
-
-## Database Workflow (Drizzle + Neon)
-
-1. Model tables in `lib/db/schema.ts` using `pgTable` utilities.
-2. Generate SQL migrations with `pnpm db:generate`.
-3. Push migrations to Neon using `pnpm db:push`.
-4. Explore data visually via `pnpm db:studio` (Drizzle Studio).
-
-`lib/db/index.ts` enables fetch-connection caching (`neonConfig.fetchConnectionCache`) so edge/serverless deployments avoid connection storms. When expanding the schema, re-export new tables/entities to keep imports ergonomic.
+- **Framework**: Next.js 16 (App Router, Turbopack)
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Database**: PostgreSQL (Neon) + Drizzle ORM
+- **Auth**: Better-auth (email/password + Atlassian OAuth)
+- **Storage**: S3-compatible (Minio)
+- **AI**: OpenAI-compatible APIs (OpenRouter, OpenAI)
+- **Package Manager**: Bun
 
 ## Project Structure
 
 ```
-app/             # Next.js App Router pages, layouts, and metadata
-	globals.css    # Tailwind v4 directives, OKLCH theme tokens, dark mode setup
-	page.tsx       # Marketing experience for ClearSprint AI
-components/
-	ui/            # Shadcn-derived primitives ready for composition
-hooks/           # Reusable React hooks (e.g., responsive helpers)
-lib/
-	db/            # Drizzle database client & schema definitions
-	utils.ts       # Utility helpers shared across the app
-public/          # Static assets served verbatim
-
-### Core Modules (Epic 3)
-
-- **`lib/s3.ts`**: S3-compliant storage client (Minio/AWS). Handles file uploads and retrieval.
-- **`actions/upload.server.ts`**: Server Actions for handling file uploads and text extraction.
-  - `uploadDoc(formData)`: Uploads file to S3 and extracts text using `pdf2json`.
-- **`components/dropzone.tsx`**: Drag-and-drop file upload component with "Paste Text" mode.
-- **`app/upload-test/page.tsx`**: Test page for verifying upload and extraction functionality.
-
-### Key Dependencies
-
-- **`@aws-sdk/client-s3`**: For S3 interactions.
-- **`pdf2json`**: For robust PDF text extraction.
-- **`react-dropzone`**: For handling file drops.
-- **`shadcn/ui`**: For UI components (Switch, Button, Textarea, etc.).
+clearsprint-ai/
+├── actions/              # Server actions
+│   ├── jira.server.ts   # Jira API operations
+│   ├── upload.server.ts # Document upload
+│   └── user.server.ts   # User operations
+├── app/                  # Next.js app directory
+│   ├── api/auth/        # Auth API routes
+│   ├── auth/            # Auth pages (signin/signup)
+│   ├── dashboard/       # Main application
+│   │   ├── page.tsx    # Dashboard overview
+│   │   ├── projects-list/ # All projects
+│   │   ├── projects/   # Individual project pages
+│   │   ├── settings/   # User settings
+│   │   └── test/       # Jira API testing
+│   ├── layout.tsx      # Root layout
+│   └── page.tsx        # Landing page
+├── components/          # React components
+│   ├── ui/             # shadcn/ui components
+│   ├── examples/       # Example components
+│   ├── sidebar.tsx     # Main navigation
+│   └── user-profile.tsx # User profile widget
+├── lib/                 # Utility libraries
+│   ├── db/             # Database schema & config
+│   ├── auth.ts         # Auth configuration
+│   ├── jira.ts         # Jira API client
+│   └── s3.ts           # S3 storage client
+├── types/               # TypeScript type definitions
+│   ├── database.ts     # DB model types
+│   ├── jira.ts         # Jira API types
+│   ├── pdf.ts          # PDF parsing types
+│   ├── actions.ts      # Server action types
+│   └── index.ts        # Centralized exports
+├── drizzle/             # Database migrations
+├── docs/                # Documentation
+└── public/              # Static assets
 ```
 
-## UI & UX Guidelines
+## Strict Structure Rules
 
-- **Spacing & Rhythm**: Prefer `gap-6`, `gap-8`, and generous padding (`px-8`, `py-12`) to maintain the spacious visual language seen on the home page.
-- **Color System**: Use OKLCH tokens defined in `app/globals.css` to keep light/dark contrast accessible. Default to dark mode; ensure light mode parity before shipping.
-- **Micro-interactions**: Lean on Tailwind transitions (`transition`, `duration-300`, `hover:scale-[1.02]`) and Shadcn states for subtle feedback. Avoid custom CSS unless unavoidable.
-- **Typography**: Geist Sans/Mono are globally loaded via `next/font`. Keep headings within `text-2xl`–`text-6xl`, paragraph copy around `text-sm`–`text-lg` for legibility.
+### File Organization
 
-## Available Scripts
+1. **Server Actions** (`actions/`):
+   - Must end with `.server.ts`
+   - Must start with `'use server'` directive
+   - Group by feature (e.g., `jira.server.ts`, `user.server.ts`)
 
-| Command | Description |
-| ------- | ----------- |
-| `pnpm dev` | Start Next.js in development mode (hot reload). |
-| `pnpm build` | Create an optimized production build. |
-| `pnpm start` | Launch the production server (after `build`). |
-| `pnpm db:generate` | Produce SQL migrations from Drizzle schema. |
-| `pnpm db:push` | Apply migrations to the configured Postgres database. |
-| `pnpm db:studio` | Open Drizzle Studio for interactive DB inspection. |
+2. **Components** (`components/`):
+   - Client components: Use `'use client'` directive
+   - Server components: No directive (default)
+   - UI primitives go in `components/ui/`
+   - Feature components at root level
 
-> Replace `pnpm` with your package manager of choice (`npm`, `bun`, etc.) if you installed dependencies differently.
+3. **Types** (`types/`):
+   - **MUST** use centralized types folder
+   - Group by domain (database, jira, pdf, actions)
+   - Import from `@/types` ONLY
+   - Never define types inline for shared data
 
-## Testing & Quality
+4. **Database** (`lib/db/`):
+   - Schema definitions in `schema.ts`
+   - Migrations in `drizzle/` folder
+   - All DB operations through Drizzle
 
-- Run `npx next lint` or set up a `lint` script to enforce ESLint + Tailwind rules.
-- Introduce end-to-end tests (Playwright) or integration tests (Jest/React Testing Library) as dynamic flows are implemented.
-- Keep TypeScript strictness high; prefer explicit return types and `zod` schemas for runtime validation on API routes and forms.
-- Validate accessibility with `@axe-core/react` in development and manual keyboard checks.
+5. **Routes** (`app/`):
+   - Follow Next.js App Router conventions
+   - Protected routes under `/dashboard`
+   - Public routes at root level
 
-## Deployment
+### Naming Conventions
 
-- **Vercel**: Zero-config deployment recommended. Set `DATABASE_URL` in project environment variables and enable the Edge runtime for routes that benefit from low latency.
-- **Docker / Custom Hosting**: Generate a production build (`pnpm build`) and serve with `pnpm start`. Ensure the environment exposes `DATABASE_URL` and supports Node 20.
+- **Files**: `kebab-case.tsx` or `kebab-case.ts`
+- **Components**: `PascalCase`
+- **Functions**: `camelCase`
+- **Types/Interfaces**: `PascalCase`
+- **Constants**: `SCREAMING_SNAKE_CASE`
 
-## Roadmap
+### Import Rules
 
-- Flesh out Drizzle schema with sprint, task, and team membership tables.
-- Add authenticated spaces leveraging NextAuth.js or custom OAuth flows.
-- Integrate analytics dashboards with Recharts and live data feeds.
-- Expand 3D/motion sections using Three.js for immersive storytelling moments.
+```typescript
+// ✅ Correct
+import { User } from '@/types';
+import { db } from '@/lib/db';
 
----
+// ❌ Wrong - never use relative paths for cross-folder imports
+import { User } from '../../lib/types';
+```
 
-ClearSprint AI is engineered with senior-level standards: scalable architecture, polished UX, and a foundation ready for production. Iterate thoughtfully, keep components composable, and ship with confidence.
+### Type Safety Rules
+
+1. **Never use `any`** - Use `unknown` and type guards
+2. **Explicit return types** for all exported functions
+3. **Strict mode enabled** in tsconfig.json
+4. **No implicit any** in function parameters
+
+## Setup
+
+### Prerequisites
+
+- Node.js 18+ or Bun
+- PostgreSQL database (Neon recommended)
+- S3-compatible storage (Minio, AWS S3, etc.)
+- Atlassian Developer account (for Jira)
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+# Database
+DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
+
+# Authentication
+BETTER_AUTH_SECRET="your_secret"      # Generate with: openssl rand -base64 32
+BETTER_AUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# Atlassian Jira OAuth
+ATLASSIAN_CLIENT_ID="your_client_id"
+ATLASSIAN_CLIENT_SECRET="your_secret"
+
+# S3 Storage
+S3_ENDPOINT="https://s3.example.com"
+S3_ACCESS_KEY="your_access_key"
+S3_SECRET_KEY="your_secret_key"
+S3_BUCKET_NAME="clearsprint-docs"
+S3_REGION="us-east-1"
+
+# AI (OpenAI-compatible)
+OPENAI_BASE_URL="https://openrouter.ai/api/v1"
+OPENAI_API_KEY="sk-or-v1-..."
+OPENAI_MODEL_NAME="gpt-4o-mini"
+```
+
+### Installation
+
+```bash
+# Install dependencies
+bun install
+
+# Setup database
+bun run db:push        # Push schema to database
+bun run db:studio      # Open Drizzle Studio
+
+# Development
+bun run dev            # Start dev server at localhost:3000
+
+# Production
+bun run build          # Build for production
+bun start              # Start production server
+```
+
+## Jira Integration Setup
+
+1. Go to [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/)
+2. Create OAuth 2.0 integration
+3. Add callback URL:
+   - Local: `http://localhost:3000/api/auth/callback/atlassian`
+   - Production: `https://yourdomain.com/api/auth/callback/atlassian`
+4. Add scopes:
+   - `read:jira-user`
+   - `read:jira-work`
+   - `write:jira-work`
+   - `read:me`
+   - `manage:jira-project`
+   - `manage:jira-configuration`
+   - `offline_access`
+5. Copy Client ID and Secret to `.env`
+
+## Development Workflow
+
+### Adding New Features
+
+1. **Create types** in `types/` folder
+2. **Define schema** in `lib/db/schema.ts` (if needed)
+3. **Create server actions** in `actions/`
+4. **Build components** in `components/`
+5. **Add routes** in `app/`
+6. **Test thoroughly**
+
+### Database Changes
+
+```bash
+# Make schema changes in lib/db/schema.ts
+# Generate migration
+bun run db:generate
+
+# Apply migration  
+bun run db:push
+
+# View data
+bun run db:studio
+```
+
+### Code Quality
+
+```bash
+# Format code
+bun run format
+
+# Lint code  
+bun run lint
+
+# Type check
+bun run type-check
+```
+
+## Project Pages
+
+- **Dashboard** (`/dashboard`): Overview with stats and quick actions
+- **Projects** (`/dashboard/projects-list`): All user projects
+- **Settings** (`/dashboard/settings`): User info and Jira connection
+- **Test** (`/dashboard/test`): Jira API testing interface
+
+## Key Components
+
+- **Sidebar**: Main navigation with user profile
+- **UserProfile**: User avatar/info with connection status
+- **ConnectJiraButton**: OAuth connection to Jira
+- **ProjectList**: Grid of user projects
+- **NewProjectModal**: Create new project dialog
+
+## API Routes
+
+- `/api/auth/[...all]`: Better-auth endpoints
+- All other operations use server actions
+
+## Documentation
+
+- `docs/jira-setup.md` - Detailed Jira integration guide
+- `docs/jira-integration-changes.md` - Recent changes
+- `docs/jira-api-search-fix.md` - API endpoint updates
+- `docs/app-reorganization.md` - Structure changes
+
+## Contributing
+
+1. Follow the strict structure rules above
+2. Use TypeScript strictly (no `any`)
+3. Import types from `@/types` only
+4. Write server actions for data operations
+5. Use shadcn/ui for all UI components
+6. Follow the AGENTS.md guidelines
+
+## Architecture Decisions
+
+### Why Centralized Types?
+
+- **Single source of truth** for all type definitions
+- **Prevents duplication** across files
+- **Easier refactoring** - change once, update everywhere
+- **Better organization** - types grouped by domain
+
+### Why Better-auth?
+
+- **Full TypeScript support**
+- **Flexible** - works with any database
+- **Modern** - React 19 compatible
+- **Extensible** - easy to add providers
+
+### Why Server Actions?
+
+- **Type-safe** end-to-end
+- **No API boilerplate**
+- **Built-in security** with Next.js
+- **Better DX** than traditional REST
+
+## Troubleshooting
+
+### Jira Connection Issues
+
+See `docs/jira-setup.md` for detailed troubleshooting.
+
+### Type Errors
+
+Always import from `@/types`, never from `@/lib/types`.
+
+### Database Issues
+
+Run `bun run db:studio` to inspect data and schema.
+
+## License
+
+MIT
+
+## Support
+
+For issues or questions, check the docs folder or create an issue.
