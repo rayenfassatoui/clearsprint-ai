@@ -113,12 +113,12 @@ export async function getJiraIssues(
   accessToken: string,
   jql?: string,
   maxResults = 50,
-  startAt = 0
+  nextPageToken?: string
 ) {
-  // Use the new /search/jql endpoint (POST method)
+  // Use the new /search/jql endpoint (POST method) with nextPageToken pagination
   const requestBody: any = {
+    jql: jql || 'order by created DESC',
     maxResults,
-    startAt,
     fields: [
       'summary',
       'description',
@@ -133,9 +133,9 @@ export async function getJiraIssues(
     ],
   };
 
-  // Add JQL if provided, otherwise search all issues
-  if (jql) {
-    requestBody.jql = jql;
+  // Add nextPageToken for pagination if provided
+  if (nextPageToken) {
+    requestBody.nextPageToken = nextPageToken;
   }
 
   const res = await fetch(
@@ -152,8 +152,8 @@ export async function getJiraIssues(
 
   if (!res.ok) {
     const errorText = await res.text();
-    console.error('Get issues failed:', errorText);
-    throw new Error(`Failed to fetch Jira issues: ${res.statusText}`);
+    console.error('Get issues failed:', res.status, res.statusText, errorText);
+    throw new Error(`Failed to fetch Jira issues: ${res.status} ${res.statusText} - ${errorText}`);
   }
 
   return res.json();

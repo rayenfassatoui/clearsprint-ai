@@ -4,16 +4,16 @@ import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { tickets } from '@/lib/db/schema';
+import { tickets, projects } from '@/lib/db/schema';
 import type { JiraIssueUpdateData } from '@/types';
 import {
-    createJiraIssue,
-    getJiraIssue,
-    getJiraIssues,
-    getJiraProjects,
-    getJiraResources,
-    getValidJiraToken,
-    updateJiraIssue
+  createJiraIssue,
+  getJiraIssue,
+  getJiraIssues,
+  getJiraProjects,
+  getJiraResources,
+  getValidJiraToken,
+  updateJiraIssue
 } from '@/lib/jira';
 
 function extractDescription(description: any): string {
@@ -322,7 +322,7 @@ export async function getJiraIssuesList(
   cloudId: string,
   jql?: string,
   maxResults = 50,
-  startAt = 0
+  nextPageToken?: string
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -341,7 +341,7 @@ export async function getJiraIssuesList(
       token,
       jql,
       maxResults,
-      startAt
+      nextPageToken
     );
     return { success: true, ...result };
   } catch (error) {
@@ -415,6 +415,54 @@ export async function updateJiraIssueAction(
     return {
       error:
         error instanceof Error ? error.message : 'Failed to update Jira issue',
+    };
+  }
+}
+
+export async function createProjectFromJira(
+  cloudId: string,
+  jiraProjectKey: string,
+  projectName: string
+) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: 'Unauthorized' };
+  }
+
+  try {
+    // Create project
+    const [newProject] = await db
+      .insert(projects)
+      .values({
+        userId: session.user.id,
+        name: projectName,
+        jiraProjectKey: jiraProjectKey,
+        // docUrl and rawText are empty for imported projects
+      })
+      .returning();
+
+    // Import tickets
+    const importResult = await importFromJira(
+      newProject.id,
+      cloudId,
+      jiraProjectKey
+    );
+
+    if (importResult.error) {
+      return { error: importResult.error, projectId: newProject.id };
+    }
+
+    return { success: true, projectId: newProject.id };
+  } catch (error) {
+    console.error('Create project from Jira error:', error);
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : 'Failed to create project from Jira',
     };
   }
 }

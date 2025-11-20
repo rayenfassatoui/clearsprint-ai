@@ -105,9 +105,8 @@ export default function TestPage() {
     try {
       const result = await getJiraIssuesList(
         selectedSite,
-        `project = ${selectedProject}`,
-        50,
-        0
+        `project = "${selectedProject}"`,
+        50
       );
       if (result.error) {
         toast.error(result.error);

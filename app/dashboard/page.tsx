@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ConnectJiraButton } from '@/components/connect-jira-button';
+import { ImportJiraModal } from '@/components/import-jira-modal';
 import {
   Card,
   CardContent,
@@ -83,9 +84,8 @@ export default async function DashboardPage() {
               Jira Integration
             </CardTitle>
             <div
-              className={`h-2 w-2 rounded-full ${
-                jiraConnected ? 'bg-green-500' : 'bg-muted'
-              }`}
+              className={`h-2 w-2 rounded-full ${jiraConnected ? 'bg-green-500' : 'bg-muted'
+                }`}
             />
           </CardHeader>
           <CardContent>
@@ -120,14 +120,19 @@ export default async function DashboardPage() {
             <CardTitle>Jira Integration</CardTitle>
             <CardDescription className='flex items-center justify-between'>
               <span>Connect your Jira workspace</span>
-              {!jiraConnected && <ConnectJiraButton />}
-              {jiraConnected && (
-                <Link href='/dashboard/test'>
-                  <Button variant='outline' size='sm'>
-                    Test API
-                  </Button>
-                </Link>
-              )}
+              <div className="flex gap-2">
+                {!jiraConnected && <ConnectJiraButton />}
+                {jiraConnected && (
+                  <>
+                    <ImportJiraModal />
+                    <Link href='/dashboard/test'>
+                      <Button variant='outline' size='sm'>
+                        Test API
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
             </CardDescription>
           </CardHeader>
         </Card>

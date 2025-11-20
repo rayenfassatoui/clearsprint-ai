@@ -41,6 +41,24 @@ export default async function ProjectPage({
   const ticketsResult = await getProjectTickets(projectId);
   const tickets = ticketsResult.success ? ticketsResult.tickets : [];
 
+  // Get Jira cloudId if the project has a jiraProjectKey
+  let jiraCloudId: string | null = null;
+  if (project.jiraProjectKey) {
+    try {
+      const { getJiraAccount, getJiraResources, getValidJiraToken } = await import('@/lib/jira');
+      const jiraAccount = await getJiraAccount(session.user.id);
+      if (jiraAccount) {
+        const token = await getValidJiraToken(session.user.id);
+        const resources = await getJiraResources(token);
+        if (resources && resources.length > 0) {
+          jiraCloudId = resources[0].id;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get Jira resources:', error);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -60,6 +78,13 @@ export default async function ProjectPage({
             <>
               <GenerateButton projectId={projectId} />
               <GeneralAiEditDialog projectId={projectId} />
+              {jiraCloudId && project.jiraProjectKey && (
+                <PullFromJiraModal
+                  projectId={projectId}
+                  cloudId={jiraCloudId}
+                  jiraProjectKey={project.jiraProjectKey}
+                />
+              )}
               <SyncWithJiraModal
                 projectId={projectId}
                 projectTitle={project.name || 'Untitled'}
