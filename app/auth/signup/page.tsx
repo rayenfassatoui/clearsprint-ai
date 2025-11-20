@@ -1,24 +1,43 @@
 'use client';
 
-import { ArrowRight, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { AuthLayout } from '@/components/auth-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { SignUpPage, Testimonial } from '@/components/ui/sign-up';
 import { authClient } from '@/lib/auth-client';
 
+const sampleTestimonials: Testimonial[] = [
+  {
+    avatarSrc: 'https://randomuser.me/api/portraits/women/44.jpg',
+    name: 'Emily Rodriguez',
+    handle: '@emilydesigns',
+    text: 'The best decision I made for my workflow. Everything just works seamlessly!',
+  },
+  {
+    avatarSrc: 'https://randomuser.me/api/portraits/men/86.jpg',
+    name: 'Alex Thompson',
+    handle: '@alexbuilds',
+    text: "Incredible platform! It's helped me stay organized and productive like never before.",
+  },
+  {
+    avatarSrc: 'https://randomuser.me/api/portraits/women/68.jpg',
+    name: 'Jessica Park',
+    handle: '@jessicapm',
+    text: 'Game changer for project management. The interface is beautiful and intuitive.',
+  },
+];
+
 export default function SignUp() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const name = formData.get('name') as string;
+
     if (!email || !password || !name) {
       toast.error('Please fill in all fields');
       return;
@@ -44,7 +63,7 @@ export default function SignUp() {
             toast.error(ctx.error.message);
             setLoading(false);
           },
-        },
+        }
       );
     } catch (error) {
       console.error(error);
@@ -53,87 +72,32 @@ export default function SignUp() {
     }
   };
 
+  const handleGoogleSignUp = () => {
+    toast.info('Google sign-up coming soon!');
+  };
+
+  const handleSignIn = () => {
+    router.push('/auth/signin');
+  };
+
+  const handleGoBack = () => {
+    router.push('/');
+  };
+
   return (
-    <AuthLayout
-      title="Create Account"
-      subtitle="Start building your product backlog today"
-    >
-      <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="bg-background/50 border-primary/10 focus:border-primary/30 transition-all h-11"
-              placeholder="John Doe"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email-address">Email address</Label>
-            <Input
-              id="email-address"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-background/50 border-primary/10 focus:border-primary/30 transition-all h-11"
-              placeholder="john@example.com"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-background/50 border-primary/10 focus:border-primary/30 transition-all h-11"
-              placeholder="••••••••"
-            />
-          </div>
-        </div>
-
-        <Button
-          onClick={handleSignUp}
-          disabled={loading}
-          className="w-full h-11 text-base shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
-            </>
-          ) : (
-            <>
-              Sign up
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </>
-          )}
-        </Button>
-
-        <div className="text-center text-sm">
-          <span className="text-muted-foreground">
-            Already have an account?{' '}
-          </span>
-          <Link
-            href="/auth/signin"
-            className="font-medium text-primary hover:text-primary/80 transition-colors underline-offset-4 hover:underline"
-          >
-            Sign in instead
-          </Link>
-        </div>
-      </div>
-    </AuthLayout>
+    <SignUpPage
+      title={
+        <span className='font-light text-foreground tracking-tighter'>
+          Create Account
+        </span>
+      }
+      description='Start building your product backlog with ClearSprint AI'
+      heroImageSrc='https://images.unsplash.com/photo-1557804506-669a67965ba0?w=2160&q=80'
+      testimonials={sampleTestimonials}
+      onSignUp={handleSignUp}
+      onGoogleSignUp={handleGoogleSignUp}
+      onSignIn={handleSignIn}
+      onGoBack={handleGoBack}
+    />
   );
 }
