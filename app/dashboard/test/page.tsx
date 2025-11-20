@@ -106,7 +106,7 @@ export default function TestPage() {
       const result = await getJiraIssuesList(
         selectedSite,
         `project = "${selectedProject}"`,
-        50
+        50,
       );
       if (result.error) {
         toast.error(result.error);
@@ -124,10 +124,10 @@ export default function TestPage() {
   };
 
   return (
-    <div className='space-y-8'>
+    <div className="space-y-8">
       <div>
-        <h1 className='text-3xl font-bold tracking-tight'>Jira API Test</h1>
-        <p className='text-muted-foreground mt-1'>
+        <h1 className="text-3xl font-bold tracking-tight">Jira API Test</h1>
+        <p className="text-muted-foreground mt-1">
           Test your Jira integration and fetch data
         </p>
       </div>
@@ -138,7 +138,7 @@ export default function TestPage() {
           <CardTitle>1. Jira Sites</CardTitle>
           <CardDescription>Fetch accessible Jira sites</CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
+        <CardContent className="space-y-4">
           <Button onClick={fetchSites} disabled={loading}>
             <RefreshCw
               className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
@@ -146,10 +146,10 @@ export default function TestPage() {
             Fetch Sites
           </Button>
           {sites.length > 0 && (
-            <div className='space-y-2'>
+            <div className="space-y-2">
               <Select value={selectedSite} onValueChange={setSelectedSite}>
                 <SelectTrigger>
-                  <SelectValue placeholder='Select a site' />
+                  <SelectValue placeholder="Select a site" />
                 </SelectTrigger>
                 <SelectContent>
                   {sites.map((site) => (
@@ -170,7 +170,7 @@ export default function TestPage() {
           <CardTitle>2. Jira Projects</CardTitle>
           <CardDescription>Fetch projects from selected site</CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
+        <CardContent className="space-y-4">
           <Button onClick={fetchProjects} disabled={loading || !selectedSite}>
             <RefreshCw
               className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
@@ -178,13 +178,13 @@ export default function TestPage() {
             Fetch Projects
           </Button>
           {projects.length > 0 && (
-            <div className='space-y-2'>
+            <div className="space-y-2">
               <Select
                 value={selectedProject}
                 onValueChange={setSelectedProject}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder='Select a project' />
+                  <SelectValue placeholder="Select a project" />
                 </SelectTrigger>
                 <SelectContent>
                   {projects.map((project) => (
@@ -205,7 +205,7 @@ export default function TestPage() {
           <CardTitle>3. Jira Issues</CardTitle>
           <CardDescription>Fetch issues from selected project</CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
+        <CardContent className="space-y-4">
           <Button
             onClick={fetchIssues}
             disabled={loading || !selectedSite || !selectedProject}
@@ -216,31 +216,31 @@ export default function TestPage() {
             Fetch Issues
           </Button>
           {issues.length > 0 && (
-            <div className='space-y-2'>
-              <p className='text-sm font-medium'>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">
                 Found {issues.length} issues:
               </p>
-              <div className='space-y-2 max-h-96 overflow-y-auto'>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
                 {issues.map((issue) => (
                   <div
                     key={issue.id}
-                    className='p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors'
+                    className="p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                   >
-                    <div className='flex items-start justify-between gap-2'>
-                      <div className='flex-1 min-w-0'>
-                        <div className='flex items-center gap-2 mb-1'>
-                          <span className='text-xs font-mono text-muted-foreground'>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-mono text-muted-foreground">
                             {issue.key}
                           </span>
-                          <span className='text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary'>
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                             {issue.fields.issuetype.name}
                           </span>
                         </div>
-                        <p className='text-sm font-medium truncate'>
+                        <p className="text-sm font-medium truncate">
                           {issue.fields.summary}
                         </p>
                       </div>
-                      <span className='text-xs text-muted-foreground whitespace-nowrap'>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
                         {issue.fields.status.name}
                       </span>
                     </div>

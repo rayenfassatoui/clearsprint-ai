@@ -46,7 +46,8 @@ export default async function ProjectPage({
   let jiraCloudId: string | null = null;
   if (project.jiraProjectKey) {
     try {
-      const { getJiraAccount, getJiraResources, getValidJiraToken } = await import('@/lib/jira');
+      const { getJiraAccount, getJiraResources, getValidJiraToken } =
+        await import('@/lib/jira');
       const jiraAccount = await getJiraAccount(session.user.id);
       if (jiraAccount) {
         const token = await getValidJiraToken(session.user.id);

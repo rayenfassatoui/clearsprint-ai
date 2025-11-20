@@ -105,9 +105,15 @@ export function SyncWithJiraModal({
   async function handleImport() {
     if (!selectedSiteId || !selectedProjectKey) return;
     setProcessing(true);
-    const res = await importFromJira(projectId, selectedSiteId, selectedProjectKey);
+    const res = await importFromJira(
+      projectId,
+      selectedSiteId,
+      selectedProjectKey,
+    );
     if (res.success) {
-      toast.success(`Successfully imported ${res.importedCount} tickets from Jira!`);
+      toast.success(
+        `Successfully imported ${res.importedCount} tickets from Jira!`,
+      );
       setIsOpen(false);
       // Optional: Refresh page or data
       window.location.reload();
@@ -132,9 +138,7 @@ export function SyncWithJiraModal({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <DialogTrigger asChild>
-                {triggerButton}
-              </DialogTrigger>
+              <DialogTrigger asChild>{triggerButton}</DialogTrigger>
             </TooltipTrigger>
             <TooltipContent>
               <p>{tooltip}</p>
@@ -142,9 +146,7 @@ export function SyncWithJiraModal({
           </Tooltip>
         </TooltipProvider>
       ) : (
-        <DialogTrigger asChild>
-          {triggerButton}
-        </DialogTrigger>
+        <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       )}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -201,29 +203,37 @@ export function SyncWithJiraModal({
             </TabsList>
             <TabsContent value="import" className="space-y-4 pt-4">
               <div className="text-sm text-muted-foreground">
-                Import tickets from the selected Jira project into ClearSprint AI.
-                Existing tickets will be updated.
+                Import tickets from the selected Jira project into ClearSprint
+                AI. Existing tickets will be updated.
               </div>
               <Button
                 className="w-full"
                 onClick={handleImport}
                 disabled={processing || !selectedProjectKey}
               >
-                {processing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                {processing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="mr-2 h-4 w-4" />
+                )}
                 {processing ? 'Importing...' : 'Import from Jira'}
               </Button>
             </TabsContent>
             <TabsContent value="sync" className="space-y-4 pt-4">
               <div className="text-sm text-muted-foreground">
-                Sync local tickets to the selected Jira project.
-                New tickets will be created in Jira, and existing ones updated.
+                Sync local tickets to the selected Jira project. New tickets
+                will be created in Jira, and existing ones updated.
               </div>
               <Button
                 className="w-full"
                 onClick={handleSync}
                 disabled={processing || !selectedProjectKey}
               >
-                {processing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+                {processing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <UploadCloud className="mr-2 h-4 w-4" />
+                )}
                 {processing ? 'Syncing...' : 'Sync to Jira'}
               </Button>
             </TabsContent>

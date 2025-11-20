@@ -61,7 +61,7 @@ export default function SignIn() {
             toast.error(ctx.error.message);
             setLoading(false);
           },
-        }
+        },
       );
     } catch (error) {
       console.error(error);
@@ -89,12 +89,12 @@ export default function SignIn() {
   return (
     <SignInPage
       title={
-        <span className='font-light text-foreground tracking-tighter'>
+        <span className="font-light text-foreground tracking-tighter">
           Welcome Back
         </span>
       }
-      description='Sign in to continue your journey with ClearSprint AI'
-      heroImageSrc='https://images.unsplash.com/photo-1642615835477-d303d7dc9ee9?w=2160&q=80'
+      description="Sign in to continue your journey with ClearSprint AI"
+      heroImageSrc="https://images.unsplash.com/photo-1642615835477-d303d7dc9ee9?w=2160&q=80"
       testimonials={sampleTestimonials}
       onSignIn={handleSignIn}
       onGoogleSignIn={handleGoogleSignIn}

@@ -93,14 +93,16 @@ export function GenerationLoadingState({
                     x: 0,
                     scale: isActive ? 1.02 : 1,
                   }}
-                  className={`flex items-center p-3 rounded-lg transition-colors ${isActive ? 'bg-primary/5 border border-primary/20' : ''
-                    }`}
+                  className={`flex items-center p-3 rounded-lg transition-colors ${
+                    isActive ? 'bg-primary/5 border border-primary/20' : ''
+                  }`}
                 >
                   <div
-                    className={`mr-3 p-2 rounded-full ${isActive
+                    className={`mr-3 p-2 rounded-full ${
+                      isActive
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-muted'
-                      }`}
+                    }`}
                   >
                     {isCompleted ? (
                       <CheckCircle2 className="w-4 h-4" />
@@ -109,8 +111,9 @@ export function GenerationLoadingState({
                     )}
                   </div>
                   <span
-                    className={`font-medium ${isActive ? 'text-primary' : 'text-muted-foreground'
-                      }`}
+                    className={`font-medium ${
+                      isActive ? 'text-primary' : 'text-muted-foreground'
+                    }`}
                   >
                     {step.label}
                   </span>

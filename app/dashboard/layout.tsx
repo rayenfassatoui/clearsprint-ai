@@ -24,20 +24,20 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div className='flex min-h-screen flex-col md:flex-row'>
+    <div className="flex min-h-screen flex-col md:flex-row">
       {/* Mobile Header */}
-      <div className='md:hidden flex items-center p-4 border-b'>
+      <div className="md:hidden flex items-center p-4 border-b">
         <MobileNav user={user} />
-        <span className='font-bold ml-2'>ClearSprint AI</span>
+        <span className="font-bold ml-2">ClearSprint AI</span>
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className='hidden md:block w-64 border-r bg-background'>
+      <aside className="hidden md:block w-64 border-r bg-background">
         <Sidebar user={user} />
       </aside>
 
       {/* Main Content */}
-      <main className='flex-1 p-8 overflow-y-auto'>{children}</main>
+      <main className="flex-1 p-8 overflow-y-auto">{children}</main>
     </div>
   );
 }

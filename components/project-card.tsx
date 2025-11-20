@@ -78,7 +78,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 projectId={project.id}
                 tooltip="General AI Edit"
                 trigger={
-                  <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 hover:bg-primary/10 hover:text-primary"
+                  >
                     <Sparkles className="h-4 w-4" />
                   </Button>
                 }
@@ -89,7 +93,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 projectTitle={project.name || 'Untitled'}
                 tooltip="Sync with Jira"
                 trigger={
-                  <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-primary/10 hover:text-primary">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 hover:bg-primary/10 hover:text-primary"
+                  >
                     <RefreshCw className="h-4 w-4" />
                   </Button>
                 }

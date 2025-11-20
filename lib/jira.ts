@@ -83,7 +83,7 @@ export async function getJiraResources(accessToken: string) {
     `${ATLASSIAN_API_URL}/oauth/token/accessible-resources`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    },
   );
   if (!res.ok) throw new Error('Failed to fetch Jira resources');
   return res.json();
@@ -94,7 +94,7 @@ export async function getJiraProjects(cloudId: string, accessToken: string) {
     `${ATLASSIAN_API_URL}/ex/jira/${cloudId}/rest/api/3/project`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    },
   );
   if (!res.ok) throw new Error('Failed to fetch Jira projects');
   return res.json();
@@ -113,7 +113,7 @@ export async function getJiraIssues(
   accessToken: string,
   jql?: string,
   maxResults = 50,
-  nextPageToken?: string
+  nextPageToken?: string,
 ) {
   // Use the new /search/jql endpoint (POST method) with nextPageToken pagination
   const requestBody: any = {
@@ -147,13 +147,15 @@ export async function getJiraIssues(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(requestBody),
-    }
+    },
   );
 
   if (!res.ok) {
     const errorText = await res.text();
     console.error('Get issues failed:', res.status, res.statusText, errorText);
-    throw new Error(`Failed to fetch Jira issues: ${res.status} ${res.statusText} - ${errorText}`);
+    throw new Error(
+      `Failed to fetch Jira issues: ${res.status} ${res.statusText} - ${errorText}`,
+    );
   }
 
   return res.json();
@@ -165,13 +167,13 @@ export async function getJiraIssues(
 export async function getJiraIssue(
   cloudId: string,
   accessToken: string,
-  issueIdOrKey: string
+  issueIdOrKey: string,
 ) {
   const res = await fetch(
     `${ATLASSIAN_API_URL}/ex/jira/${cloudId}/rest/api/3/issue/${issueIdOrKey}`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    },
   );
 
   if (!res.ok) {
@@ -194,7 +196,7 @@ export async function updateJiraIssue(
   cloudId: string,
   accessToken: string,
   issueIdOrKey: string,
-  updateData: JiraIssueUpdateData
+  updateData: JiraIssueUpdateData,
 ) {
   const res = await fetch(
     `${ATLASSIAN_API_URL}/ex/jira/${cloudId}/rest/api/3/issue/${issueIdOrKey}`,
@@ -205,7 +207,7 @@ export async function updateJiraIssue(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(updateData),
-    }
+    },
   );
 
   if (!res.ok) {
@@ -221,7 +223,7 @@ export async function updateJiraIssue(
 export async function createJiraIssue(
   cloudId: string,
   accessToken: string,
-  issueData: JiraIssueData
+  issueData: JiraIssueData,
 ) {
   const res = await fetch(
     `${ATLASSIAN_API_URL}/ex/jira/${cloudId}/rest/api/3/issue`,
@@ -232,7 +234,7 @@ export async function createJiraIssue(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(issueData),
-    }
+    },
   );
 
   if (!res.ok) {
@@ -249,7 +251,7 @@ export async function createJiraIssue(
 export async function deleteJiraIssue(
   cloudId: string,
   accessToken: string,
-  issueIdOrKey: string
+  issueIdOrKey: string,
 ) {
   const res = await fetch(
     `${ATLASSIAN_API_URL}/ex/jira/${cloudId}/rest/api/3/issue/${issueIdOrKey}`,
@@ -258,7 +260,7 @@ export async function deleteJiraIssue(
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
+    },
   );
 
   if (!res.ok) {

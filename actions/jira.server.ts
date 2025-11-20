@@ -13,13 +13,13 @@ import {
   getJiraProjects,
   getJiraResources,
   getValidJiraToken,
-  updateJiraIssue
+  updateJiraIssue,
 } from '@/lib/jira';
 
 function extractDescription(description: any): string {
   if (!description || typeof description !== 'object') return '';
   if (description.type !== 'doc') return '';
-  
+
   let text = '';
   if (description.content) {
     description.content.forEach((node: any) => {
@@ -91,7 +91,7 @@ export async function getJiraProjectsList(cloudId: string) {
 export async function syncToJira(
   projectId: number,
   cloudId: string,
-  jiraProjectKey: string
+  jiraProjectKey: string,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -117,7 +117,10 @@ export async function syncToJira(
     const tasks = allTickets.filter((t) => t.type === 'task');
     const subtasks = allTickets.filter((t) => t.type === 'subtask');
 
-    const processTicket = async (ticket: typeof tickets.$inferSelect, parentJiraKey?: string) => {
+    const processTicket = async (
+      ticket: typeof tickets.$inferSelect,
+      parentJiraKey?: string,
+    ) => {
       const issueData: any = {
         fields: {
           project: { key: jiraProjectKey },
@@ -137,8 +140,13 @@ export async function syncToJira(
               },
             ],
           },
-          issuetype: { 
-            name: ticket.type === 'epic' ? 'Epic' : ticket.type === 'subtask' ? 'Sub-task' : 'Task' 
+          issuetype: {
+            name:
+              ticket.type === 'epic'
+                ? 'Epic'
+                : ticket.type === 'subtask'
+                  ? 'Sub-task'
+                  : 'Task',
           },
         },
       };
@@ -208,7 +216,7 @@ export async function syncToJira(
 export async function importFromJira(
   projectId: number,
   cloudId: string,
-  jiraProjectKey: string
+  jiraProjectKey: string,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -232,11 +240,17 @@ export async function importFromJira(
     const jiraKeyToLocalId = new Map<string, number>();
 
     // Helper to upsert ticket
-    const upsertTicket = async (issue: any, type: 'epic' | 'task' | 'subtask', parentId?: number) => {
+    const upsertTicket = async (
+      issue: any,
+      type: 'epic' | 'task' | 'subtask',
+      parentId?: number,
+    ) => {
       const existing = await db
         .select()
         .from(tickets)
-        .where(and(eq(tickets.projectId, projectId), eq(tickets.jiraId, issue.key)))
+        .where(
+          and(eq(tickets.projectId, projectId), eq(tickets.jiraId, issue.key)),
+        )
         .limit(1);
 
       const description = extractDescription(issue.fields.description);
@@ -274,7 +288,9 @@ export async function importFromJira(
     };
 
     // 1. Process Epics
-    const epics = issues.filter((i: any) => mapJiraType(i.fields.issuetype.name) === 'epic');
+    const epics = issues.filter(
+      (i: any) => mapJiraType(i.fields.issuetype.name) === 'epic',
+    );
     for (const epic of epics) {
       await upsertTicket(epic, 'epic');
     }
@@ -284,7 +300,7 @@ export async function importFromJira(
       const type = mapJiraType(i.fields.issuetype.name);
       return type === 'task';
     });
-    
+
     for (const task of tasks) {
       let parentId = undefined;
       // Try to find parent epic
@@ -295,7 +311,9 @@ export async function importFromJira(
     }
 
     // 3. Process Subtasks
-    const subtasks = issues.filter((i: any) => mapJiraType(i.fields.issuetype.name) === 'subtask');
+    const subtasks = issues.filter(
+      (i: any) => mapJiraType(i.fields.issuetype.name) === 'subtask',
+    );
     for (const subtask of subtasks) {
       let parentId = undefined;
       if (subtask.fields.parent) {
@@ -305,11 +323,11 @@ export async function importFromJira(
     }
 
     return { success: true, importedCount };
-
   } catch (error) {
     console.error('Import from Jira error:', error);
     return {
-      error: error instanceof Error ? error.message : 'Failed to import from Jira',
+      error:
+        error instanceof Error ? error.message : 'Failed to import from Jira',
     };
   }
 }
@@ -322,7 +340,7 @@ export async function getJiraIssuesList(
   cloudId: string,
   jql?: string,
   maxResults = 50,
-  nextPageToken?: string
+  nextPageToken?: string,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -341,7 +359,7 @@ export async function getJiraIssuesList(
       token,
       jql,
       maxResults,
-      nextPageToken
+      nextPageToken,
     );
     return { success: true, ...result };
   } catch (error) {
@@ -358,7 +376,7 @@ export async function getJiraIssuesList(
  */
 export async function getSingleJiraIssue(
   cloudId: string,
-  issueIdOrKey: string
+  issueIdOrKey: string,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -389,7 +407,7 @@ export async function getSingleJiraIssue(
 export async function updateJiraIssueAction(
   cloudId: string,
   issueIdOrKey: string,
-  updateData: JiraIssueUpdateData
+  updateData: JiraIssueUpdateData,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -407,7 +425,7 @@ export async function updateJiraIssueAction(
       cloudId,
       token,
       issueIdOrKey,
-      updateData
+      updateData,
     );
     return { success: true, ...result };
   } catch (error) {
@@ -422,7 +440,7 @@ export async function updateJiraIssueAction(
 export async function createProjectFromJira(
   cloudId: string,
   jiraProjectKey: string,
-  projectName: string
+  projectName: string,
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -448,7 +466,7 @@ export async function createProjectFromJira(
     const importResult = await importFromJira(
       newProject.id,
       cloudId,
-      jiraProjectKey
+      jiraProjectKey,
     );
 
     if (importResult.error) {

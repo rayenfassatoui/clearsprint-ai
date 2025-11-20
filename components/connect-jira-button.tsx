@@ -30,7 +30,7 @@ export function ConnectJiraButton() {
             toast.error(ctx.error.message || 'Failed to connect to Jira');
             setLoading(false);
           },
-        }
+        },
       );
     } catch (error) {
       console.error('Connection error:', error);

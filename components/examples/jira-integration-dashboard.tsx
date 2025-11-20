@@ -132,7 +132,7 @@ export function JiraIntegrationDashboard() {
         cloudId,
         `project = ${projectKey}`,
         50,
-        0
+        0,
       );
       if (result.error) {
         toast.error(result.error);
@@ -150,7 +150,7 @@ export function JiraIntegrationDashboard() {
   };
 
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>Jira Integration</CardTitle>
@@ -158,16 +158,16 @@ export function JiraIntegrationDashboard() {
             View and manage your Jira projects and issues
           </CardDescription>
         </CardHeader>
-        <CardContent className='space-y-4'>
+        <CardContent className="space-y-4">
           {/* Site Selector */}
-          <div className='space-y-2'>
-            <label className='text-sm font-medium'>Jira Site</label>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Jira Site</label>
             {loading.sites ? (
-              <Skeleton className='h-10 w-full' />
+              <Skeleton className="h-10 w-full" />
             ) : (
               <Select value={selectedSite} onValueChange={setSelectedSite}>
                 <SelectTrigger>
-                  <SelectValue placeholder='Select a Jira site' />
+                  <SelectValue placeholder="Select a Jira site" />
                 </SelectTrigger>
                 <SelectContent>
                   {sites.map((site) => (
@@ -181,10 +181,10 @@ export function JiraIntegrationDashboard() {
           </div>
 
           {/* Project Selector */}
-          <div className='space-y-2'>
-            <label className='text-sm font-medium'>Project</label>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Project</label>
             {loading.projects ? (
-              <Skeleton className='h-10 w-full' />
+              <Skeleton className="h-10 w-full" />
             ) : (
               <Select
                 value={selectedProject}
@@ -192,7 +192,7 @@ export function JiraIntegrationDashboard() {
                 disabled={!selectedSite || projects.length === 0}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder='Select a project' />
+                  <SelectValue placeholder="Select a project" />
                 </SelectTrigger>
                 <SelectContent>
                   {projects.map((project) => (
@@ -218,38 +218,38 @@ export function JiraIntegrationDashboard() {
           </CardHeader>
           <CardContent>
             {loading.issues ? (
-              <div className='space-y-3'>
+              <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
-                  <Skeleton key={i} className='h-20 w-full' />
+                  <Skeleton key={i} className="h-20 w-full" />
                 ))}
               </div>
             ) : issues.length === 0 ? (
-              <p className='text-sm text-muted-foreground text-center py-8'>
+              <p className="text-sm text-muted-foreground text-center py-8">
                 No issues found in this project
               </p>
             ) : (
-              <div className='space-y-3'>
+              <div className="space-y-3">
                 {issues.map((issue) => (
                   <div
                     key={issue.id}
-                    className='flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors'
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
                   >
-                    <div className='flex-1 space-y-1'>
-                      <div className='flex items-center gap-2'>
-                        <span className='text-sm font-mono text-muted-foreground'>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-mono text-muted-foreground">
                           {issue.key}
                         </span>
-                        <span className='text-sm font-medium'>
+                        <span className="text-sm font-medium">
                           {issue.fields.summary}
                         </span>
                       </div>
-                      <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{issue.fields.issuetype.name}</span>
                         <span>•</span>
                         <span>{issue.fields.status.name}</span>
                       </div>
                     </div>
-                    <Button variant='ghost' size='sm'>
+                    <Button variant="ghost" size="sm">
                       View
                     </Button>
                   </div>

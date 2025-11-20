@@ -29,7 +29,11 @@ interface GeneralAiEditDialogProps {
   tooltip?: string;
 }
 
-export function GeneralAiEditDialog({ projectId, trigger, tooltip }: GeneralAiEditDialogProps) {
+export function GeneralAiEditDialog({
+  projectId,
+  trigger,
+  tooltip,
+}: GeneralAiEditDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState('');
@@ -70,9 +74,7 @@ export function GeneralAiEditDialog({ projectId, trigger, tooltip }: GeneralAiEd
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <DialogTrigger asChild>
-                {triggerButton}
-              </DialogTrigger>
+              <DialogTrigger asChild>{triggerButton}</DialogTrigger>
             </TooltipTrigger>
             <TooltipContent>
               <p>{tooltip}</p>
@@ -80,9 +82,7 @@ export function GeneralAiEditDialog({ projectId, trigger, tooltip }: GeneralAiEd
           </Tooltip>
         </TooltipProvider>
       ) : (
-        <DialogTrigger asChild>
-          {triggerButton}
-        </DialogTrigger>
+        <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       )}
       <DialogContent>
         <DialogHeader>
@@ -90,7 +90,9 @@ export function GeneralAiEditDialog({ projectId, trigger, tooltip }: GeneralAiEd
         </DialogHeader>
         <div className="py-4 space-y-4">
           <p className="text-muted-foreground text-sm">
-            Describe how you want to change the entire backlog. The AI will regenerate tickets based on your instructions and the original document.
+            Describe how you want to change the entire backlog. The AI will
+            regenerate tickets based on your instructions and the original
+            document.
           </p>
           <Textarea
             placeholder="e.g., 'Make all user stories follow the Gherkin syntax' or 'Focus more on security requirements'"
@@ -101,7 +103,8 @@ export function GeneralAiEditDialog({ projectId, trigger, tooltip }: GeneralAiEd
           <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-md border border-yellow-200 dark:border-yellow-800">
             <p className="text-xs text-yellow-800 dark:text-yellow-200 flex items-center">
               <RefreshCw className="w-3 h-3 mr-2" />
-              Warning: This will regenerate all tickets. Existing manual edits might be lost.
+              Warning: This will regenerate all tickets. Existing manual edits
+              might be lost.
             </p>
           </div>
         </div>

@@ -63,7 +63,7 @@ export default function SignUp() {
             toast.error(ctx.error.message);
             setLoading(false);
           },
-        }
+        },
       );
     } catch (error) {
       console.error(error);
@@ -87,12 +87,12 @@ export default function SignUp() {
   return (
     <SignUpPage
       title={
-        <span className='font-light text-foreground tracking-tighter'>
+        <span className="font-light text-foreground tracking-tighter">
           Create Account
         </span>
       }
-      description='Start building your product backlog with ClearSprint AI'
-      heroImageSrc='https://images.unsplash.com/photo-1557804506-669a67965ba0?w=2160&q=80'
+      description="Start building your product backlog with ClearSprint AI"
+      heroImageSrc="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=2160&q=80"
       testimonials={sampleTestimonials}
       onSignUp={handleSignUp}
       onGoogleSignUp={handleGoogleSignUp}

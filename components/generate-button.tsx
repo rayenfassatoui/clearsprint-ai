@@ -12,10 +12,20 @@ import { cn } from '@/lib/utils';
 interface GenerateButtonProps {
   projectId: number;
   className?: string;
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link';
 }
 
-export function GenerateButton({ projectId, className, variant = 'secondary' }: GenerateButtonProps) {
+export function GenerateButton({
+  projectId,
+  className,
+  variant = 'secondary',
+}: GenerateButtonProps) {
   const [status, setStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle');
@@ -58,11 +68,13 @@ export function GenerateButton({ projectId, className, variant = 'secondary' }: 
         onClick={handleGenerate}
         disabled={status === 'loading'}
         className={cn(
-          "transition-all duration-300 hover:bg-primary hover:text-primary-foreground",
-          className
+          'transition-all duration-300 hover:bg-primary hover:text-primary-foreground',
+          className,
         )}
       >
-        <Sparkles className={cn("mr-2", variant === 'default' ? "h-5 w-5" : "h-4 w-4")} />
+        <Sparkles
+          className={cn('mr-2', variant === 'default' ? 'h-5 w-5' : 'h-4 w-4')}
+        />
         Generate
       </Button>
     </>

@@ -50,49 +50,50 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className='space-y-8'>
+    <div className="space-y-8">
       {/* Welcome Header */}
       <div>
-        <h1 className='text-3xl font-bold tracking-tight'>
+        <h1 className="text-3xl font-bold tracking-tight">
           Welcome back, {session.user.name}
         </h1>
-        <p className='text-muted-foreground mt-1'>
+        <p className="text-muted-foreground mt-1">
           Here's what's happening with your projects today
         </p>
       </div>
 
       {/* Quick Stats */}
-      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
               Total Projects
             </CardTitle>
-            <FolderKanban className='h-4 w-4 text-muted-foreground' />
+            <FolderKanban className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>{stats.projectCount}</div>
-            <p className='text-xs text-muted-foreground mt-1'>
+            <div className="text-2xl font-bold">{stats.projectCount}</div>
+            <p className="text-xs text-muted-foreground mt-1">
               Across all workspaces
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
               Jira Integration
             </CardTitle>
             <div
-              className={`h-2 w-2 rounded-full ${jiraConnected ? 'bg-green-500' : 'bg-muted'
-                }`}
+              className={`h-2 w-2 rounded-full ${
+                jiraConnected ? 'bg-green-500' : 'bg-muted'
+              }`}
             />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>
+            <div className="text-2xl font-bold">
               {jiraConnected ? 'Connected' : 'Not Connected'}
             </div>
-            <p className='text-xs text-muted-foreground mt-1'>
+            <p className="text-xs text-muted-foreground mt-1">
               {jiraConnected ? 'Sync enabled' : 'Connect to sync work items'}
             </p>
           </CardContent>
@@ -100,13 +101,13 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className='grid gap-4 md:grid-cols-2'>
-        <Card className='hover:bg-accent/50 transition-colors cursor-pointer group'>
-          <Link href='/dashboard/projects-list'>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="hover:bg-accent/50 transition-colors cursor-pointer group">
+          <Link href="/dashboard/projects-list">
             <CardHeader>
-              <CardTitle className='flex items-center justify-between'>
+              <CardTitle className="flex items-center justify-between">
                 View All Projects
-                <ArrowRight className='h-4 w-4 group-hover:translate-x-1 transition-transform' />
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </CardTitle>
               <CardDescription>
                 Manage and organize your sprint projects
@@ -115,18 +116,18 @@ export default async function DashboardPage() {
           </Link>
         </Card>
 
-        <Card className='hover:bg-accent/50 transition-colors'>
+        <Card className="hover:bg-accent/50 transition-colors">
           <CardHeader>
             <CardTitle>Jira Integration</CardTitle>
-            <CardDescription className='flex items-center justify-between'>
+            <CardDescription className="flex items-center justify-between">
               <span>Connect your Jira workspace</span>
               <div className="flex gap-2">
                 {!jiraConnected && <ConnectJiraButton />}
                 {jiraConnected && (
                   <>
                     <ImportJiraModal />
-                    <Link href='/dashboard/test'>
-                      <Button variant='outline' size='sm'>
+                    <Link href="/dashboard/test">
+                      <Button variant="outline" size="sm">
                         Test API
                       </Button>
                     </Link>

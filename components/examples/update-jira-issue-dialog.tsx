@@ -98,7 +98,7 @@ export function UpdateJiraIssueDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[525px]'>
+      <DialogContent className="sm:max-w-[525px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Update Issue</DialogTitle>
@@ -107,41 +107,41 @@ export function UpdateJiraIssueDialog({
             </DialogDescription>
           </DialogHeader>
 
-          <div className='space-y-4 py-4'>
-            <div className='space-y-2'>
-              <Label htmlFor='summary'>Summary</Label>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="summary">Summary</Label>
               <Input
-                id='summary'
+                id="summary"
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
-                placeholder='Issue summary'
+                placeholder="Issue summary"
                 required
               />
             </div>
 
-            <div className='space-y-2'>
-              <Label htmlFor='description'>Description</Label>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
               <Textarea
-                id='description'
+                id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder='Issue description'
+                placeholder="Issue description"
                 rows={6}
-                className='resize-none'
+                className="resize-none"
               />
             </div>
           </div>
 
           <DialogFooter>
             <Button
-              type='button'
-              variant='outline'
+              type="button"
+              variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
               Cancel
             </Button>
-            <Button type='submit' disabled={loading}>
+            <Button type="submit" disabled={loading}>
               {loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
