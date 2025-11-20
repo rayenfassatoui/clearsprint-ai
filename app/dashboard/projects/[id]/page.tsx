@@ -7,6 +7,7 @@ import { KanbanBoard } from '@/components/kanban-board';
 import { SyncWithJiraModal } from '@/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
 import { EmptyProjectState } from '@/components/empty-project-state';
+import { PullFromJiraModal } from '@/components/pull-from-jira-modal';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
