@@ -132,7 +132,6 @@ export function JiraIntegrationDashboard() {
         cloudId,
         `project = ${projectKey}`,
         50,
-        0,
       );
       if (result.error) {
         toast.error(result.error);
