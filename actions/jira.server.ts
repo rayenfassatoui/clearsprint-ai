@@ -7,13 +7,13 @@ import { db } from '@/lib/db';
 import { tickets, projects } from '@/lib/db/schema';
 import type { JiraIssueUpdateData } from '@/types';
 import {
-  createJiraIssue,
-  getJiraIssue,
-  getJiraIssues,
-  getJiraProjects,
-  getJiraResources,
-  getValidJiraToken,
-  updateJiraIssue,
+    createJiraIssue,
+    getJiraIssue,
+    getJiraIssues,
+    getJiraProjects,
+    getJiraResources,
+    getValidJiraToken,
+    updateJiraIssue,
 } from '@/lib/jira';
 
 function extractDescription(description: any): string {
@@ -162,7 +162,30 @@ export async function syncToJira(
           syncedCount++;
           return ticket.jiraId;
         } else {
-          // Create new
+          // Check if issue already exists in Jira (by title and type) to prevent duplicates
+          // Escape quotes in title for JQL
+          const title = ticket.title || 'Untitled';
+          const safeTitle = title.replace(/"/g, '\\"');
+          const jql = `project = "${jiraProjectKey}" AND summary ~ "\\"${safeTitle}\\"" AND issuetype = "${issueData.fields.issuetype.name}"`;
+          
+          const existingRes = await getJiraIssues(cloudId, token, jql, 1);
+          
+          if (existingRes.issues && existingRes.issues.length > 0) {
+            // Found existing issue, link to it and update
+            const existingIssue = existingRes.issues[0];
+            // Double check exact title match because JQL ~ operator is fuzzy/contains
+            if (existingIssue.fields.summary === ticket.title) {
+               await updateJiraIssue(cloudId, token, existingIssue.key, issueData);
+               await db
+                .update(tickets)
+                .set({ jiraId: existingIssue.key })
+                .where(eq(tickets.id, ticket.id));
+               syncedCount++;
+               return existingIssue.key;
+            }
+          }
+
+          // Create new if not found
           const res = await createJiraIssue(cloudId, token, issueData);
           await db
             .update(tickets)
@@ -245,7 +268,8 @@ export async function importFromJira(
       type: 'epic' | 'task' | 'subtask',
       parentId?: number,
     ) => {
-      const existing = await db
+      // 1. Try to find by Jira ID (Key)
+      let existing = await db
         .select()
         .from(tickets)
         .where(
@@ -253,11 +277,27 @@ export async function importFromJira(
         )
         .limit(1);
 
+      // 2. Fallback: Try to find by Title and Type if not found by Jira ID
+      // This handles cases where tickets were created locally or link was lost
+      if (existing.length === 0) {
+        existing = await db
+          .select()
+          .from(tickets)
+          .where(
+            and(
+              eq(tickets.projectId, projectId),
+              eq(tickets.title, issue.fields.summary),
+              eq(tickets.type, type),
+            ),
+          )
+          .limit(1);
+      }
+
       const description = extractDescription(issue.fields.description);
       const title = issue.fields.summary;
 
       if (existing.length > 0) {
-        // Update
+        // Update existing ticket
         await db
           .update(tickets)
           .set({
@@ -265,11 +305,12 @@ export async function importFromJira(
             description,
             type,
             parentId: parentId || null,
+            jiraId: issue.key, // Ensure Jira ID is linked
           })
           .where(eq(tickets.id, existing[0].id));
         jiraKeyToLocalId.set(issue.key, existing[0].id);
       } else {
-        // Insert
+        // Insert new ticket
         const [newTicket] = await db
           .insert(tickets)
           .values({
