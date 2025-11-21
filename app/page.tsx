@@ -45,7 +45,7 @@ export default async function Home() {
             </div>
 
             <div className="space-y-8 relative z-10">
-              <FadeIn delay={0.1} className="space-y-6">
+              <FadeIn delay={0.2} className="space-y-6">
                 <h1 className="text-balance text-4xl font-bold leading-tight text-foreground sm:text-7xl tracking-tight">
                   Orchestrate every sprint with AI.
                 </h1>
@@ -56,7 +56,7 @@ export default async function Home() {
               </FadeIn>
 
               <FadeIn
-                delay={0.3}
+                delay={0.4}
                 className="flex flex-col gap-4 sm:flex-row sm:items-center"
               >
                 <Button
@@ -76,36 +76,40 @@ export default async function Home() {
             </div>
 
             <FadeIn
-              delay={0.5}
+              delay={0.6}
               direction="left"
               className="relative flex justify-center lg:justify-end"
             >
               <DatabaseWithRestApi
-                title="Real-time AI Synchronization"
-                circleText="AI"
+                title="Autonomous Sprint Orchestration"
+                circleText="AI Core"
                 badgeTexts={{
-                  first: 'Analysis',
-                  second: 'Sprint',
+                  first: 'Jira Sync',
+                  second: 'Tasks',
                   third: 'Risks',
-                  fourth: 'Optimization',
+                  fourth: 'Docs & PRDs',
                 }}
                 buttonTexts={{
-                  first: 'ClearSprint',
-                  second: 'v1.0',
+                  first: 'Sprint Ready',
+                  second: 'Optimized',
                 }}
               />
             </FadeIn>
           </div>
 
-          <LogoCloud />
+          <FadeIn delay={0.8}>
+            <LogoCloud />
+          </FadeIn>
 
-          <VelocityText
-            text="CLEARSPRINT AI • SHIP FASTER • PREDICT RISKS • GET SHIT DONE"
-            defaultVelocity={10}
-            className=" absolute bg-transparent py-12 -my-24 opacity-5 "
-            size="md:text-[10em]"
-            tilt={-2}
-          />
+          <FadeIn delay={1.0}>
+            <VelocityText
+              text="CLEARSPRINT AI • SHIP FASTER • PREDICT RISKS • GET SHIT DONE"
+              defaultVelocity={10}
+              className=" absolute bg-transparent py-12 -my-24 opacity-5 "
+              size="md:text-[10em]"
+              tilt={-2}
+            />
+          </FadeIn>
 
           {/* Full Width Roadmap Cards */}
           {/* Roadmap Section */}

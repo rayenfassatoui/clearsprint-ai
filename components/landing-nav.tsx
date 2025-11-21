@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { FadeIn } from '@/components/ui/motion-wrappers';
 
 interface LandingNavProps {
   isAuthenticated: boolean;
@@ -31,48 +32,50 @@ export const LogoMark = ({ className }: { className?: string }) => (
 
 export function LandingNav({ isAuthenticated }: LandingNavProps) {
   return (
-    <header className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-      <div className="flex items-start gap-6">
-        <LogoMark className="size-14 rounded-xl" />
-        <div className="space-y-1 pt-1">
-          <Badge className="border-primary/40 bg-primary/10 text-primary text-xs font-medium">
-            ClearSprint AI
-          </Badge>
-          <p className="text-xs text-foreground/70 dark:text-muted-foreground leading-relaxed max-w-xs">
-            AI-driven Project Orchestration & Sync.
-          </p>
+    <FadeIn className="w-full" direction="down">
+      <header className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex items-start gap-6">
+          <LogoMark className="size-14 rounded-xl" />
+          <div className="space-y-1 pt-1">
+            <Badge className="border-primary/40 bg-primary/10 text-primary text-xs font-medium">
+              ClearSprint AI
+            </Badge>
+            <p className="text-xs text-foreground/70 dark:text-muted-foreground leading-relaxed max-w-xs">
+              AI-driven Project Orchestration & Sync.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-3  flex-wrap">
-        <ThemeToggle />
-        <div className="h-6 w-px bg-border/30 dark:bg-muted-foreground/30" />
+        <div className="flex items-center gap-3  flex-wrap">
+          <ThemeToggle />
+          <div className="h-6 w-px bg-border/30 dark:bg-muted-foreground/30" />
 
-        {isAuthenticated ? (
-          <Button
-            asChild
-            className="bg-emerald-500 text-black hover:bg-emerald-400"
-          >
-            <Link href="/dashboard">Dashboard</Link>
-          </Button>
-        ) : (
-          <>
-            <Button
-              asChild
-              variant="ghost"
-              className="text-zinc-400 hover:text-white hover:bg-white/5"
-            >
-              <Link href="/auth/signin">Sign In</Link>
-            </Button>
+          {isAuthenticated ? (
             <Button
               asChild
               className="bg-emerald-500 text-black hover:bg-emerald-400"
             >
-              <Link href="/auth/signup">Get Started</Link>
+              <Link href="/dashboard">Dashboard</Link>
             </Button>
-          </>
-        )}
-      </div>
-    </header>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                className="text-zinc-400 hover:text-white hover:bg-white/5"
+              >
+                <Link href="/auth/signin">Sign In</Link>
+              </Button>
+              <Button
+                asChild
+                className="bg-emerald-500 text-black hover:bg-emerald-400"
+              >
+                <Link href="/auth/signup">Get Started</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </header>
+    </FadeIn>
   );
 }
