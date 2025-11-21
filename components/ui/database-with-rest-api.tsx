@@ -53,7 +53,7 @@ const DatabaseWithRestApi = ({
           <path d="M 31 10 v 15 q 0 5 5 5 h 59 q 5 0 5 5 v 10" />
           <path d="M 77 10 v 10 q 0 5 5 5 h 13 q 5 0 5 5 v 10" />
           <path d="M 124 10 v 10 q 0 5 -5 5 h -14 q -5 0 -5 5 v 10" />
-          <path d="M 170 10 v 15 q 0 5 -5 5 h -60 q -5 0 -5 5 v 10" />
+          <path d="M 170 10 v 15 q 0 5 -5 5 h -55 q -5 0 -5 5 v 10" />
           {/* Animation For Path Starting */}
           <animate
             attributeName="stroke-dashoffset"
@@ -111,7 +111,7 @@ const DatabaseWithRestApi = ({
               fill="var(--card)"
               x="14"
               y="5"
-              width="34"
+              width="40"
               height="10"
               rx="5"
               className="fill-card stroke-border"
@@ -181,20 +181,20 @@ const DatabaseWithRestApi = ({
           <g>
             <rect
               fill="var(--card)"
-              x="150"
+              x="145"
               y="5"
-              width="40"
+              width="50"
               height="10"
               rx="5"
               className="fill-card stroke-border"
             ></rect>
-            <DatabaseIcon x="154" y="7.5"></DatabaseIcon>
+            <DatabaseIcon x="149" y="7.5"></DatabaseIcon>
             <text
-              x="165"
+              x="159"
               y="12"
               fill="currentColor"
               stroke="none"
-              fontSize="5"
+              fontSize="4.5"
               fontWeight="500"
               className="fill-foreground"
             >
@@ -230,7 +230,7 @@ const DatabaseWithRestApi = ({
           {/* 4 - misc */}
           <mask id="db-mask-4">
             <path
-              d="M 170 10 v 15 q 0 5 -5 5 h -60 q -5 0 -5 5 v 10"
+              d="M 170 10 v 15 q 0 5 -5 5 h -55 q -5 0 -5 5 v 10"
               strokeWidth="0.5"
               stroke="white"
             />

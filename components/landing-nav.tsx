@@ -1,17 +1,23 @@
 'use client';
-
-import { Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { FadeIn } from '@/components/ui/motion-wrappers';
 
 interface LandingNavProps {
   isAuthenticated: boolean;
 }
 
-const LogoMark = () => (
-  <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 dark:bg-primary/10 text-primary ring-1 ring-primary/30 shadow-lg dark:shadow-[0_0_45px_rgba(16,185,129,0.4)]">
+import { cn } from '@/lib/utils';
+
+export const LogoMark = ({ className }: { className?: string }) => (
+  <div
+    className={cn(
+      'flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 dark:bg-primary/10 text-primary ring-1 ring-primary/30 shadow-lg dark:shadow-[0_0_45px_rgba(16,185,129,0.4)]',
+      className,
+    )}
+  >
     <svg
       viewBox="0 0 1024 1024"
       xmlns="http://www.w3.org/2000/svg"
@@ -26,53 +32,50 @@ const LogoMark = () => (
 
 export function LandingNav({ isAuthenticated }: LandingNavProps) {
   return (
-    <header className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
-      <div className="flex items-start gap-6">
-        <LogoMark />
-        <div className="space-y-3 pt-1">
-          <Badge className="border-primary/40 bg-primary/10 text-primary text-xs font-medium">
-            ClearSprint AI
-          </Badge>
-          <p className="text-sm text-foreground/70 dark:text-muted-foreground leading-relaxed max-w-xs">
-            Espace de travail intelligent pour des équipes collaboratives
-            livrant dans les délais.
-          </p>
+    <FadeIn className="w-full" direction="down">
+      <header className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex items-start gap-6">
+          <LogoMark className="size-14 rounded-xl" />
+          <div className="space-y-1 pt-1">
+            <Badge className="border-primary/40 bg-primary/10 text-primary text-xs font-medium">
+              ClearSprint AI
+            </Badge>
+            <p className="text-xs text-foreground/70 dark:text-muted-foreground leading-relaxed max-w-xs">
+              AI-driven Project Orchestration & Sync.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
-        <div className="items-center gap-3 text-xs text-foreground/60 dark:text-muted-foreground whitespace-nowrap hidden sm:flex">
-          <Sparkles className="h-4 w-4 text-primary shrink-0" aria-hidden />
-          <span>
-            Optimisé pour la feuille de route de lancement sur 45 jours
-          </span>
-        </div>
-        <ThemeToggle />
-        {isAuthenticated ? (
-          <Button
-            asChild
-            className="bg-emerald-500 text-black hover:bg-emerald-400"
-          >
-            <Link href="/dashboard">Dashboard</Link>
-          </Button>
-        ) : (
-          <>
-            <Button
-              asChild
-              variant="ghost"
-              className="text-zinc-400 hover:text-white hover:bg-white/5"
-            >
-              <Link href="/auth/signin">Se connecter</Link>
-            </Button>
+        <div className="flex items-center gap-3  flex-wrap">
+          <ThemeToggle />
+          <div className="h-6 w-px bg-border/30 dark:bg-muted-foreground/30" />
+
+          {isAuthenticated ? (
             <Button
               asChild
               className="bg-emerald-500 text-black hover:bg-emerald-400"
             >
-              <Link href="/auth/signup">S'inscrire</Link>
+              <Link href="/dashboard">Dashboard</Link>
             </Button>
-          </>
-        )}
-      </div>
-    </header>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                className="text-zinc-400 hover:text-white hover:bg-white/5"
+              >
+                <Link href="/auth/signin">Sign In</Link>
+              </Button>
+              <Button
+                asChild
+                className="bg-emerald-500 text-black hover:bg-emerald-400"
+              >
+                <Link href="/auth/signup">Get Started</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </header>
+    </FadeIn>
   );
 }

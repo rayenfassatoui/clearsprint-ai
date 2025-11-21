@@ -29,98 +29,97 @@ A modern Next.js application that transforms PRDs into actionable sprint tickets
 
 ```
 clearsprint-ai/
-├── actions/              # Server actions
-│   ├── jira.server.ts   # Jira API operations
-│   ├── upload.server.ts # Document upload
-│   └── user.server.ts   # User operations
-├── app/                  # Next.js app directory
-│   ├── api/auth/        # Auth API routes
-│   ├── auth/            # Auth pages (signin/signup)
-│   ├── dashboard/       # Main application
-│   │   ├── page.tsx    # Dashboard overview
-│   │   ├── projects-list/ # All projects
-│   │   ├── projects/   # Individual project pages
-│   │   ├── settings/   # User settings
-│   │   └── test/       # Jira API testing
-│   ├── layout.tsx      # Root layout
-│   └── page.tsx        # Landing page
-├── components/          # React components
-│   ├── ui/             # shadcn/ui components
-│   ├── examples/       # Example components
-│   ├── sidebar.tsx     # Main navigation
-│   └── user-profile.tsx # User profile widget
-├── lib/                 # Utility libraries
-│   ├── db/             # Database schema & config
-│   ├── auth.ts         # Auth configuration
-│   ├── jira.ts         # Jira API client
-│   └── s3.ts           # S3 storage client
-├── types/               # TypeScript type definitions
-│   ├── database.ts     # DB model types
-│   ├── jira.ts         # Jira API types
-│   ├── pdf.ts          # PDF parsing types
-│   ├── actions.ts      # Server action types
-│   └── index.ts        # Centralized exports
-├── drizzle/             # Database migrations
-├── docs/                # Documentation
-└── public/              # Static assets
+├── actions/              # Server actions (Server-side logic only)
+│   ├── generate.server.ts # AI generation logic
+│   ├── jira.server.ts    # Jira API operations
+│   ├── tickets.server.ts # Ticket management
+│   ├── upload.server.ts  # Document upload & processing
+│   └── user.server.ts    # User operations
+├── app/                  # Next.js App Router
+│   ├── api/auth/         # Auth API routes
+│   ├── auth/             # Authentication pages
+│   ├── dashboard/        # Protected application routes
+│   │   ├── page.tsx      # Dashboard overview
+│   │   ├── projects-list/# Project directory
+│   │   ├── projects/     # Individual project views
+│   │   ├── settings/     # User settings
+│   │   └── test/         # Integration testing
+│   ├── upload-test/      # Upload functionality testing
+│   ├── layout.tsx        # Root layout
+│   └── page.tsx          # Landing page
+├── components/           # React Components
+│   ├── ui/               # shadcn/ui primitives (DO NOT EDIT manually)
+│   ├── motion-primitives/# Animation components
+│   ├── examples/         # Usage examples
+│   ├── kanban-board.tsx  # Project board
+│   ├── sidebar.tsx       # Application navigation
+│   └── [feature].tsx     # Feature-specific components
+├── lib/                  # Shared Utilities
+│   ├── db/               # Database schema & config
+│   ├── auth.ts           # Auth configuration
+│   ├── jira.ts           # Jira client
+│   └── s3.ts             # Storage client
+├── types/                # Type Definitions (Source of Truth)
+│   ├── database.ts       # DB models
+│   ├── jira.ts           # Jira interfaces
+│   └── index.ts          # Central exports
+├── drizzle/              # Database migrations
+├── docs/                 # Project documentation
+└── public/               # Static assets
 ```
 
-## Strict Structure Rules
+## 🚨 Strict Development Rules
 
-### File Organization
+**All contributors must adhere to these rules. Code that violates these standards will be rejected.**
 
-1. **Server Actions** (`actions/`):
-   - Must end with `.server.ts`
-   - Must start with `'use server'` directive
-   - Group by feature (e.g., `jira.server.ts`, `user.server.ts`)
+### 1. File Organization & Architecture
 
-2. **Components** (`components/`):
-   - Client components: Use `'use client'` directive
-   - Server components: No directive (default)
-   - UI primitives go in `components/ui/`
-   - Feature components at root level
+- **Server Actions**:
+  - MUST be placed in `actions/`.
+  - MUST end with `.server.ts`.
+  - MUST start with `'use server'`.
+  - MUST return a standardized `ActionResponse` type.
+  
+- **Components**:
+  - **UI Primitives**: strictly in `components/ui/`. Do not modify these unless upgrading shadcn.
+  - **Feature Components**: Place in `components/` or `components/features/`.
+  - **Client vs Server**: Use `'use client'` only when interactivity (hooks, event listeners) is required. Default to Server Components.
 
-3. **Types** (`types/`):
-   - **MUST** use centralized types folder
-   - Group by domain (database, jira, pdf, actions)
-   - Import from `@/types` ONLY
-   - Never define types inline for shared data
+- **Types**:
+  - **Single Source of Truth**: All shared types MUST be defined in `types/`.
+  - **No Inline Types**: Never define interfaces inline for data that is passed between components or files.
+  - **Imports**: Always import from `@/types`. Example: `import { Project } from '@/types'`.
 
-4. **Database** (`lib/db/`):
-   - Schema definitions in `schema.ts`
-   - Migrations in `drizzle/` folder
-   - All DB operations through Drizzle
+### 2. Coding Standards
 
-5. **Routes** (`app/`):
-   - Follow Next.js App Router conventions
-   - Protected routes under `/dashboard`
-   - Public routes at root level
+- **Type Safety**:
+  - **NO `any`**: Usage of `any` is strictly forbidden. Use `unknown` with type guards if necessary.
+  - **Strict Null Checks**: Handle `null` and `undefined` explicitly.
+  - **Return Types**: All exported functions must have explicit return types.
 
-### Naming Conventions
+- **Styling (Tailwind CSS)**:
+  - Use utility classes for everything.
+  - No custom CSS files (except `globals.css` for base styles).
+  - Use `clsx` or `cn()` for conditional class names.
+  - Follow the project's color palette (variables in `globals.css`).
 
-- **Files**: `kebab-case.tsx` or `kebab-case.ts`
-- **Components**: `PascalCase`
-- **Functions**: `camelCase`
-- **Types/Interfaces**: `PascalCase`
-- **Constants**: `SCREAMING_SNAKE_CASE`
+- **Naming Conventions**:
+  - **Files**: `kebab-case.tsx` (components), `kebab-case.ts` (utilities).
+  - **Components**: `PascalCase`.
+  - **Functions/Variables**: `camelCase`.
+  - **Constants**: `SCREAMING_SNAKE_CASE`.
 
-### Import Rules
+### 3. Data Fetching & State
 
-```typescript
-// ✅ Correct
-import { User } from '@/types';
-import { db } from '@/lib/db';
+- **Server Actions**: Use Server Actions for all mutations and data fetching where possible.
+- **TanStack Query**: Use for client-side data synchronization if needed (not currently primary).
+- **URL State**: Prefer URL search params for shareable state (filters, tabs) over `useState`.
 
-// ❌ Wrong - never use relative paths for cross-folder imports
-import { User } from '../../lib/types';
-```
+### 4. Git & Workflow
 
-### Type Safety Rules
-
-1. **Never use `any`** - Use `unknown` and type guards
-2. **Explicit return types** for all exported functions
-3. **Strict mode enabled** in tsconfig.json
-4. **No implicit any** in function parameters
+- **Commits**: Use conventional commits (e.g., `feat: add jira sync`, `fix: upload error`).
+- **Clean Code**: Remove `console.log` and commented-out code before committing.
+- **Linting**: Ensure `bun run lint` and `bun run type-check` pass before pushing.
 
 ## Setup
 
