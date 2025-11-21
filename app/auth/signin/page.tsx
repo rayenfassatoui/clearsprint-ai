@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { SignInPage, Testimonial } from '@/components/ui/sign-in';
+import { SignInPage, type Testimonial } from '@/components/ui/sign-in';
 import { authClient } from '@/lib/auth-client';
 
 const sampleTestimonials: Testimonial[] = [

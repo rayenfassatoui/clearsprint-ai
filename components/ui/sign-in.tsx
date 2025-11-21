@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react';
 import { AuthShader } from '@/components/ui/auth-shader';
 

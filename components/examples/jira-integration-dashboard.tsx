@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -62,26 +62,7 @@ export function JiraIntegrationDashboard() {
     issues: false,
   });
 
-  // Load Jira sites on mount
-  useEffect(() => {
-    loadSites();
-  }, []);
-
-  // Load projects when site changes
-  useEffect(() => {
-    if (selectedSite) {
-      loadProjects(selectedSite);
-    }
-  }, [selectedSite]);
-
-  // Load issues when project changes
-  useEffect(() => {
-    if (selectedSite && selectedProject) {
-      loadIssues(selectedSite, selectedProject);
-    }
-  }, [selectedSite, selectedProject]);
-
-  const loadSites = async () => {
+  const loadSites = useCallback(async () => {
     setLoading((prev) => ({ ...prev, sites: true }));
     try {
       const result = await getJiraSites();
@@ -101,9 +82,9 @@ export function JiraIntegrationDashboard() {
     } finally {
       setLoading((prev) => ({ ...prev, sites: false }));
     }
-  };
+  }, []);
 
-  const loadProjects = async (cloudId: string) => {
+  const loadProjects = useCallback(async (cloudId: string) => {
     setLoading((prev) => ({ ...prev, projects: true }));
     setProjects([]);
     setSelectedProject('');
@@ -122,31 +103,53 @@ export function JiraIntegrationDashboard() {
     } finally {
       setLoading((prev) => ({ ...prev, projects: false }));
     }
-  };
+  }, []);
 
-  const loadIssues = async (cloudId: string, projectKey: string) => {
-    setLoading((prev) => ({ ...prev, issues: true }));
-    setIssues([]);
-    try {
-      const result = await getJiraIssuesList(
-        cloudId,
-        `project = ${projectKey}`,
-        50,
-      );
-      if (result.error) {
-        toast.error(result.error);
-        return;
+  const loadIssues = useCallback(
+    async (cloudId: string, projectKey: string) => {
+      setLoading((prev) => ({ ...prev, issues: true }));
+      setIssues([]);
+      try {
+        const result = await getJiraIssuesList(
+          cloudId,
+          `project = ${projectKey}`,
+          50,
+        );
+        if (result.error) {
+          toast.error(result.error);
+          return;
+        }
+        if (result.issues) {
+          setIssues(result.issues);
+        }
+      } catch (error) {
+        toast.error('Failed to load issues');
+        console.error(error);
+      } finally {
+        setLoading((prev) => ({ ...prev, issues: false }));
       }
-      if (result.issues) {
-        setIssues(result.issues);
-      }
-    } catch (error) {
-      toast.error('Failed to load issues');
-      console.error(error);
-    } finally {
-      setLoading((prev) => ({ ...prev, issues: false }));
+    },
+    [],
+  );
+
+  // Load Jira sites on mount
+  useEffect(() => {
+    loadSites();
+  }, [loadSites]);
+
+  // Load projects when site changes
+  useEffect(() => {
+    if (selectedSite) {
+      loadProjects(selectedSite);
     }
-  };
+  }, [selectedSite, loadProjects]);
+
+  // Load issues when project changes
+  useEffect(() => {
+    if (selectedSite && selectedProject) {
+      loadIssues(selectedSite, selectedProject);
+    }
+  }, [selectedSite, selectedProject, loadIssues]);
 
   return (
     <div className="space-y-6">

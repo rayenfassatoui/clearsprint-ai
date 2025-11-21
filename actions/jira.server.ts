@@ -187,7 +187,7 @@ export async function syncToJira(
     // 2. Sync Tasks
     const taskMap = new Map<number, string>();
     for (const task of tasks) {
-      let parentKey = undefined;
+      let parentKey;
       if (task.parentId && epicMap.has(task.parentId)) {
         parentKey = epicMap.get(task.parentId);
       }
@@ -197,7 +197,7 @@ export async function syncToJira(
 
     // 3. Sync Subtasks
     for (const subtask of subtasks) {
-      let parentKey = undefined;
+      let parentKey;
       if (subtask.parentId && taskMap.has(subtask.parentId)) {
         parentKey = taskMap.get(subtask.parentId);
       }
@@ -302,7 +302,7 @@ export async function importFromJira(
     });
 
     for (const task of tasks) {
-      let parentId = undefined;
+      let parentId;
       // Try to find parent epic
       if (task.fields.parent) {
         parentId = jiraKeyToLocalId.get(task.fields.parent.key);
@@ -315,7 +315,7 @@ export async function importFromJira(
       (i: any) => mapJiraType(i.fields.issuetype.name) === 'subtask',
     );
     for (const subtask of subtasks) {
-      let parentId = undefined;
+      let parentId;
       if (subtask.fields.parent) {
         parentId = jiraKeyToLocalId.get(subtask.fields.parent.key);
       }
