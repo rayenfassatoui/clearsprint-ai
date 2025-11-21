@@ -15,6 +15,10 @@ export const auth = betterAuth({
   ],
   emailAndPassword: {
     enabled: true,
+    async sendResetPassword({ user, url }) {
+      const { sendResetPasswordEmail } = await import('./email');
+      await sendResetPasswordEmail(user.email, url);
+    },
   },
   // Enable account linking to connect social accounts to existing users
   account: {
