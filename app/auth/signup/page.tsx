@@ -3,7 +3,10 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { SignUpPage, type Testimonial } from '@/components/ui/sign-up';
+import {
+  SignUpPage,
+  type Testimonial,
+} from '@/features/auth/components/sign-up';
 import { authClient } from '@/lib/auth-client';
 
 const sampleTestimonials: Testimonial[] = [
@@ -72,8 +75,18 @@ export default function SignUp() {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    toast.info('Google sign-up coming soon!');
+  const handleAtlassianSignUp = async () => {
+    setLoading(true);
+    try {
+      await authClient.signIn.social({
+        provider: 'atlassian',
+        callbackURL: '/dashboard',
+      });
+    } catch (error) {
+      console.error('Atlassian sign-up error:', error);
+      toast.error('Failed to sign up with Atlassian');
+      setLoading(false);
+    }
   };
 
   const handleSignIn = () => {
@@ -95,7 +108,7 @@ export default function SignUp() {
       heroImageSrc="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=2160&q=80"
       testimonials={sampleTestimonials}
       onSignUp={handleSignUp}
-      onGoogleSignUp={handleGoogleSignUp}
+      onAtlassianSignUp={handleAtlassianSignUp}
       onSignIn={handleSignIn}
       onGoBack={handleGoBack}
       isLoading={loading}

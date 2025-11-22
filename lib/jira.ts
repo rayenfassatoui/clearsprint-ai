@@ -7,13 +7,33 @@ const ATLASSIAN_TOKEN_URL = 'https://auth.atlassian.com/oauth/token';
 const ATLASSIAN_API_URL = 'https://api.atlassian.com';
 
 export async function getJiraAccount(userId: string) {
+  console.log('[getJiraAccount] Fetching Jira account for userId:', userId);
   const accounts = await db
     .select()
     .from(account)
     .where(and(eq(account.userId, userId), eq(account.providerId, 'atlassian')))
     .limit(1);
 
+  console.log('[getJiraAccount] Found accounts:', accounts.length);
+  if (accounts.length > 0) {
+    console.log(
+      '[getJiraAccount] Account ID:',
+      accounts[0].id,
+      'Has access token:',
+      !!accounts[0].accessToken
+    );
+  }
   return accounts[0];
+}
+
+export async function disconnectJiraAccount(userId: string) {
+  console.log('[disconnectJiraAccount] Disconnecting Jira for userId:', userId);
+  const result = await db
+    .delete(account)
+    .where(and(eq(account.userId, userId), eq(account.providerId, 'atlassian')))
+    .returning();
+  console.log('[disconnectJiraAccount] Deleted accounts:', result.length);
+  return { success: true, deleted: result.length };
 }
 
 export async function refreshJiraToken(refreshToken: string) {

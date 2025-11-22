@@ -44,8 +44,8 @@ const navigation = [
     icon: FolderKanban,
   },
   {
-    name: 'Settings',
-    href: '/dashboard/settings',
+    name: 'Integration',
+    href: '/dashboard/integration',
     icon: Settings,
   },
   {

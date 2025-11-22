@@ -5,27 +5,32 @@ import { Spinner } from '@/components/ui/spinner';
 
 // --- HELPER COMPONENTS (ICONS) ---
 
-const GoogleIcon = () => (
+const AtlassianIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className="h-5 w-5"
-    viewBox="0 0 48 48"
+    preserveAspectRatio="xMidYMid"
+    viewBox="0 0 256 256"
   >
+    <defs>
+      <linearGradient
+        x1="99.7%"
+        y1="15.8%"
+        x2="39.8%"
+        y2="97.4%"
+        id="atlassian-a"
+      >
+        <stop stopColor="#0052CC" offset="0%" />
+        <stop stopColor="#2684FF" offset="92.3%" />
+      </linearGradient>
+    </defs>
     <path
-      fill="#FFC107"
-      d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s12-5.373 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-2.641-.21-5.236-.611-7.743z"
+      d="M76 118c-4-4-10-4-13 1L1 245a7 7 0 0 0 6 10h88c3 0 5-1 6-4 19-39 8-98-25-133Z"
+      fill="url(#atlassian-a)"
     />
     <path
-      fill="#FF3D00"
-      d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
-    />
-    <path
-      fill="#4CAF50"
-      d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
-    />
-    <path
-      fill="#1976D2"
-      d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.022 35.026 44 30.038 44 24c0-2.641-.21-5.236-.611-7.743z"
+      d="M122 4c-35 56-33 117-10 163l42 84c1 3 4 4 7 4h87a7 7 0 0 0 7-10L134 4c-2-5-9-5-12 0Z"
+      fill="#2681FF"
     />
   </svg>
 );
@@ -45,7 +50,7 @@ interface SignUpPageProps {
   heroImageSrc?: string;
   testimonials?: Testimonial[];
   onSignUp?: (event: React.FormEvent<HTMLFormElement>) => void;
-  onGoogleSignUp?: () => void;
+  onAtlassianSignUp?: () => void;
   onSignIn?: () => void;
   onGoBack?: () => void;
   isLoading?: boolean;
@@ -96,7 +101,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
   heroImageSrc,
   testimonials = [],
   onSignUp,
-  onGoogleSignUp,
+  onAtlassianSignUp,
   onSignIn,
   onGoBack,
   isLoading = false,
@@ -209,85 +214,11 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
             </div>
 
             <button
-              onClick={onGoogleSignUp}
+              onClick={onAtlassianSignUp}
               className="animate-element animate-delay-800 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary transition-all hover:scale-[1.01] hover:border-border/80"
             >
-              <GoogleIcon />
-              <span>Continue with Google</span>
-            </button>
-
-            <p className="animate-element animate-delay-900 text-center text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onSignIn?.();
-                }}
-                className="text-primary hover:underline transition-colors font-medium"
-              >
-                Sign in instead
-              </a>
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Right column: shader background + testimonials */}
-      <section className="hidden md:block flex-1 relative p-4">
-        <div className="absolute inset-4 rounded-3xl overflow-hidden">
-          <AuthShader />
-        </div>
-
-        {testimonials.length > 0 && (
-          <div className="absolute inset-0 z-10 pointer-events-none p-8">
-            {/* Top Right */}
-            <div className="absolute top-12 right-8 animate-float-1 hidden lg:block pointer-events-auto">
-              <TestimonialCard
-                testimonial={testimonials[0]}
-                delay="animate-delay-1000"
-              />
-            </div>
-
-            {/* Center Left */}
-            {testimonials[1] && (
-              <div className="absolute top-1/2 left-8 -translate-y-1/2 animate-float-2 hidden xl:block pointer-events-auto">
-                <TestimonialCard
-                  testimonial={testimonials[1]}
-                  delay="animate-delay-1200"
-                />
-              </div>
-            )}
-
-            {/* Bottom Right */}
-            {testimonials[2] && (
-              <div className="absolute bottom-12 right-12 animate-float-3 hidden md:block pointer-events-auto">
-                <TestimonialCard
-                  testimonial={testimonials[2]}
-                  delay="animate-delay-1400"
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-    </div>
-  );
-};
-
-            <div className="animate-element animate-delay-700 relative flex items-center justify-center">
-              <span className="w-full border-t border-border"></span>
-              <span className="px-4 text-sm text-muted-foreground bg-background absolute">
-                Or continue with
-              </span>
-            </div>
-
-            <button
-              onClick={onGoogleSignUp}
-              className="animate-element animate-delay-800 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary transition-all hover:scale-[1.01] hover:border-border/80"
-            >
-              <GoogleIcon />
-              <span>Continue with Google</span>
+              <AtlassianIcon />
+              <span>Continue with Atlassian</span>
             </button>
 
             <p className="animate-element animate-delay-900 text-center text-sm text-muted-foreground">

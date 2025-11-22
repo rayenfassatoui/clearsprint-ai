@@ -24,7 +24,9 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      // Link accounts with the same email automatically
+      // Allow linking social accounts with different emails
+      allowDifferentEmails: true,
+      // Required to allow linking this provider
       trustedProviders: ['atlassian'],
     },
   },

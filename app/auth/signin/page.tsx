@@ -70,8 +70,18 @@ export default function SignIn() {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    toast.info('Google sign-in coming soon!');
+  const handleAtlassianSignIn = async () => {
+    setLoading(true);
+    try {
+      await authClient.signIn.social({
+        provider: 'atlassian',
+        callbackURL: '/dashboard',
+      });
+    } catch (error) {
+      console.error('Atlassian sign-in error:', error);
+      toast.error('Failed to sign in with Atlassian');
+      setLoading(false);
+    }
   };
 
   const handleResetPassword = () => {
@@ -97,7 +107,7 @@ export default function SignIn() {
       heroImageSrc="https://images.unsplash.com/photo-1642615835477-d303d7dc9ee9?w=2160&q=80"
       testimonials={sampleTestimonials}
       onSignIn={handleSignIn}
-      onGoogleSignIn={handleGoogleSignIn}
+      onAtlassianSignIn={handleAtlassianSignIn}
       onResetPassword={handleResetPassword}
       onCreateAccount={handleCreateAccount}
       onGoBack={handleGoBack}
