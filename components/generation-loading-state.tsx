@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 
 interface LoadingStateProps {
   status: 'idle' | 'loading' | 'success' | 'error';
-  loadingStep?: string;
 }
 
 const steps = [
@@ -22,10 +21,7 @@ const steps = [
   { id: 'finalizing', label: 'Structuring Backlog', icon: ListTodo },
 ];
 
-export function GenerationLoadingState({
-  status,
-  loadingStep,
-}: LoadingStateProps) {
+export function GenerationLoadingState({ status }: LoadingStateProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   useEffect(() => {

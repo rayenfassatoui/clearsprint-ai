@@ -1,8 +1,8 @@
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { ConnectJiraButton } from '@/components/connect-jira-button';
-import { ImportJiraModal } from '@/components/import-jira-modal';
+import { ConnectJiraButton } from '@/features/jira/components/connect-jira-button';
+import { ImportJiraModal } from '@/features/jira/components/import-jira-modal';
 import {
   Card,
   CardContent,
@@ -45,8 +45,8 @@ export default async function DashboardPage() {
   try {
     const jiraAccount = await getJiraAccount(session.user.id);
     jiraConnected = !!jiraAccount;
-  } catch (error) {
-    // Not connected
+  } catch {
+    // Ignore error
   }
 
   return (

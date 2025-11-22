@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { NewProjectModal } from '@/components/new-project-modal';
-import { ProjectList } from '@/components/project-list';
+import { NewProjectModal } from '@/features/projects/components/new-project-modal';
+import { ProjectList } from '@/features/projects/components/project-list';
 import { ProjectCardSkeleton } from '@/components/skeletons';
 
 export default function ProjectsPage() {

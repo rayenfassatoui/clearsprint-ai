@@ -18,7 +18,8 @@
       "!**/drizzle",
       "!**/*.config.js",
       "!**/*.config.ts",
-      "!**/*.config.mjs"
+      "!**/*.config.mjs",
+      "!**/components/ui"
     ]
   },
   "formatter": {
@@ -143,7 +144,12 @@
   },
   "overrides": [
     {
-      "includes": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "includes": [
+        "*.ts",
+        "*.tsx",
+        "*.js",
+        "*.jsx"
+      ],
       "linter": {
         "rules": {
           "suspicious": {

@@ -1,6 +1,6 @@
 'use client';
-import LightRays from '@/components/lightrays';
-import Particles from '@/components/particles';
+import LightRays from '@/features/landing/components/lightrays';
+import Particles from '@/features/landing/components/particles';
 
 interface BackgroundEffectsProps {
   particleCount?: number;

@@ -4,7 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { generateBacklog } from '@/actions/generate.server';
+import { generateBacklog } from '@/features/projects/actions/generate.server';
 import { GenerationLoadingState } from '@/components/generation-loading-state';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -52,7 +52,7 @@ export function GenerateButton({
         toast.error(result.error);
         setTimeout(() => setStatus('idle'), 2000);
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       toast.error('An unexpected error occurred');
       setTimeout(() => setStatus('idle'), 2000);

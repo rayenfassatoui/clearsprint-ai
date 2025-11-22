@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { ConnectJiraButton } from '@/components/connect-jira-button';
+import { ConnectJiraButton } from '@/features/jira/components/connect-jira-button';
 import {
   Card,
   CardContent,
@@ -26,8 +26,8 @@ export default async function SettingsPage() {
   let jiraAccount = null;
   try {
     jiraAccount = await getJiraAccount(session.user.id);
-  } catch (error) {
-    // Not connected
+  } catch {
+    // Ignore error
   }
 
   return (

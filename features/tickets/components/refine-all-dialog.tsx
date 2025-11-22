@@ -4,7 +4,7 @@ import { Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { generateBacklog } from '@/actions/generate.server';
+import { generateBacklog } from '@/features/projects/actions/generate.server';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -52,7 +52,7 @@ export function GeneralAiEditDialog({
       } else {
         toast.error(result.error);
       }
-    } catch (error) {
+    } catch {
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);

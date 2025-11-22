@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { updateJiraIssueAction } from '@/actions/jira.server';
+import { updateJiraIssueAction } from '@/features/jira/actions/jira.server';
 
 interface UpdateIssueDialogProps {
   open: boolean;

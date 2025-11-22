@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Loader2, Download } from 'lucide-react';
-import { importFromJira } from '@/actions/jira.server';
+import { importFromJira } from '@/features/jira/actions/jira.server';
 
 interface PullFromJiraModalProps {
   projectId: number;
@@ -44,8 +44,8 @@ export function PullFromJiraModal({
       toast.success(`Pulled ${result.importedCount || 0} tickets from Jira`);
       setOpen(false);
       router.refresh();
-    } catch (error) {
-      toast.error('Failed to pull from Jira');
+    } catch {
+      toast.error('Failed to import issues');
     } finally {
       setLoading(false);
     }

@@ -9,12 +9,13 @@ import {
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { uploadDoc } from '@/actions/upload.server';
+import { uploadDoc } from '@/features/projects/actions/upload.server';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface DropzoneProps {
   onUploadComplete?: (result: {
@@ -89,11 +90,9 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
     try {
       const result = await uploadDoc(formData);
 
-      if (result.error) {
-        setUploadStatus('error');
-        setErrorMessage(result.error);
-      } else if (result.success && result.url && result.text) {
+      if (result.success) {
         setUploadStatus('success');
+        toast.success('Text imported successfully');
         if (onUploadComplete) {
           onUploadComplete({
             url: result.url,
@@ -101,10 +100,13 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
             projectId: result.projectId,
           });
         }
+      } else {
+        setUploadStatus('error');
+        toast.error(result.error || 'Failed to import text.');
       }
     } catch (error) {
       setUploadStatus('error');
-      setErrorMessage('An unexpected error occurred.');
+      toast.error('An unexpected error occurred.');
     } finally {
       setIsUploading(false);
     }
@@ -114,10 +116,12 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
-      'text/plain': ['.txt'],
+      'text/plain': ['.txt', '.md'], // Added .md
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        ['.docx'], // Added .docx
     },
     maxFiles: 1,
-    multiple: false,
+    // Removed multiple: false, as maxFiles: 1 implies it
   });
 
   return (

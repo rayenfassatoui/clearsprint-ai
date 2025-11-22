@@ -1,52 +1,51 @@
 # ClearSprint AI
 
-> AI-powered sprint planning and Jira integration.
-
-Transforms PRDs into actionable sprint tickets with intelligent AI analysis and seamless Jira synchronization.
-
-## Features
-
-- **AI Planning**: Intelligent PRD analysis and ticket generation
-- **Jira Sync**: Two-way synchronization with Jira projects
-- **Modern UI**: Beautiful, responsive interface with dark mode
-- **Secure**: Type-safe, robust authentication and data handling
+AI-powered sprint planning and Jira integration. Transforms PRDs into actionable sprint tickets with intelligent analysis.
 
 ## Tech Stack
 
-- **Core**: Next.js 16, TypeScript, Tailwind CSS, shadcn/ui
-- **Data**: PostgreSQL (Neon), Drizzle ORM, S3 Storage (Minio)
-- **Auth**: Better-auth (Email/Password + Jira OAuth)
-- **AI**: OpenAI-compatible APIs
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4, shadcn/ui
+- **Database**: PostgreSQL (Neon), Drizzle ORM
+- **Auth**: Better-auth
+- **Storage**: S3 (Minio)
 
-## Quick Start
+## Architecture
 
-1.  **Install**: `bun install`
-2.  **Env**: Copy `.env.example` to `.env` and fill in credentials.
-3.  **DB**: `bun run db:push`
-4.  **Run**: `bun run dev`
+This project follows a Feature-Driven Architecture (Vertical Slices).
 
-## Project Structure
+### Directory Structure
 
-- `actions/`: Server actions (logic)
-- `app/`: Next.js App Router pages
-- `components/`: React components
-- `lib/`: Shared utilities (db, auth, etc.)
-- `types/`: Shared type definitions
+- `features/`: Contains all domain logic, grouped by feature.
+  - `auth/`: Authentication (Login, Signup, Profile)
+  - `projects/`: Project management
+  - `tickets/`: Ticket generation and Kanban
+  - `jira/`: Jira integration logic
+  - `landing/`: Marketing pages components
+- `components/ui/`: STRICTLY for shadcn/ui primitives only. No business logic.
+- `app/`: Routing layer only. Imports features.
+- `lib/`: Shared utilities (DB, Auth client, Email).
+
+### Feature Structure
+
+Each feature folder (e.g., `features/auth/`) is self-contained:
+- `components/`: Feature-specific UI
+- `actions/`: Server actions
+- `hooks/`: Custom hooks
+- `types/`: Feature-specific types
 
 ## Development Rules
 
-- **Strict Types**: No `any`. Use `unknown` if needed.
-- **Server Actions**: Use for all data mutations.
-- **UI Components**: Use shadcn/ui primitives.
-- **Styling**: Tailwind CSS utility classes only.
+1. **Feature Isolation**: Place code in `features/[feature-name]`. Do not pollute global folders.
+2. **UI Components**: `components/ui` is for generic primitives ONLY. Feature-specific UI goes in `features/*/components`.
+3. **Server Actions**: Use server actions for mutations.
+4. **Type Safety**: Strict TypeScript. No `any`.
+5. **Styling**: Use Tailwind CSS utility classes.
 
-## Key Pages
+## Setup
 
-- `/dashboard`: Main overview
-- `/dashboard/projects-list`: Project directory
-- `/auth/forgot-password`: Password recovery
-- `/api/health`: System status
-
-## License
-
-MIT
+1. **Install**: `bun install`
+2. **Env**: Configure `.env` (see `.env.example`)
+3. **DB**: `bun run db:push`
+4. **Dev**: `bun run dev`

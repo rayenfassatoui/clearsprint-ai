@@ -1,7 +1,7 @@
 'use client';
 
 import { CheckCircle2, XCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { checkJiraConnectionStatus } from '@/actions/user.server';
+import { checkJiraConnectionStatus } from '@/features/auth/actions/user.server';
 
 interface UserProfileProps {
   user: {
@@ -23,23 +23,23 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ user }: UserProfileProps) {
-  const [jiraConnected, setJiraConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkConnection();
-  }, []);
-
-  const checkConnection = async () => {
+  const checkConnection = useCallback(async () => {
     try {
-      const result = await checkJiraConnectionStatus();
-      setJiraConnected(result.connected);
-    } catch (error) {
-      setJiraConnected(false);
+      const status = await checkJiraConnectionStatus();
+      setIsConnected(status.connected);
+    } catch {
+      setIsConnected(false);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkConnection();
+  }, [checkConnection]);
 
   const getInitials = () => {
     if (user.name) {
@@ -87,7 +87,7 @@ export function UserProfile({ user }: UserProfileProps) {
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               <span>Checking Jira...</span>
             </>
-          ) : jiraConnected ? (
+          ) : isConnected ? (
             <>
               <CheckCircle2 className="h-4 w-4 text-green-500" />
               <span>Jira Connected</span>

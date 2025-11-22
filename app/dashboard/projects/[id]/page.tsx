@@ -3,16 +3,16 @@ import { ChevronLeft } from 'lucide-react';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { GenerateButton } from '@/components/generate-button';
-import { KanbanBoard } from '@/components/kanban-board';
-import { SyncWithJiraModal } from '@/components/push-to-jira-modal';
-import { GeneralAiEditDialog } from '@/components/refine-all-dialog';
-import { EmptyProjectState } from '@/components/empty-project-state';
-import { PullFromJiraModal } from '@/components/pull-from-jira-modal';
+import { KanbanBoard } from '@/features/tickets/components/kanban-board';
+import { SyncWithJiraModal } from '@/features/jira/components/push-to-jira-modal';
+import { GeneralAiEditDialog } from '@/features/tickets/components/refine-all-dialog';
+import { EmptyProjectState } from '@/features/projects/components/empty-project-state';
+import { PullFromJiraModal } from '@/features/jira/components/pull-from-jira-modal';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/db/schema';
-import { getProjectTickets } from '@/actions/tickets.server';
+import { getProjectTickets } from '@/features/tickets/actions/tickets.server';
 
 export default async function ProjectPage({
   params,

@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
-import { ProjectCard } from '@/components/project-card';
+import { ProjectCard } from '@/features/projects/components/project-card';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/db/schema';

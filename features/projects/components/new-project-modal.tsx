@@ -2,7 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import { NewProjectCard } from '@/components/new-project-card';
+import { NewProjectCard } from '@/features/projects/components/new-project-card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -25,7 +26,7 @@ import {
   getJiraSites,
   getJiraProjectsList,
   createProjectFromJira,
-} from '@/actions/jira.server';
+} from '@/features/jira/actions/jira.server';
 
 interface JiraResource {
   id: string;
@@ -51,21 +52,6 @@ export function ImportJiraModal() {
     projects: false,
     import: false,
   });
-
-  useEffect(() => {
-    if (open && sites.length === 0) {
-      loadSites();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (selectedSite) {
-      loadProjects(selectedSite);
-    } else {
-      setProjects([]);
-      setSelectedProject('');
-    }
-  }, [selectedSite]);
 
   const loadSites = async () => {
     setLoading((prev) => ({ ...prev, sites: true }));
@@ -99,7 +85,7 @@ export function ImportJiraModal() {
       if (result.projects) {
         setProjects(result.projects);
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to load projects');
     } finally {
       setLoading((prev) => ({ ...prev, projects: false }));
@@ -131,8 +117,8 @@ export function ImportJiraModal() {
       if (result.projectId) {
         router.push(`/dashboard/projects/${result.projectId}`);
       }
-    } catch (error) {
-      toast.error('Failed to import project');
+    } catch {
+      toast.error('Failed to import issues');
     } finally {
       setLoading((prev) => ({ ...prev, import: false }));
     }
@@ -155,14 +141,16 @@ export function ImportJiraModal() {
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Jira Site</label>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="jira-site-import" className="text-right">
+              Jira Site
+            </Label>
             <Select
               value={selectedSite}
               onValueChange={setSelectedSite}
               disabled={loading.sites || loading.import}
             >
-              <SelectTrigger>
+              <SelectTrigger id="jira-site-import" className="col-span-3">
                 <SelectValue placeholder="Select a site" />
               </SelectTrigger>
               <SelectContent>
@@ -174,26 +162,29 @@ export function ImportJiraModal() {
               </SelectContent>
             </Select>
           </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Project</label>
-            <Select
-              value={selectedProject}
-              onValueChange={setSelectedProject}
-              disabled={!selectedSite || loading.projects || loading.import}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a project" />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.map((project) => (
-                  <SelectItem key={project.id} value={project.key}>
-                    {project.name} ({project.key})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {selectedSite && (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="jira-project-import" className="text-right">
+                Project
+              </Label>
+              <Select
+                value={selectedProject}
+                onValueChange={setSelectedProject}
+                disabled={loading.projects || loading.import}
+              >
+                <SelectTrigger id="jira-project-import" className="col-span-3">
+                  <SelectValue placeholder="Select a project" />
+                </SelectTrigger>
+                <SelectContent>
+                  {projects.map((project) => (
+                    <SelectItem key={project.id} value={project.key}>
+                      {project.name} ({project.key})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         <DialogFooter>

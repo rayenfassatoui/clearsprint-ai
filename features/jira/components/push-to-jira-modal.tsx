@@ -8,7 +8,7 @@ import {
   getJiraSites,
   importFromJira,
   syncToJira,
-} from '@/actions/jira.server';
+} from '@/features/jira/actions/jira.server';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -56,12 +57,14 @@ export function SyncWithJiraModal({
     if (isOpen) {
       loadSites();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   useEffect(() => {
     if (selectedSiteId) {
       loadProjects(selectedSiteId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSiteId]);
 
   async function loadSites() {
@@ -154,14 +157,16 @@ export function SyncWithJiraModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Select Jira Site</label>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="jira-site" className="text-right">
+              Jira Site
+            </Label>
             <Select
               value={selectedSiteId}
               onValueChange={setSelectedSiteId}
               disabled={loading || sites.length === 0}
             >
-              <SelectTrigger>
+              <SelectTrigger id="jira-site" className="col-span-3">
                 <SelectValue placeholder="Select a site" />
               </SelectTrigger>
               <SelectContent>
@@ -175,14 +180,16 @@ export function SyncWithJiraModal({
           </div>
 
           {selectedSiteId && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Select Jira Project</label>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="jira-project" className="text-right">
+                Project
+              </Label>
               <Select
                 value={selectedProjectKey}
                 onValueChange={setSelectedProjectKey}
-                disabled={loading}
+                disabled={!selectedSiteId}
               >
-                <SelectTrigger>
+                <SelectTrigger id="jira-project" className="col-span-3">
                   <SelectValue placeholder="Select a project" />
                 </SelectTrigger>
                 <SelectContent>

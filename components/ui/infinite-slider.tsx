@@ -27,10 +27,10 @@ export function InfiniteSlider({
   const [ref, { width, height }] = useMeasure();
   const translation = useMotionValue(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [key, setKey] = useState(0);
+  const [, setKey] = useState(0);
 
   useEffect(() => {
-    let controls;
+    let controls: any;
     const size = direction === 'horizontal' ? width : height;
     const contentSize = size + gap;
     const from = reverse ? -contentSize / 2 : 0;
@@ -66,7 +66,6 @@ export function InfiniteSlider({
 
     return controls?.stop;
   }, [
-    key,
     translation,
     currentSpeed,
     width,
@@ -93,7 +92,7 @@ export function InfiniteSlider({
   return (
     <div className={cn('overflow-hidden', className)}>
       <motion.div
-        className='flex w-max'
+        className="flex w-max"
         style={{
           ...(direction === 'horizontal'
             ? { x: translation }

@@ -21,7 +21,7 @@ import {
   getJiraSites,
   getJiraProjectsList,
   getJiraIssuesList,
-} from '@/actions/jira.server';
+} from '@/features/jira/actions/jira.server';
 import { RefreshCw } from 'lucide-react';
 
 interface JiraResource {

@@ -3,7 +3,7 @@
 import { Loader2, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { tweakTicket } from '@/actions/generate.server';
+import { tweakTicket } from '@/features/projects/actions/generate.server';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

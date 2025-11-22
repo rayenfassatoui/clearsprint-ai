@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { LandingNav } from '@/components/landing-nav';
+import { LandingNav } from '@/features/landing/components/landing-nav';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/auth';
 import { AuthShader } from '@/components/ui/auth-shader';
 import { BentoGrid } from '@/components/ui/bento-grid';
 import DatabaseWithRestApi from '@/components/ui/database-with-rest-api';
-import { LandingFooter } from '@/components/landing-footer';
+import { LandingFooter } from '@/features/landing/components/landing-footer';
 import {
   FadeIn,
   FadeInItem,
@@ -18,7 +18,7 @@ import { benefits, capabilities } from '@/lib/landing-copy';
 import { headers } from 'next/headers';
 import { VelocityText } from '@/components/ui/parallax-scrolling-text-effect';
 import BackgroundEffects from '@/components/decorations/BackgroundEffects';
-import LogoCloud from '@/components/logo-cloud';
+import LogoCloud from '@/features/landing/components/logo-cloud';
 
 export default async function Home() {
   const session = await auth.api.getSession({

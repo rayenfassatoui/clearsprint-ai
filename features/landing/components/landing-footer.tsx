@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { LogoMark } from '@/components/landing-nav';
-import { ThemeSwitcher } from './theme-switcher';
+import { LogoMark } from '@/features/landing/components/landing-nav';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 
 export function LandingFooter() {
   const links = [

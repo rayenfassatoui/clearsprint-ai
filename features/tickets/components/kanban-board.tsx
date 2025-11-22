@@ -3,7 +3,6 @@
 import {
   closestCenter,
   DndContext,
-  type DragCancelEvent,
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
@@ -28,9 +27,9 @@ import {
   getProjectTickets,
   updateTicket,
   updateTicketOrder,
-} from '@/actions/tickets.server';
+} from '@/features/tickets/actions/tickets.server';
 import { KanbanBoardSkeleton } from '@/components/skeletons';
-import { TicketTweakDialog } from '@/components/ticket-tweak-dialog';
+import { TicketTweakDialog } from '@/features/tickets/components/ticket-tweak-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -154,7 +153,7 @@ export function KanbanBoard({
     }
   }
 
-  function handleDragCancel(event: DragCancelEvent) {
+  function handleDragCancel() {
     setActiveId(null);
   }
 

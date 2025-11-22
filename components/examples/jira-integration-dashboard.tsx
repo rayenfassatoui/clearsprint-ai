@@ -22,7 +22,7 @@ import {
   getJiraSites,
   getJiraProjectsList,
   getJiraIssuesList,
-} from '@/actions/jira.server';
+} from '@/features/jira/actions/jira.server';
 
 interface JiraResource {
   id: string;
@@ -163,12 +163,14 @@ export function JiraIntegrationDashboard() {
         <CardContent className="space-y-4">
           {/* Site Selector */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Jira Site</label>
+            <label htmlFor="jira-site-select" className="text-sm font-medium">
+              Jira Site
+            </label>
             {loading.sites ? (
               <Skeleton className="h-10 w-full" />
             ) : (
               <Select value={selectedSite} onValueChange={setSelectedSite}>
-                <SelectTrigger>
+                <SelectTrigger id="jira-site-select">
                   <SelectValue placeholder="Select a Jira site" />
                 </SelectTrigger>
                 <SelectContent>
@@ -184,7 +186,12 @@ export function JiraIntegrationDashboard() {
 
           {/* Project Selector */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Project</label>
+            <label
+              htmlFor="jira-project-select"
+              className="text-sm font-medium"
+            >
+              Project
+            </label>
             {loading.projects ? (
               <Skeleton className="h-10 w-full" />
             ) : (
@@ -193,7 +200,7 @@ export function JiraIntegrationDashboard() {
                 onValueChange={setSelectedProject}
                 disabled={!selectedSite || projects.length === 0}
               >
-                <SelectTrigger>
+                <SelectTrigger id="jira-project-select">
                   <SelectValue placeholder="Select a project" />
                 </SelectTrigger>
                 <SelectContent>
@@ -222,6 +229,7 @@ export function JiraIntegrationDashboard() {
             {loading.issues ? (
               <div className="space-y-3">
                 {[...Array(3)].map((_, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Skeletons are static
                   <Skeleton key={i} className="h-20 w-full" />
                 ))}
               </div>
