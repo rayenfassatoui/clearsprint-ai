@@ -98,6 +98,7 @@ export default function SignUp() {
       onGoogleSignUp={handleGoogleSignUp}
       onSignIn={handleSignIn}
       onGoBack={handleGoBack}
+      isLoading={loading}
     />
   );
 }

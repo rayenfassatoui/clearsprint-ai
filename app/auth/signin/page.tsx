@@ -101,6 +101,7 @@ export default function SignIn() {
       onResetPassword={handleResetPassword}
       onCreateAccount={handleCreateAccount}
       onGoBack={handleGoBack}
+      isLoading={loading}
     />
   );
 }

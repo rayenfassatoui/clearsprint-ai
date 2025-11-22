@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   BeakerIcon,
@@ -19,6 +20,8 @@ import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
+import { LogoMark } from '@/features/landing/components/landing-nav';
+import { Spinner } from '@/components/ui/spinner';
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   user: {
@@ -55,8 +58,10 @@ const navigation = [
 export function Sidebar({ className, user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleSignOut = async () => {
+    setIsLoggingOut(true);
     await authClient.signOut();
     router.push('/auth/signin');
   };
@@ -104,16 +109,14 @@ export function Sidebar({ className, user }: SidebarProps) {
   return (
     <div
       className={cn(
-        'h-full flex flex-col bg-card/50 backdrop-blur-xl border-r border-border/50',
+        'h-full flex flex-col bg-card/50 backdrop-blur-xl border-r border-border/50 overflow-x-hidden',
         className,
       )}
     >
       {/* Header */}
       <div className="px-3 py-4">
-        <div className="flex items-center px-4 gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
-            <Sparkles className="h-4 w-4 text-primary" />
-          </div>
+        <div className="flex items-center px-4 gap-3">
+          <LogoMark className="size-8 rounded-lg" />
           <h2 className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-primary to-primary/60">
             ClearSprint AI
           </h2>
@@ -123,7 +126,7 @@ export function Sidebar({ className, user }: SidebarProps) {
       <Separator className="mx-3" />
 
       {/* Navigation */}
-      <div className="flex-1 px-3 py-4">
+      <div className="flex-1 px-3 py-4 flex flex-col gap-4">
         <div className="space-y-1">
           {navigation.map((item) => (
             <NavItem
@@ -138,10 +141,34 @@ export function Sidebar({ className, user }: SidebarProps) {
             />
           ))}
         </div>
+
+        {/* Upgrade Card */}
+        <div className="mt-auto mx-1">
+          <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-linear-to-br from-primary/10 via-primary/5 to-transparent p-4">
+            <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent opacity-50" />
+            <div className="relative z-10 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary ring-1 ring-primary/30">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+                <h3 className="font-semibold text-sm">Go Premium</h3>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Unlock unlimited AI generations and advanced Jira sync.
+              </p>
+              <Button
+                size="sm"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
+              >
+                Upgrade Now
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-4 mt-auto border-t border-border/50 bg-background/50 space-y-3">
+      <div className="px-3 py-4 border-t border-border/50 bg-background/50 space-y-3">
         {/* Theme Toggle */}
         <div className="px-4 py-2 flex items-center justify-between rounded-lg hover:bg-accent/50 transition-colors">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -159,9 +186,14 @@ export function Sidebar({ className, user }: SidebarProps) {
           variant="ghost"
           className="w-full justify-start text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors"
           onClick={handleSignOut}
+          disabled={isLoggingOut}
         >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
+          {isLoggingOut ? (
+            <Spinner className="mr-2 h-4 w-4" />
+          ) : (
+            <LogOut className="mr-2 h-4 w-4" />
+          )}
+          {isLoggingOut ? 'Signing out...' : 'Sign Out'}
         </Button>
       </div>
     </div>

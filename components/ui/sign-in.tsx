@@ -2,6 +2,7 @@ import type React from 'react';
 import { useState } from 'react';
 import { Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react';
 import { AuthShader } from '@/components/ui/auth-shader';
+import { Spinner } from '@/components/ui/spinner';
 
 // --- HELPER COMPONENTS (ICONS) ---
 
@@ -49,6 +50,7 @@ interface SignInPageProps {
   onResetPassword?: () => void;
   onCreateAccount?: () => void;
   onGoBack?: () => void;
+  isLoading?: boolean;
 }
 
 // --- SUB-COMPONENTS ---
@@ -98,6 +100,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({
   onResetPassword,
   onCreateAccount,
   onGoBack,
+  isLoading = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -189,10 +192,20 @@ export const SignInPage: React.FC<SignInPageProps> = ({
 
               <button
                 type="submit"
-                className="animate-element animate-delay-600 group w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] flex items-center justify-center gap-2"
+                disabled={isLoading}
+                className="animate-element animate-delay-600 group w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <span>Sign In</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                {isLoading ? (
+                  <>
+                    <Spinner className="w-4 h-4 text-primary-foreground" />
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
               </button>
             </form>
 

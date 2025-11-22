@@ -72,6 +72,7 @@ export const projects = pgTable('projects', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id),
   name: text('name'),
+  description: text('description'),
   docUrl: text('doc_url'),
   rawText: text('raw_text'),
   jiraProjectKey: text('jira_project_key'),

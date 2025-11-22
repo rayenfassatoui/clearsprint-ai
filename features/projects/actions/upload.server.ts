@@ -75,9 +75,13 @@ export async function uploadDoc(formData: FormData) {
               const parsedText = pdfData.Pages.map((page: PdfPage) => {
                 return page.Texts.map((text: PdfText) => {
                   // R is an array of text runs, usually just one
-                  return text.R.map((run: PdfTextRun) =>
-                    decodeURIComponent(run.T),
-                  ).join(' ');
+                  return text.R.map((run: PdfTextRun) => {
+                    try {
+                      return decodeURIComponent(run.T);
+                    } catch {
+                      return run.T;
+                    }
+                  }).join(' ');
                 }).join(' ');
               }).join('\n\n');
 

@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { AuthShader } from '@/components/ui/auth-shader';
+import { Spinner } from '@/components/ui/spinner';
 
 // --- HELPER COMPONENTS (ICONS) ---
 
@@ -47,6 +48,7 @@ interface SignUpPageProps {
   onGoogleSignUp?: () => void;
   onSignIn?: () => void;
   onGoBack?: () => void;
+  isLoading?: boolean;
 }
 
 // --- SUB-COMPONENTS ---
@@ -97,6 +99,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
   onGoogleSignUp,
   onSignIn,
   onGoBack,
+  isLoading = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -181,12 +184,96 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
 
               <button
                 type="submit"
-                className="animate-element animate-delay-600 group w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] flex items-center justify-center gap-2"
+                disabled={isLoading}
+                className="animate-element animate-delay-600 group w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <span>Create Account</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                {isLoading ? (
+                  <>
+                    <Spinner className="w-4 h-4 text-primary-foreground" />
+                    <span>Creating Account...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Create Account</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
               </button>
             </form>
+
+            <div className="animate-element animate-delay-700 relative flex items-center justify-center">
+              <span className="w-full border-t border-border"></span>
+              <span className="px-4 text-sm text-muted-foreground bg-background absolute">
+                Or continue with
+              </span>
+            </div>
+
+            <button
+              onClick={onGoogleSignUp}
+              className="animate-element animate-delay-800 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary transition-all hover:scale-[1.01] hover:border-border/80"
+            >
+              <GoogleIcon />
+              <span>Continue with Google</span>
+            </button>
+
+            <p className="animate-element animate-delay-900 text-center text-sm text-muted-foreground">
+              Already have an account?{' '}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSignIn?.();
+                }}
+                className="text-primary hover:underline transition-colors font-medium"
+              >
+                Sign in instead
+              </a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Right column: shader background + testimonials */}
+      <section className="hidden md:block flex-1 relative p-4">
+        <div className="absolute inset-4 rounded-3xl overflow-hidden">
+          <AuthShader />
+        </div>
+
+        {testimonials.length > 0 && (
+          <div className="absolute inset-0 z-10 pointer-events-none p-8">
+            {/* Top Right */}
+            <div className="absolute top-12 right-8 animate-float-1 hidden lg:block pointer-events-auto">
+              <TestimonialCard
+                testimonial={testimonials[0]}
+                delay="animate-delay-1000"
+              />
+            </div>
+
+            {/* Center Left */}
+            {testimonials[1] && (
+              <div className="absolute top-1/2 left-8 -translate-y-1/2 animate-float-2 hidden xl:block pointer-events-auto">
+                <TestimonialCard
+                  testimonial={testimonials[1]}
+                  delay="animate-delay-1200"
+                />
+              </div>
+            )}
+
+            {/* Bottom Right */}
+            {testimonials[2] && (
+              <div className="absolute bottom-12 right-12 animate-float-3 hidden md:block pointer-events-auto">
+                <TestimonialCard
+                  testimonial={testimonials[2]}
+                  delay="animate-delay-1400"
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+};
 
             <div className="animate-element animate-delay-700 relative flex items-center justify-center">
               <span className="w-full border-t border-border"></span>

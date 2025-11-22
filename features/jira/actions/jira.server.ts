@@ -7,13 +7,14 @@ import { db } from '@/lib/db';
 import { tickets, projects } from '@/lib/db/schema';
 import type { JiraIssueUpdateData } from '@/types';
 import {
-    createJiraIssue,
-    getJiraIssue,
-    getJiraIssues,
-    getJiraProjects,
-    getJiraResources,
-    getValidJiraToken,
-    updateJiraIssue,
+  createJiraIssue,
+  getJiraIssue,
+  getJiraIssues,
+  getJiraProjects,
+  getJiraResources,
+  getValidJiraToken,
+  updateJiraIssue,
+  getJiraProjectDetails,
 } from '@/lib/jira';
 
 function extractDescription(description: any): string {
@@ -91,7 +92,7 @@ export async function getJiraProjectsList(cloudId: string) {
 export async function syncToJira(
   projectId: number,
   cloudId: string,
-  jiraProjectKey: string,
+  jiraProjectKey: string
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -110,6 +111,55 @@ export async function syncToJira(
       .from(tickets)
       .where(eq(tickets.projectId, projectId));
 
+    // Fetch project details to get valid issue types
+    const projectDetails = await getJiraProjectDetails(
+      cloudId,
+      token,
+      jiraProjectKey
+    );
+    const issueTypes = projectDetails.issueTypes || [];
+
+    const findIssueTypeId = (type: 'epic' | 'task' | 'subtask') => {
+      const normalized = type.toLowerCase();
+      const match = issueTypes.find((it: any) => {
+        const itName = it.name.toLowerCase();
+        if (normalized === 'epic') return itName === 'epic';
+        if (normalized === 'subtask') return it.subtask;
+        // For task, find a non-subtask, non-epic type. Prefer 'Task' if available.
+        if (normalized === 'task') {
+          return !it.subtask && itName !== 'epic';
+        }
+        return false;
+      });
+
+      // If we have multiple matches for 'task' (e.g. Task, Bug, Story), try to find exact 'Task' first
+      if (
+        normalized === 'task' &&
+        match &&
+        match.name.toLowerCase() !== 'task'
+      ) {
+        const exactTask = issueTypes.find(
+          (it: any) => it.name.toLowerCase() === 'task'
+        );
+        if (exactTask) return exactTask;
+      }
+
+      return match;
+    };
+
+    const epicType = findIssueTypeId('epic');
+    const taskType = findIssueTypeId('task');
+    const subtaskType = findIssueTypeId('subtask');
+
+    if (!epicType || !taskType || !subtaskType) {
+      console.warn('Could not map all issue types', {
+        epicType,
+        taskType,
+        subtaskType,
+      });
+      // We continue, but some tickets might fail if type is missing
+    }
+
     let syncedCount = 0;
 
     // Sort by hierarchy to ensure parents exist before children
@@ -117,9 +167,15 @@ export async function syncToJira(
     const tasks = allTickets.filter((t) => t.type === 'task');
     const subtasks = allTickets.filter((t) => t.type === 'subtask');
 
+    // Track all active Jira keys (initially from DB)
+    const activeJiraKeys = new Set<string>();
+    allTickets.forEach((t) => {
+      if (t.jiraId) activeJiraKeys.add(t.jiraId);
+    });
+
     const processTicket = async (
       ticket: typeof tickets.$inferSelect,
-      parentJiraKey?: string,
+      parentJiraKey?: string
     ) => {
       const issueData: any = {
         fields: {
@@ -141,12 +197,12 @@ export async function syncToJira(
             ],
           },
           issuetype: {
-            name:
+            id:
               ticket.type === 'epic'
-                ? 'Epic'
+                ? epicType?.id
                 : ticket.type === 'subtask'
-                  ? 'Sub-task'
-                  : 'Task',
+                ? subtaskType?.id
+                : taskType?.id,
           },
         },
       };
@@ -166,22 +222,31 @@ export async function syncToJira(
           // Escape quotes in title for JQL
           const title = ticket.title || 'Untitled';
           const safeTitle = title.replace(/"/g, '\\"');
-          const jql = `project = "${jiraProjectKey}" AND summary ~ "\\"${safeTitle}\\"" AND issuetype = "${issueData.fields.issuetype.name}"`;
-          
+          // Use issue type ID for creation, but for JQL we need name.
+          // Note: JQL issuetype = ID is also valid and safer!
+          const typeId = issueData.fields.issuetype.id;
+          const jql = `project = "${jiraProjectKey}" AND summary ~ "\\"${safeTitle}\\"" AND issuetype = ${typeId}`;
+
           const existingRes = await getJiraIssues(cloudId, token, jql, 1);
-          
+
           if (existingRes.issues && existingRes.issues.length > 0) {
             // Found existing issue, link to it and update
             const existingIssue = existingRes.issues[0];
             // Double check exact title match because JQL ~ operator is fuzzy/contains
             if (existingIssue.fields.summary === ticket.title) {
-               await updateJiraIssue(cloudId, token, existingIssue.key, issueData);
-               await db
+              await updateJiraIssue(
+                cloudId,
+                token,
+                existingIssue.key,
+                issueData
+              );
+              await db
                 .update(tickets)
                 .set({ jiraId: existingIssue.key })
                 .where(eq(tickets.id, ticket.id));
-               syncedCount++;
-               return existingIssue.key;
+              syncedCount++;
+              activeJiraKeys.add(existingIssue.key); // Add to active set
+              return existingIssue.key;
             }
           }
 
@@ -192,6 +257,7 @@ export async function syncToJira(
             .set({ jiraId: res.key })
             .where(eq(tickets.id, ticket.id));
           syncedCount++;
+          activeJiraKeys.add(res.key); // Add to active set
           return res.key;
         }
       } catch (err) {
@@ -227,6 +293,48 @@ export async function syncToJira(
       await processTicket(subtask, parentKey);
     }
 
+    // 4. Soft Delete Sync: Mark orphaned Jira issues as [DELETED]
+    try {
+      // Fetch all issues for the project to check for deletions
+      // We need to paginate to get ALL issues
+      let allJiraIssues: any[] = [];
+      let nextPageToken: string | undefined = undefined;
+
+      do {
+        const jql = `project = "${jiraProjectKey}"`;
+        const res = await getJiraIssues(
+          cloudId,
+          token,
+          jql,
+          100,
+          nextPageToken
+        );
+        if (res.issues) {
+          allJiraIssues = [...allJiraIssues, ...res.issues];
+        }
+        nextPageToken = res.nextPageToken;
+      } while (nextPageToken);
+
+      for (const issue of allJiraIssues) {
+        // If issue is NOT in activeJiraKeys, it means it was deleted locally (or never existed locally but is in Jira)
+        if (!activeJiraKeys.has(issue.key)) {
+          const currentSummary = issue.fields.summary;
+          // Avoid double marking
+          if (!currentSummary.endsWith(' [DELETED]')) {
+            console.log(`Marking issue ${issue.key} as [DELETED]`);
+            await updateJiraIssue(cloudId, token, issue.key, {
+              fields: {
+                summary: `${currentSummary} [DELETED]`,
+              },
+            });
+          }
+        }
+      }
+    } catch (deleteError) {
+      console.error('Soft delete sync error:', deleteError);
+      // Don't fail the whole sync if soft delete fails
+    }
+
     return { success: true, syncedCount };
   } catch (error) {
     console.error('Sync to Jira error:', error);
@@ -239,7 +347,7 @@ export async function syncToJira(
 export async function importFromJira(
   projectId: number,
   cloudId: string,
-  jiraProjectKey: string,
+  jiraProjectKey: string
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -266,14 +374,14 @@ export async function importFromJira(
     const upsertTicket = async (
       issue: any,
       type: 'epic' | 'task' | 'subtask',
-      parentId?: number,
+      parentId?: number
     ) => {
       // 1. Try to find by Jira ID (Key)
       let existing = await db
         .select()
         .from(tickets)
         .where(
-          and(eq(tickets.projectId, projectId), eq(tickets.jiraId, issue.key)),
+          and(eq(tickets.projectId, projectId), eq(tickets.jiraId, issue.key))
         )
         .limit(1);
 
@@ -287,8 +395,8 @@ export async function importFromJira(
             and(
               eq(tickets.projectId, projectId),
               eq(tickets.title, issue.fields.summary),
-              eq(tickets.type, type),
-            ),
+              eq(tickets.type, type)
+            )
           )
           .limit(1);
       }
@@ -330,7 +438,7 @@ export async function importFromJira(
 
     // 1. Process Epics
     const epics = issues.filter(
-      (i: any) => mapJiraType(i.fields.issuetype.name) === 'epic',
+      (i: any) => mapJiraType(i.fields.issuetype.name) === 'epic'
     );
     for (const epic of epics) {
       await upsertTicket(epic, 'epic');
@@ -353,7 +461,7 @@ export async function importFromJira(
 
     // 3. Process Subtasks
     const subtasks = issues.filter(
-      (i: any) => mapJiraType(i.fields.issuetype.name) === 'subtask',
+      (i: any) => mapJiraType(i.fields.issuetype.name) === 'subtask'
     );
     for (const subtask of subtasks) {
       let parentId;
@@ -381,7 +489,7 @@ export async function getJiraIssuesList(
   cloudId: string,
   jql?: string,
   maxResults = 50,
-  nextPageToken?: string,
+  nextPageToken?: string
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -400,7 +508,7 @@ export async function getJiraIssuesList(
       token,
       jql,
       maxResults,
-      nextPageToken,
+      nextPageToken
     );
     return { success: true, ...result };
   } catch (error) {
@@ -417,7 +525,7 @@ export async function getJiraIssuesList(
  */
 export async function getSingleJiraIssue(
   cloudId: string,
-  issueIdOrKey: string,
+  issueIdOrKey: string
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -448,7 +556,7 @@ export async function getSingleJiraIssue(
 export async function updateJiraIssueAction(
   cloudId: string,
   issueIdOrKey: string,
-  updateData: JiraIssueUpdateData,
+  updateData: JiraIssueUpdateData
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -466,7 +574,7 @@ export async function updateJiraIssueAction(
       cloudId,
       token,
       issueIdOrKey,
-      updateData,
+      updateData
     );
     return { success: true, ...result };
   } catch (error) {
@@ -481,7 +589,7 @@ export async function updateJiraIssueAction(
 export async function createProjectFromJira(
   cloudId: string,
   jiraProjectKey: string,
-  projectName: string,
+  projectName: string
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -507,7 +615,7 @@ export async function createProjectFromJira(
     const importResult = await importFromJira(
       newProject.id,
       cloudId,
-      jiraProjectKey,
+      jiraProjectKey
     );
 
     if (importResult.error) {

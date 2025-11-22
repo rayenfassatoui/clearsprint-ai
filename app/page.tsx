@@ -101,15 +101,13 @@ export default async function Home() {
             <LogoCloud />
           </FadeIn>
 
-          <FadeIn delay={1.0}>
-            <VelocityText
-              text="CLEARSPRINT AI • SHIP FASTER • PREDICT RISKS • GET SHIT DONE"
-              defaultVelocity={10}
-              className=" absolute bg-transparent py-12 -my-24 opacity-5 "
-              size="md:text-[10em]"
-              tilt={-2}
-            />
-          </FadeIn>
+          <VelocityText
+            text="CLEARSPRINT AI • SHIP FASTER • PREDICT RISKS • GET SHIT DONE"
+            defaultVelocity={10}
+            className=" absolute bg-transparent py-12 -my-24 opacity-5 animate-in fade-in duration-1000"
+            size="md:text-[10em]"
+            tilt={-2}
+          />
 
           {/* Full Width Roadmap Cards */}
           {/* Roadmap Section */}

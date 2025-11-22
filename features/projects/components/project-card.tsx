@@ -15,6 +15,8 @@ import { GenerateButton } from '@/components/generate-button';
 import { SyncWithJiraModal } from '@/features/jira/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/features/tickets/components/refine-all-dialog';
 import { Button } from '@/components/ui/button';
+import { EditProjectDialog } from './edit-project-dialog';
+import { DeleteProjectDialog } from './delete-project-dialog';
 
 import {
   Card,
@@ -53,7 +55,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         className="block group h-full"
       >
         <Card className="group relative flex h-full flex-col overflow-hidden border-muted/40 bg-card transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
           <CardHeader className="relative pb-2">
             <div className="flex items-start justify-between">
@@ -158,6 +160,18 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </CardFooter>
         </Card>
       </Link>
+
+      <EditProjectDialog
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        project={project}
+      />
+
+      <DeleteProjectDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        project={project}
+      />
     </motion.div>
   );
 }

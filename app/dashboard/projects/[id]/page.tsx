@@ -2,7 +2,6 @@ import { eq } from 'drizzle-orm';
 import { ChevronLeft } from 'lucide-react';
 import { headers } from 'next/headers';
 import Link from 'next/link';
-import { GenerateButton } from '@/components/generate-button';
 import { KanbanBoard } from '@/features/tickets/components/kanban-board';
 import { SyncWithJiraModal } from '@/features/jira/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/features/tickets/components/refine-all-dialog';
@@ -78,7 +77,7 @@ export default async function ProjectPage({
         <div className="flex items-center space-x-2">
           {tickets && tickets.length > 0 && (
             <>
-              <GenerateButton projectId={projectId} />
+              {/* GenerateButton removed from here as it should only be visible when no tickets exist */}
               <GeneralAiEditDialog projectId={projectId} />
               {jiraCloudId && project.jiraProjectKey && (
                 <PullFromJiraModal
