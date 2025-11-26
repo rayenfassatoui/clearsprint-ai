@@ -1,18 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import {
-  FileText,
-  MoreVertical,
-  Edit,
-  Trash2,
-  RefreshCw,
-  Sparkles,
-} from 'lucide-react';
+import { FileText, MoreVertical, Edit, Trash2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { GenerateButton } from '@/components/generate-button';
-import { SyncWithJiraModal } from '@/features/jira/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/features/tickets/components/refine-all-dialog';
 import { Button } from '@/components/ui/button';
 import { EditProjectDialog } from './edit-project-dialog';
@@ -138,21 +130,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     className="h-9 w-9 hover:bg-primary/10 hover:text-primary"
                   >
                     <Sparkles className="h-4 w-4" />
-                  </Button>
-                }
-              />
-
-              <SyncWithJiraModal
-                projectId={project.id}
-                projectTitle={project.name || 'Untitled'}
-                tooltip="Sync with Jira"
-                trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 hover:bg-primary/10 hover:text-primary"
-                  >
-                    <RefreshCw className="h-4 w-4" />
                   </Button>
                 }
               />

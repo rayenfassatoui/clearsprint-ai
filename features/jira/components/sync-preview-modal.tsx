@@ -20,6 +20,9 @@ import {
   Trash2,
   CheckCircle2,
   Info,
+  Calendar,
+  Hash,
+  Clock,
 } from 'lucide-react';
 import type { SyncChange } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -38,13 +41,13 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.05,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
@@ -55,6 +58,21 @@ const itemVariants = {
     },
   },
 };
+
+function formatDate(date: string | Date | null | undefined) {
+  if (!date) return 'Not set';
+  try {
+    return new Date(date).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return 'Invalid date';
+  }
+}
 
 export function SyncPreviewModal({
   isOpen,
@@ -83,8 +101,8 @@ export function SyncPreviewModal({
       open={isOpen}
       onOpenChange={(open) => !isSyncing && !open && onClose()}
     >
-      <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col">
-        <DialogHeader className="space-y-3">
+      <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b space-y-3">
           <DialogTitle className="text-2xl font-bold">Sync Preview</DialogTitle>
           <DialogDescription className="text-base">
             {changes.length === 0
@@ -144,7 +162,7 @@ export function SyncPreviewModal({
           )}
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden px-6">
           <ScrollArea className="h-full pr-4">
             <AnimatePresence>
               {changes.length === 0 ? (
@@ -166,12 +184,12 @@ export function SyncPreviewModal({
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
-                  className="space-y-6"
+                  className="space-y-6 py-4"
                 >
                   {/* Create Section */}
                   {toCreate.length > 0 && (
                     <motion.div variants={itemVariants}>
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-4">
                         <div className="h-6 w-6 rounded-md bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                           <Plus className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
                         </div>
@@ -179,32 +197,66 @@ export function SyncPreviewModal({
                           Create in Jira ({toCreate.length})
                         </h3>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {toCreate.map((c, idx) => (
                           <motion.div
                             key={c.id}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.05 }}
-                            className="group p-4 border rounded-lg bg-green-50/50 dark:bg-green-900/10 hover:shadow-md transition-all duration-200"
+                            transition={{ delay: idx * 0.03 }}
+                            className="group p-4 border rounded-lg bg-green-50/30 dark:bg-green-900/5 hover:shadow-lg transition-all duration-200"
                           >
-                            <div className="flex justify-between items-start gap-3">
-                              <div className="flex-1">
-                                <p className="font-medium text-sm mb-1">
-                                  {c.title}
-                                </p>
-                                {c.description && (
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-start gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-semibold text-base mb-1 truncate">
+                                    {c.title}
+                                  </p>
+                                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                                    <span className="flex items-center gap-1">
+                                      <Hash className="h-3 w-3" />
+                                      ID: {c.id}
+                                    </span>
+                                    {c.ticketType && (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs"
+                                      >
+                                        {c.ticketType}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                <Badge
+                                  variant="outline"
+                                  className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800 shrink-0"
+                                >
+                                  New
+                                </Badge>
+                              </div>
+
+                              {c.description && (
+                                <div className="pt-2 border-t">
+                                  <p className="text-sm text-muted-foreground line-clamp-3">
                                     {c.description}
                                   </p>
+                                </div>
+                              )}
+
+                              <div className="flex flex-wrap gap-3 pt-2 text-xs text-muted-foreground border-t">
+                                {c.createdAt && (
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    Created: {formatDate(c.createdAt)}
+                                  </span>
+                                )}
+                                {c.updatedAt && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    Updated: {formatDate(c.updatedAt)}
+                                  </span>
                                 )}
                               </div>
-                              <Badge
-                                variant="outline"
-                                className="bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800 shrink-0"
-                              >
-                                New
-                              </Badge>
                             </div>
                           </motion.div>
                         ))}
@@ -215,7 +267,7 @@ export function SyncPreviewModal({
                   {/* Update Section */}
                   {toUpdate.length > 0 && (
                     <motion.div variants={itemVariants}>
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-4">
                         <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                           <Edit3 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                         </div>
@@ -223,47 +275,91 @@ export function SyncPreviewModal({
                           Update in Jira ({toUpdate.length})
                         </h3>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {toUpdate.map((c, idx) => (
                           <motion.div
                             key={c.id}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.05 }}
-                            className="group p-4 border rounded-lg bg-blue-50/50 dark:bg-blue-900/10 hover:shadow-md transition-all duration-200"
+                            transition={{ delay: idx * 0.03 }}
+                            className="group p-4 border rounded-lg bg-blue-50/30 dark:bg-blue-900/5 hover:shadow-lg transition-all duration-200"
                           >
-                            <div className="flex justify-between items-start gap-3 mb-2">
-                              <p className="font-medium text-sm">{c.title}</p>
-                              <Badge
-                                variant="outline"
-                                className="text-xs shrink-0"
-                              >
-                                {c.jiraId}
-                              </Badge>
-                            </div>
-                            {c.diff && c.diff.length > 0 && (
-                              <div className="space-y-1.5 mt-3 p-3 bg-white dark:bg-slate-950 rounded border">
-                                {c.diff.map((d, i) => (
-                                  <div
-                                    key={`${c.id}-diff-${i}`}
-                                    className="flex items-center gap-2 text-xs"
-                                  >
-                                    <span className="text-muted-foreground min-w-[60px] font-medium">
-                                      {d.field}:
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-start gap-3 mb-2">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-semibold text-base truncate">
+                                    {c.title}
+                                  </p>
+                                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                                    <span className="flex items-center gap-1">
+                                      <Hash className="h-3 w-3" />
+                                      ID: {c.id}
                                     </span>
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                      <span className="line-through text-red-500 truncate flex-1">
-                                        {d.oldValue}
+                                    {c.jiraId && (
+                                      <span className="flex items-center gap-1">
+                                        Jira: {c.jiraId}
                                       </span>
-                                      <ArrowRight className="h-3 w-3 text-slate-400 shrink-0" />
-                                      <span className="text-green-600 dark:text-green-400 truncate flex-1 font-medium">
-                                        {d.newValue}
-                                      </span>
-                                    </div>
+                                    )}
+                                    {c.ticketType && (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs"
+                                      >
+                                        {c.ticketType}
+                                      </Badge>
+                                    )}
                                   </div>
-                                ))}
+                                </div>
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs shrink-0"
+                                >
+                                  {c.jiraId || 'Updating'}
+                                </Badge>
                               </div>
-                            )}
+
+                              {c.diff && c.diff.length > 0 && (
+                                <div className="space-y-2 p-3 bg-background rounded border">
+                                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                                    Changes:
+                                  </p>
+                                  {c.diff.map((d, i) => (
+                                    <div
+                                      key={`${c.id}-diff-${i}`}
+                                      className="flex items-start gap-2 text-xs"
+                                    >
+                                      <span className="text-muted-foreground min-w-[80px] font-medium capitalize">
+                                        {d.field}:
+                                      </span>
+                                      <div className="flex items-start gap-2 flex-1 min-w-0">
+                                        <span className="line-through text-red-500 flex-1 break-words">
+                                          {d.oldValue}
+                                        </span>
+                                        <ArrowRight className="h-3 w-3 text-slate-400 shrink-0 mt-0.5" />
+                                        <span className="text-green-600 dark:text-green-400 flex-1 font-medium break-words">
+                                          {d.newValue}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              <div className="flex flex-wrap gap-3 pt-2 text-xs text-muted-foreground border-t">
+                                {c.createdAt && (
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    Created: {formatDate(c.createdAt)}
+                                  </span>
+                                )}
+                                {c.updatedAt && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    Updated: {formatDate(c.updatedAt)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </motion.div>
                         ))}
                       </div>
@@ -273,7 +369,7 @@ export function SyncPreviewModal({
                   {/* Delete Section */}
                   {toDelete.length > 0 && (
                     <motion.div variants={itemVariants}>
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-4">
                         <AlertTriangle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                         <h3 className="text-sm font-semibold text-orange-600 dark:text-orange-400">
                           Mark as [DELETED] in Jira ({toDelete.length})
@@ -288,25 +384,55 @@ export function SyncPreviewModal({
                           </p>
                         </div>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {toDelete.map((c, idx) => (
                           <motion.div
                             key={c.id}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.05 }}
-                            className="group p-4 border rounded-lg bg-orange-50/30 dark:bg-orange-900/5 hover:shadow-md transition-all duration-200"
+                            transition={{ delay: idx * 0.03 }}
+                            className="group p-4 border rounded-lg bg-orange-50/20 dark:bg-orange-900/5 hover:shadow-md transition-all duration-200"
                           >
-                            <div className="flex justify-between items-center gap-3">
-                              <span className="line-through text-muted-foreground text-sm">
-                                {c.title}
-                              </span>
-                              <Badge
-                                variant="outline"
-                                className="text-xs shrink-0"
-                              >
-                                {c.jiraId}
-                              </Badge>
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <span className="line-through text-muted-foreground text-base font-medium block truncate">
+                                    {c.title}
+                                  </span>
+                                  <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1">
+                                    <span className="flex items-center gap-1">
+                                      <Hash className="h-3 w-3" />
+                                      ID: {c.id}
+                                    </span>
+                                    {c.jiraId && (
+                                      <span className="flex items-center gap-1">
+                                        Jira: {c.jiraId}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs shrink-0"
+                                >
+                                  {c.jiraId}
+                                </Badge>
+                              </div>
+
+                              <div className="flex flex-wrap gap-3 pt-2 text-xs text-muted-foreground border-t">
+                                {c.createdAt && (
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    Created: {formatDate(c.createdAt)}
+                                  </span>
+                                )}
+                                {c.updatedAt && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    Updated: {formatDate(c.updatedAt)}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </motion.div>
                         ))}
@@ -319,7 +445,7 @@ export function SyncPreviewModal({
           </ScrollArea>
         </div>
 
-        <DialogFooter className="mt-4 gap-2">
+        <DialogFooter className="px-6 py-4 border-t gap-2">
           <Button
             variant="outline"
             onClick={onClose}

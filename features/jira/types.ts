@@ -7,6 +7,9 @@ export interface SyncChange {
   description?: string;
   changeType: SyncChangeType;
   jiraId?: string;
+  ticketType?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   diff?: {
     field: string;
     oldValue: string;

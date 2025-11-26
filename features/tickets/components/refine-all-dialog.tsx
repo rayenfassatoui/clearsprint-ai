@@ -148,7 +148,8 @@ export function GeneralAiEditDialog({
             <div>
               <DialogTitle>AI-Powered Refinement</DialogTitle>
               <DialogDescription>
-                Refine all tickets in your backlog with AI assistance
+                Refine all tickets in this project. The AI will strictly follow
+                your instructions.
               </DialogDescription>
             </div>
           </div>

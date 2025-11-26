@@ -1,5 +1,6 @@
 'use server';
 
+import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import PDFParser from 'pdf2json';
 import { auth } from '@/lib/auth';
@@ -18,6 +19,8 @@ export async function uploadDoc(formData: FormData) {
   }
 
   const mode = formData.get('mode') as string; // 'file' | 'text'
+  const projectIdStr = formData.get('projectId') as string;
+  const projectId = projectIdStr ? parseInt(projectIdStr) : null;
 
   let url = '';
   let textContent = '';
@@ -106,22 +109,56 @@ export async function uploadDoc(formData: FormData) {
   }
 
   try {
-    const [newProject] = await db
-      .insert(projects)
-      .values({
-        userId: session.user.id,
-        name: fileName,
-        docUrl: url,
-        rawText: textContent,
-      })
-      .returning();
+    if (projectId) {
+      // Update existing project
+      const [existingProject] = await db
+        .select()
+        .from(projects)
+        .where(eq(projects.id, projectId));
 
-    return {
-      success: true,
-      url,
-      text: textContent,
-      projectId: newProject.id,
-    };
+      if (!existingProject) {
+        return { error: 'Project not found' };
+      }
+
+      if (existingProject.userId !== session.user.id) {
+        return { error: 'Unauthorized to modify this project' };
+      }
+
+      await db
+        .update(projects)
+        .set({
+          docUrl: url,
+          rawText: textContent,
+          // Optionally update name if it was empty or generic, but maybe safer to keep it
+          // name: fileName,
+        })
+        .where(eq(projects.id, projectId));
+
+      return {
+        success: true,
+        url,
+        text: textContent,
+        projectId: projectId,
+      };
+    } else {
+      // Create new project
+      const [newProject] = await db
+        .insert(projects)
+        .values({
+          userId: session.user.id,
+          name: fileName,
+          docUrl: url,
+          rawText: textContent,
+        })
+        .returning();
+
+      return {
+        success: true,
+        url,
+        text: textContent,
+        projectId: newProject.id,
+      };
+    }
   } catch (error) {
     console.error('Database error:', error);
     return { error: 'Failed to save project' };

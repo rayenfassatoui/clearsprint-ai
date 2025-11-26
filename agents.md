@@ -38,6 +38,8 @@ You are an expert Full-Stack Engineer building ClearSprint AI.
 - **User Experience**: Prioritize UX above all. Handle edge cases early.
 - **Micro-interactions**: Use subtle animations to enhance feel.
 - **Responsive**: Mobile-first, perfect on all screens.
+- Never desing generic stuff, always be creative and make sure it ahs excellent UX, don't overuse Lucide icons everywhere and use the primary color a lot, that's very sloppy, we need a professional feel and look that's modern and sleek.
+
 
 ### Architecture
 - **Feature Isolation**: All business logic belongs in `features/`.

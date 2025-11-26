@@ -80,16 +80,19 @@ export default async function ProjectPage({
               {/* GenerateButton removed from here as it should only be visible when no tickets exist */}
               <GeneralAiEditDialog projectId={projectId} />
               {jiraCloudId && project.jiraProjectKey && (
-                <PullFromJiraModal
-                  projectId={projectId}
-                  cloudId={jiraCloudId}
-                  jiraProjectKey={project.jiraProjectKey}
-                />
+                <>
+                  <PullFromJiraModal
+                    projectId={projectId}
+                    cloudId={jiraCloudId}
+                    jiraProjectKey={project.jiraProjectKey}
+                  />
+                  <SyncWithJiraModal
+                    projectId={projectId}
+                    cloudId={jiraCloudId}
+                    jiraProjectKey={project.jiraProjectKey}
+                  />
+                </>
               )}
-              <SyncWithJiraModal
-                projectId={projectId}
-                projectTitle={project.name || 'Untitled'}
-              />
             </>
           )}
         </div>

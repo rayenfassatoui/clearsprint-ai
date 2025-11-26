@@ -18,6 +18,8 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface DropzoneProps {
+  projectId?: number;
+  defaultPasteMode?: boolean;
   onUploadComplete?: (result: {
     url: string;
     text: string;
@@ -25,13 +27,17 @@ interface DropzoneProps {
   }) => void;
 }
 
-export function Dropzone({ onUploadComplete }: DropzoneProps) {
+export function Dropzone({
+  onUploadComplete,
+  projectId,
+  defaultPasteMode = false,
+}: DropzoneProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<
     'idle' | 'success' | 'error'
   >('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPasteMode, setIsPasteMode] = useState(false);
+  const [isPasteMode, setIsPasteMode] = useState(defaultPasteMode);
   const [pastedText, setPastedText] = useState('');
 
   const onDrop = useCallback(
@@ -46,6 +52,9 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
       const formData = new FormData();
       formData.append('mode', 'file');
       formData.append('file', file);
+      if (projectId) {
+        formData.append('projectId', projectId.toString());
+      }
 
       try {
         const result = await uploadDoc(formData);
@@ -63,14 +72,14 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
             });
           }
         }
-      } catch (error) {
+      } catch {
         setUploadStatus('error');
         setErrorMessage('An unexpected error occurred.');
       } finally {
         setIsUploading(false);
       }
     },
-    [onUploadComplete],
+    [onUploadComplete, projectId],
   );
 
   const handleTextSubmit = async () => {
@@ -86,6 +95,9 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
     const formData = new FormData();
     formData.append('mode', 'text');
     formData.append('text', pastedText);
+    if (projectId) {
+      formData.append('projectId', projectId.toString());
+    }
 
     try {
       const result = await uploadDoc(formData);
@@ -104,7 +116,7 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
         setUploadStatus('error');
         toast.error(result.error || 'Failed to import text.');
       }
-    } catch (error) {
+    } catch {
       setUploadStatus('error');
       toast.error('An unexpected error occurred.');
     } finally {
@@ -172,7 +184,7 @@ export function Dropzone({ onUploadComplete }: DropzoneProps) {
         <div
           {...getRootProps()}
           className={cn(
-            'relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer animate-in fade-in slide-in-from-top-2 duration-300',
+            'relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl transition-all cursor-pointer animate-in fade-in slide-in-from-top-2 duration-300',
             isDragActive
               ? 'border-primary bg-primary/5'
               : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50',

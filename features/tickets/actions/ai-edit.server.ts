@@ -44,14 +44,19 @@ export async function refineBacklog(projectId: number, instruction: string) {
 
   // 2. Call OpenAI
   try {
-    const systemPrompt = `You are a senior product manager. Refine the provided backlog tickets based on the user's instruction.
+    const systemPrompt = `You are a senior product manager. Your task is to refine the provided backlog tickets based STRICTLY on the user's instruction.
     
     User Instruction: "${instruction}"
     
     Input: A list of tickets with ID, Title, and Description.
-    Output: A JSON object with a list of "tickets". Each ticket must have "id" (unchanged), "title" (refined), and "description" (refined).
+    Output: A JSON object with a list of "tickets". Each ticket must have "id" (unchanged), "title", and "description".
     
-    Do NOT add or remove tickets. Only update existing ones.`;
+    CRITICAL RULES:
+    1. Do NOT add or remove tickets.
+    2. ONLY modify the fields (title/description) that the user explicitly asked to change. If the user only asked to change titles, keep descriptions exactly as they are.
+    3. If the user asked to add something (e.g., acceptance criteria), append it to the existing description. Do not rewrite the whole description unless asked.
+    4. Maintain the original intent of the ticket.
+    5. Do not change the ID.`;
 
     const inputData = allTickets.map((t) => ({
       id: t.id,
