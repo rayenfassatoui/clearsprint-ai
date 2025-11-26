@@ -3,7 +3,7 @@
 import { useTheme } from 'next-themes';
 import { Camera, Geometry, Mesh, Program, Renderer } from 'ogl';
 import type React from 'react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 interface ParticlesProps {
   particleCount?: number;
@@ -112,7 +112,7 @@ const Particles: React.FC<ParticlesProps> = ({
   const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const { theme } = useTheme();
 
-  const getDefaultColors = (): [number, number, number][] => {
+  const getDefaultColors = useCallback((): [number, number, number][] => {
     if (theme === 'dark') {
       return [
         [1.0, 1.0, 1.0], // white
@@ -126,7 +126,7 @@ const Particles: React.FC<ParticlesProps> = ({
         [0.2, 0.2, 0.2], // gray
       ];
     }
-  };
+  }, [theme]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -276,7 +276,8 @@ const Particles: React.FC<ParticlesProps> = ({
     sizeRandomness,
     cameraDistance,
     disableRotation,
-    theme,
+    getDefaultColors,
+    particleColors,
   ]);
 
   return (

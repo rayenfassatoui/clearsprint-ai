@@ -1,0 +1,40 @@
+flowchart TB
+    User["👤 User<br/>(Project Manager/Developer)"]
+    Jira["🔗 Jira System"]
+    
+    subgraph ClearSprint["ClearSprint AI Platform"]
+        direction TB
+        
+        subgraph Auth["Authentication"]
+            UC1["Sign Up / Sign In"]
+        end
+        
+        subgraph Projects["Project Management"]
+            UC2["Create Project"]
+            UC3["View Dashboard"]
+            UC4["Upload PRD Document"]
+        end
+        
+        subgraph Tickets["Ticket Management"]
+            UC5["Generate Tickets (AI)"]
+            UC6["Edit Tickets"]
+            UC7["Manage Ticket Status"]
+        end
+        
+        subgraph Integration["External Integration"]
+            UC8["Connect Jira Account"]
+            UC9["Sync Tickets to Jira"]
+            UC10["Pull Jira Projects"]
+        end
+    end
+    
+    User --> Auth
+    User --> Projects
+    User --> Tickets
+    User --> Integration
+    
+    Integration <--> Jira
+    Projects -.-> Tickets
+    Tickets -.-> Integration
+
+

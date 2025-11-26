@@ -1,0 +1,52 @@
+graph TB
+    subgraph Presentation["📱 Presentation Layer"]
+        direction LR
+        AppRouter["app/<br/>(Next.js Routes)"]
+        UIComponents["components/ui<br/>(Shadcn)"]
+    end
+    
+    subgraph Application["⚙️ Application Layer - Feature Modules"]
+        direction LR
+        AuthFeature["features/auth<br/>(Authentication)"]
+        ProjectsFeature["features/projects<br/>(Projects & PRD)"]
+        TicketsFeature["features/tickets<br/>(Ticket Management)"]
+        JiraFeature["features/jira<br/>(Jira Integration)"]
+        LandingFeature["features/landing<br/>(Marketing Pages)"]
+    end
+    
+    subgraph Domain["📦 Domain Layer"]
+        direction LR
+        Types["types/<br/>(Type Definitions)"]
+        Schema["drizzle/schema<br/>(DB Schema)"]
+    end
+    
+    subgraph Infrastructure["🔧 Infrastructure Layer"]
+        direction LR
+        DB["lib/db<br/>(Drizzle ORM)"]
+        AuthLib["lib/auth<br/>(Better-Auth)"]
+        S3Lib["lib/s3<br/>(Minio/S3)"]
+        AILib["lib/openai<br/>(OpenAI API)"]
+    end
+    
+    %% Dependencies flow downward
+    AppRouter --> AuthFeature
+    AppRouter --> ProjectsFeature
+    AppRouter --> TicketsFeature
+    AppRouter --> JiraFeature
+    AppRouter --> LandingFeature
+    
+    AuthFeature --> AuthLib
+    ProjectsFeature --> DB
+    ProjectsFeature --> S3Lib
+    ProjectsFeature --> AILib
+    TicketsFeature --> DB
+    JiraFeature --> DB
+    
+    DB --> Schema
+    AuthLib --> Schema
+    
+    ProjectsFeature -.uses.-> Types
+    TicketsFeature -.uses.-> Types
+    JiraFeature -.uses.-> Types
+
+

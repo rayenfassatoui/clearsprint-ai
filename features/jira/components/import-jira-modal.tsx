@@ -53,7 +53,7 @@ export function ImportJiraModal() {
     import: false,
   });
 
-  const loadSites = async () => {
+  const _loadSites = async () => {
     setLoading((prev) => ({ ...prev, sites: true }));
     try {
       const result = await getJiraSites();
@@ -67,14 +67,14 @@ export function ImportJiraModal() {
           setSelectedSite(result.resources[0].id);
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to load Jira sites');
     } finally {
       setLoading((prev) => ({ ...prev, sites: false }));
     }
   };
 
-  const loadProjects = async (cloudId: string) => {
+  const _loadProjects = async (cloudId: string) => {
     setLoading((prev) => ({ ...prev, projects: true }));
     try {
       const result = await getJiraProjectsList(cloudId);

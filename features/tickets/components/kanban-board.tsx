@@ -20,7 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Edit2, GripVertical, Sparkles, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
   deleteTicket,
@@ -74,17 +74,7 @@ export function KanbanBoard({
     }),
   );
 
-  useEffect(() => {
-    if (initialTickets.length === 0) {
-      loadTickets();
-    } else {
-      setTickets(initialTickets);
-      setLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId, initialTickets]);
-
-  async function loadTickets() {
+  const loadTickets = useCallback(async () => {
     setLoading(true);
     const res = await getProjectTickets(projectId);
     if (res.success && res.tickets) {
@@ -93,7 +83,16 @@ export function KanbanBoard({
       toast.error(res.error);
     }
     setLoading(false);
-  }
+  }, [projectId]);
+
+  useEffect(() => {
+    if (initialTickets.length === 0) {
+      loadTickets();
+    } else {
+      setTickets(initialTickets);
+      setLoading(false);
+    }
+  }, [initialTickets, loadTickets]);
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id as number);
@@ -185,7 +184,7 @@ export function KanbanBoard({
         {activeId ? (
           <div className="opacity-80">
             <TicketItemOverlay
-              ticket={tickets.find((t) => t.id === activeId)!}
+              ticket={tickets.find((t) => t.id === activeId) || tickets[0]}
             />
           </div>
         ) : null}

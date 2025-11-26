@@ -42,7 +42,7 @@ export function TicketTweakDialog({
       } else {
         toast.error(result.error);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('An unexpected error occurred');
     } finally {
       setLoading(false);

@@ -7,7 +7,8 @@ import {
   getJiraProjectsList,
   getJiraSites,
   importFromJira,
-  syncToJira,
+  getSyncPreview,
+  executeSync,
 } from '@/features/jira/actions/jira.server';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +34,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { SyncPreviewModal } from './sync-preview-modal';
+import type { SyncChange } from '../types';
 
 export function SyncWithJiraModal({
   projectId,
@@ -53,52 +56,81 @@ export function SyncWithJiraModal({
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
 
+  // Preview State
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewChanges, setPreviewChanges] = useState<SyncChange[]>([]);
+
   useEffect(() => {
+    async function loadSites() {
+      setLoading(true);
+      const res = await getJiraSites();
+      if (res.success) {
+        setSites(res.resources);
+        if (res.resources && res.resources.length === 1) {
+          setSelectedSiteId(res.resources[0].id);
+        }
+      } else {
+        toast.error(res.error);
+      }
+      setLoading(false);
+    }
+
     if (isOpen) {
       loadSites();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   useEffect(() => {
+    async function loadProjects(cloudId: string) {
+      setLoading(true);
+      const res = await getJiraProjectsList(cloudId);
+      if (res.success) {
+        setProjects(res.projects);
+      } else {
+        toast.error(res.error);
+      }
+      setLoading(false);
+    }
+
     if (selectedSiteId) {
       loadProjects(selectedSiteId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSiteId]);
 
-  async function loadSites() {
-    setLoading(true);
-    const res = await getJiraSites();
-    if (res.success) {
-      setSites(res.resources);
-      if (res.resources && res.resources.length === 1) {
-        setSelectedSiteId(res.resources[0].id);
-      }
-    } else {
-      toast.error(res.error);
-    }
-    setLoading(false);
-  }
-
-  async function loadProjects(cloudId: string) {
-    setLoading(true);
-    const res = await getJiraProjectsList(cloudId);
-    if (res.success) {
-      setProjects(res.projects);
-    } else {
-      toast.error(res.error);
-    }
-    setLoading(false);
-  }
-
-  async function handleSync() {
+  async function handleSyncPreview() {
     if (!selectedSiteId || !selectedProjectKey) return;
     setProcessing(true);
-    const res = await syncToJira(projectId, selectedSiteId, selectedProjectKey);
+
+    const res = await getSyncPreview(
+      projectId,
+      selectedSiteId,
+      selectedProjectKey,
+    );
+
+    if (res.success && res.preview) {
+      setPreviewChanges(res.preview.changes);
+      setShowPreview(true);
+      // Don't close main modal yet, wait for confirm
+    } else {
+      toast.error(res.error || 'Failed to get sync preview');
+    }
+    setProcessing(false);
+  }
+
+  async function handleConfirmSync() {
+    setProcessing(true);
+    const res = await executeSync(
+      projectId,
+      selectedSiteId,
+      selectedProjectKey,
+      previewChanges,
+    );
+
     if (res.success) {
       toast.success(`Successfully synced ${res.syncedCount} tickets to Jira!`);
+      setShowPreview(false);
       setIsOpen(false);
+      window.location.reload(); // Refresh to show updated statuses/IDs if any
     } else {
       toast.error(res.error);
     }
@@ -136,117 +168,127 @@ export function SyncWithJiraModal({
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {tooltip ? (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{tooltip}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ) : (
-        <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      )}
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Sync &quot;{projectTitle}&quot; with Jira</DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        {tooltip ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+        )}
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Sync &quot;{projectTitle}&quot; with Jira</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="jira-site" className="text-right">
-              Jira Site
-            </Label>
-            <Select
-              value={selectedSiteId}
-              onValueChange={setSelectedSiteId}
-              disabled={loading || sites.length === 0}
-            >
-              <SelectTrigger id="jira-site" className="col-span-3">
-                <SelectValue placeholder="Select a site" />
-              </SelectTrigger>
-              <SelectContent>
-                {sites.map((site) => (
-                  <SelectItem key={site.id} value={site.id}>
-                    {site.name} ({site.url})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {selectedSiteId && (
+          <div className="space-y-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="jira-project" className="text-right">
-                Project
+              <Label htmlFor="jira-site" className="text-right">
+                Jira Site
               </Label>
               <Select
-                value={selectedProjectKey}
-                onValueChange={setSelectedProjectKey}
-                disabled={!selectedSiteId}
+                value={selectedSiteId}
+                onValueChange={setSelectedSiteId}
+                disabled={loading || sites.length === 0}
               >
-                <SelectTrigger id="jira-project" className="col-span-3">
-                  <SelectValue placeholder="Select a project" />
+                <SelectTrigger id="jira-site" className="col-span-3">
+                  <SelectValue placeholder="Select a site" />
                 </SelectTrigger>
                 <SelectContent>
-                  {projects.map((proj) => (
-                    <SelectItem key={proj.key} value={proj.key}>
-                      {proj.name} ({proj.key})
+                  {sites.map((site) => (
+                    <SelectItem key={site.id} value={site.id}>
+                      {site.name} ({site.url})
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-          )}
 
-          <Tabs defaultValue="import" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="import">Import from Jira</TabsTrigger>
-              <TabsTrigger value="sync">Sync to Jira</TabsTrigger>
-            </TabsList>
-            <TabsContent value="import" className="space-y-4 pt-4">
-              <div className="text-sm text-muted-foreground">
-                Import tickets from the selected Jira project into ClearSprint
-                AI. Existing tickets will be updated.
+            {selectedSiteId && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="jira-project" className="text-right">
+                  Project
+                </Label>
+                <Select
+                  value={selectedProjectKey}
+                  onValueChange={setSelectedProjectKey}
+                  disabled={!selectedSiteId}
+                >
+                  <SelectTrigger id="jira-project" className="col-span-3">
+                    <SelectValue placeholder="Select a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((proj) => (
+                      <SelectItem key={proj.key} value={proj.key}>
+                        {proj.name} ({proj.key})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <Button
-                className="w-full"
-                onClick={handleImport}
-                disabled={processing || !selectedProjectKey}
-              >
-                {processing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Download className="mr-2 h-4 w-4" />
-                )}
-                {processing ? 'Importing...' : 'Import from Jira'}
-              </Button>
-            </TabsContent>
-            <TabsContent value="sync" className="space-y-4 pt-4">
-              <div className="text-sm text-muted-foreground">
-                Sync local tickets to the selected Jira project. New tickets
-                will be created in Jira, and existing ones updated.
-              </div>
-              <Button
-                className="w-full"
-                onClick={handleSync}
-                disabled={processing || !selectedProjectKey}
-              >
-                {processing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <UploadCloud className="mr-2 h-4 w-4" />
-                )}
-                {processing ? 'Syncing...' : 'Sync to Jira'}
-              </Button>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </DialogContent>
-    </Dialog>
+            )}
+
+            <Tabs defaultValue="import" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="import">Import from Jira</TabsTrigger>
+                <TabsTrigger value="sync">Sync to Jira</TabsTrigger>
+              </TabsList>
+              <TabsContent value="import" className="space-y-4 pt-4">
+                <div className="text-sm text-muted-foreground">
+                  Import tickets from the selected Jira project into ClearSprint
+                  AI. Existing tickets will be updated.
+                </div>
+                <Button
+                  className="w-full"
+                  onClick={handleImport}
+                  disabled={processing || !selectedProjectKey}
+                >
+                  {processing ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="mr-2 h-4 w-4" />
+                  )}
+                  {processing ? 'Importing...' : 'Import from Jira'}
+                </Button>
+              </TabsContent>
+              <TabsContent value="sync" className="space-y-4 pt-4">
+                <div className="text-sm text-muted-foreground">
+                  Sync local tickets to the selected Jira project. New tickets
+                  will be created in Jira, and existing ones updated.
+                </div>
+                <Button
+                  className="w-full"
+                  onClick={handleSyncPreview}
+                  disabled={processing || !selectedProjectKey}
+                >
+                  {processing ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <UploadCloud className="mr-2 h-4 w-4" />
+                  )}
+                  {processing ? 'Checking...' : 'Preview Sync'}
+                </Button>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <SyncPreviewModal
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+        onConfirm={handleConfirmSync}
+        changes={previewChanges}
+        isSyncing={processing}
+      />
+    </>
   );
 }

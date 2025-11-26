@@ -1,0 +1,14 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{\numberline {1}Partie 1 : Analyse}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Présentation Générale}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Exigences Fonctionnelles}{2}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Partie 2 : Conception Architecturale}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Vue Logique - Architecture en Couches}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Vue Implémentation - Monolithe Moderne}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Vue Déploiement - 3-Tiers Cloud}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Évaluation de l'Architecture}{5}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Partie 3 : Réalisation}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Stack Technologique}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Mapping Code $\leftrightarrow $ Architecture}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Démonstration}{8}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Conclusion}{8}{section.4}%

@@ -1,0 +1,220 @@
+\documentclass[11pt,a4paper,landscape]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\geometry{a4paper, landscape, margin=2cm, top=2cm, bottom=2cm}
+\setlength{\parskip}{0.3em}
+\setlength{\parindent}{0pt}
+
+% Color scheme
+\definecolor{primaryblue}{RGB}{0,102,204}
+\definecolor{secondarygreen}{RGB}{34,139,34}
+
+% Hyperref setup
+\hypersetup{colorlinks=true, linkcolor=primaryblue, filecolor=primaryblue, urlcolor=primaryblue}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Architecture - ClearSprint AI}
+\fancyhead[R]{\small A. Ben Abdallah - MPGL 2}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+
+{\Huge\bfseries Conception Architecturale\\[0.4cm]}
+{\LARGE\bfseries ClearSprint AI\\[1.5cm]}
+
+{\Large Présentation du Système d'Information\\[3cm]}
+
+{\large\bfseries Ashref Ben Abdallah}\\[0.2cm]
+{\large MPGL 2}\\[1.5cm]
+
+{\large Année Universitaire 2025-2026}\\[0.3cm]
+{\large POLYTECH INTL}\\[0.2cm]
+{\large Enseignant: Mme A. TAYACHI}
+
+\vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% PART 1: ANALYSIS
+\section{Partie 1 : Analyse}
+
+\subsection{Présentation Générale}
+
+\textbf{ClearSprint AI} est une plateforme web de gestion de projets agiles utilisant l'IA pour automatiser la planification.
+
+\textbf{Objectifs}: (1) Génération automatique de tickets via GPT-4, (2) Synchronisation bidirectionnelle avec Jira, (3) Hub centralisé de gestion, (4) Réduction de 70\% du temps de planification.
+
+\textbf{Stack Technique}: Next.js 16 + React 19, PostgreSQL (Neon), Minio S3, OpenAI GP T-4, Better-Auth.
+
+\subsection{Exigences Fonctionnelles}
+
+\textbf{Acteurs}: Utilisateur (PM/Dev), Système Jira.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=0.8\textheight,keepaspectratio]{diagrams/use-case.png}
+\caption{Cas d'Utilisation - ClearSprint AI}
+\end{figure}
+
+\textbf{Module 1 - Authentication}: (1) Sign Up/Sign In via Better-Auth
+
+\textbf{Module 2 - Project Management}: (2) Create Project, (3) View Dashboard, (4) Upload PRD
+
+\textbf{Module 3 - Ticket Management}: (5) Generate Tickets (AI), (6) Edit Tickets, (7) Manage Status
+
+\textbf{Module 4 - Jira Integration}: (8) Connect Jira (OAuth 2.0), (9) Sync Tickets, (10) Pull Projects
+
+\newpage
+
+% PART 2: ARCHITECTURAL DESIGN
+\section{Partie 2 : Conception Architecturale}
+
+L'architecture suit le modèle \textbf{4+1 Vues} de Philippe Kruchten.
+
+\subsection{Vue Logique - Architecture en Couches}
+
+\textbf{Style}: Architecture en Couches avec Modules Feature-Driven
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{diagrams/logical-view.png}
+\caption{Vue Logique - Couches}
+\end{figure}
+
+\textbf{Couche Présentation}: \texttt{app/} (Next.js App Router), \texttt{components/ui/} (Shadcn/ui)
+
+\textbf{Couche Application}: \texttt{features/auth} (Auth), \texttt{features/projects} (Projects + PRD), \texttt{features/tickets} (Tickets + AI), \texttt{features/jira} (Jira Integration)
+
+\textbf{Couche Domaine}: \texttt{types/} (TypeScript), \texttt{drizzle/schema} (DB Schema)
+
+\textbf{Couche Infrastructure}: \texttt{lib/db} (Drizzle ORM), \texttt{lib/auth} (Better-Auth), \texttt{lib/s3} (Minio), \texttt{lib/openai} (GPT-4)
+
+\textbf{Flux}: Présentation $\rightarrow$ Application $\rightarrow$ Infrastructure $\rightarrow$ Domaine
+
+\subsection{Vue Implémentation - Monolithe Moderne}
+
+\textbf{Style}: Monolithe Moderne Next.js 16
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{diagrams/implementation-view.png}
+\caption{Vue Implémentation}
+\end{figure}
+
+\textbf{Client Tier}: Web Browser (React UI)
+
+\textbf{App Server}: Frontend (React Server Components) + Backend (Server Actions + API Routes)
+
+\textbf{Data \& Services}: PostgreSQL (Neon), Minio S3, OpenAI API, Jira REST API
+
+\subsection{Vue Déploiement - 3-Tiers Cloud}
+
+\textbf{Style}: Architecture 3-Tiers (Vercel)
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{diagrams/deployment-view.png}
+\caption{Vue Déploiement}
+\end{figure}
+
+\textbf{Tier 1 - Client}: Web Browser (HTTPS/443 + TLS 1.3)
+
+\textbf{Tier 2 - Application}: Next.js Server (Serverless) + Vercel CDN (Auto-scaling)
+
+\textbf{Tier 3 - Data}: Neon PostgreSQL (Serverless) + Minio S3
+
+\textbf{External}: Jira Cloud + OpenAI Platform
+
+\subsection{Évaluation de l'Architecture}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Critère} & \textbf{Layered} & \textbf{Mono} & \textbf{3-Tier} & \textbf{Score} \\
+\hline
+Development & Élevé & Élevé & Bon & 8.3/10 \\
+Deployment & Moyen & Moyen & Élevé & 7.0/10 \\
+Testability & Élevé & Bon & Bon & 8.0/10 \\
+Performance & Bon & Élevé & Élevé & 8.7/10 \\
+Scalability & Moyen & Limité & Élevé & 6.7/10 \\
+\hline
+\end{tabular}
+\caption{Évaluation Comparative}
+\end{table}
+
+\textbf{Architecture en Couches}: Development (9/10), Deployment (7/10), Testability (9/10), Performance (8/10), Scalability (6/10)
+
+\textbf{Monolithique}: Development (9/10), Deployment (6/10), Testability (8/10), Performance (9/10), Scalability (5/10)
+
+\textbf{3-Tiers}: Development (7/10), Deployment (8/10), Testability (7/10), Performance (9/10), Scalability (9/10)
+
+\textbf{Conclusion}: Compromis optimal MVP avec évolution vers microservices si nécessaire.
+
+\newpage
+
+% PART 3: REALIZATION
+\section{Partie 3 : Réalisation}
+
+\subsection{Stack Technologique}
+
+\textbf{Langages}: TypeScript 5.9 (strict), SQL
+
+\textbf{Frontend}: Next.js 16, React 19.2, Tailwind CSS v4, Shadcn/ui, Framer Motion
+
+\textbf{Backend}: Server Actions, API Routes, Better-Auth 1.3
+
+\textbf{Database}: PostgreSQL (Neon), Drizzle ORM 0.44
+
+\textbf{Storage \& AI}: Minio 8.0, OpenAI SDK 6.9, PDF Parse
+
+\textbf{DevOps}: Bun, Biome 2.3, Git, Vercel
+
+\subsection{Mapping Code $\leftrightarrow$ Architecture}
+
+\textbf{Logical View}:
+\texttt{app/} $\rightarrow$ \texttt{app/(dashboard)/}, \texttt{features/projects} $\rightarrow$ \texttt{actions/}, \texttt{lib/db} $\rightarrow$ \texttt{lib/db.ts}, \texttt{drizzle/schema} $\rightarrow$ \texttt{drizzle/schema.ts}
+
+\textbf{Deployment View}:
+Dev: localhost:3000 + Neon + Minio local | Prod: Vercel + Neon Cloud + Minio Cloud
+
+\subsection{Démonstration}
+
+\textbf{Flux Principal}: (1) Auth via \texttt{/auth/signin}, (2) Create Project (Server Action), (3) Upload PRD (Minio S3 + text extraction), (4) Generate Tickets (GPT-4 $\rightarrow$ JSON $\rightarrow$ DB batch insert), (5) Sync Jira (OAuth 2.0 + REST API + jiraId tracking)
+
+\textbf{Fonctionnalités Opérationnelles}:
+Auth multi-providers, CRUD projets/tickets, Upload PRD, Génération IA, Sync Jira, Dashboard responsive, Performance Lighthouse 95+
+
+\section{Conclusion}
+
+\textbf{Synthèse}: Architecture moderne (Layered + Feature-Driven), Type-safety (TS strict), Performance (RSC + CDN), IA intégrée (GPT-4), Interopérabilité (Jira OAuth)
+
+\textbf{Évolutions}: Court terme (Notifications, Templates, Export), Moyen terme (GitHub/Linear, Analytics, Mobile), Long terme (Microservices, Multi-tenancy, Fine-tuning IA)
+
+\textbf{Remerciements}: Mme A. TAYACHI et l'équipe POLYTECH INTL.
+
+\vfill
+
+\begin{center}
+\rule{0.5\textwidth}{0.4pt}\\[0.2cm]
+{\large\textbf{Ashref Ben Abdallah}}\\
+{\large MPGL 2 - Architecture Logicielle - 2025-2026}
+\end{center}
+
+\end{document}

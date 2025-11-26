@@ -90,7 +90,7 @@ export async function generateBacklog(projectId: number, prompt?: string) {
         },
         {
           role: 'user',
-          content: project.rawText.slice(0, 50000), // Truncate if too long, though 50k chars is decent for 4o-mini
+          content: project.rawText.slice(0, 50000), // Truncate if too long
         },
       ],
       response_format: { type: 'json_object' },
@@ -104,14 +104,27 @@ export async function generateBacklog(projectId: number, prompt?: string) {
     const rawJson = JSON.parse(content);
     const backlog = BacklogSchema.parse(rawJson);
 
-    // 3. Insert into DB
-    // We'll do this sequentially to maintain order and parent relationships
+    // 3. Insert into DB with Smart Merge
 
-    // First, clear existing tickets for this project (optional, but good for re-generation)
+    // Fetch existing tickets to preserve Jira IDs
+    const existingTickets = await db
+      .select({ title: tickets.title, jiraId: tickets.jiraId })
+      .from(tickets)
+      .where(eq(tickets.projectId, projectId));
+
+    const titleToJiraId = new Map<string, string>();
+    existingTickets.forEach((t) => {
+      if (t.title && t.jiraId) {
+        titleToJiraId.set(t.title, t.jiraId);
+      }
+    });
+
+    // Clear existing tickets
     await db.delete(tickets).where(eq(tickets.projectId, projectId));
 
     let epicOrder = 0;
     for (const epic of backlog.epics) {
+      const jiraId = titleToJiraId.get(epic.title);
       const [newEpic] = await db
         .insert(tickets)
         .values({
@@ -120,12 +133,14 @@ export async function generateBacklog(projectId: number, prompt?: string) {
           title: epic.title,
           description: epic.description,
           orderIndex: epicOrder++,
+          jiraId: jiraId || null,
         })
         .returning();
 
       if (epic.tasks) {
         let taskOrder = 0;
         for (const task of epic.tasks) {
+          const taskJiraId = titleToJiraId.get(task.title);
           const [newTask] = await db
             .insert(tickets)
             .values({
@@ -135,12 +150,14 @@ export async function generateBacklog(projectId: number, prompt?: string) {
               description: task.description,
               parentId: newEpic.id,
               orderIndex: taskOrder++,
+              jiraId: taskJiraId || null,
             })
             .returning();
 
           if (task.subtasks) {
             let subtaskOrder = 0;
             for (const subtask of task.subtasks) {
+              const subtaskJiraId = titleToJiraId.get(subtask.title);
               await db.insert(tickets).values({
                 projectId: projectId,
                 type: 'subtask',
@@ -148,6 +165,7 @@ export async function generateBacklog(projectId: number, prompt?: string) {
                 description: subtask.description,
                 parentId: newTask.id,
                 orderIndex: subtaskOrder++,
+                jiraId: subtaskJiraId || null,
               });
             }
           }

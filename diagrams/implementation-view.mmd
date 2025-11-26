@@ -1,0 +1,28 @@
+graph TB
+    subgraph Client["Client Tier"]
+        Browser["Web Browser<br/>(React UI)"]
+    end
+    
+    subgraph Monolith["Application Server - Next.js 16 Monolith"]
+        direction TB
+        Frontend["Frontend Layer<br/>(React Server Components)"]
+        Backend["Backend Layer<br/>(Server Actions + API Routes)"]
+        
+        Frontend <--> Backend
+    end
+    
+    subgraph DataSources["Data & External Services"]
+        direction TB
+        DB[("PostgreSQL<br/>(Neon Cloud)")]
+        S3[("Object Storage<br/>(Minio S3)")]
+        OpenAI["OpenAI API<br/>(GPT-4)"]
+        JiraAPI["Jira REST API<br/>(Atlassian)"]
+    end
+    
+    Browser <-->|"HTTPS"| Frontend
+    Backend -->|"Drizzle ORM<br/>(Neon HTTP/TCP)"| DB
+    Backend -->|"AWS SDK<br/>(S3 Protocol)"| S3
+    Backend -->|"REST API"| OpenAI
+    Backend -->|"OAuth 2.0 + REST"| JiraAPI
+
+

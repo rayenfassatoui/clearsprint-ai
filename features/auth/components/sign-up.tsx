@@ -117,6 +117,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
             {/* Go Back Button */}
             {onGoBack && (
               <button
+                type="button"
                 onClick={onGoBack}
                 className="animate-element animate-delay-50 group flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-fit"
               >
@@ -133,11 +134,15 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
 
             <form className="space-y-5" onSubmit={onSignUp}>
               <div className="animate-element animate-delay-300">
-                <label className="text-sm font-medium text-muted-foreground">
+                <label
+                  htmlFor="name"
+                  className="text-sm font-medium text-muted-foreground"
+                >
                   Full Name
                 </label>
                 <GlassInputWrapper>
                   <input
+                    id="name"
                     name="name"
                     type="text"
                     placeholder="Enter your full name"
@@ -147,11 +152,15 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
               </div>
 
               <div className="animate-element animate-delay-400">
-                <label className="text-sm font-medium text-muted-foreground">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-muted-foreground"
+                >
                   Email Address
                 </label>
                 <GlassInputWrapper>
                   <input
+                    id="email"
                     name="email"
                     type="email"
                     placeholder="Enter your email address"
@@ -161,12 +170,16 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
               </div>
 
               <div className="animate-element animate-delay-500">
-                <label className="text-sm font-medium text-muted-foreground">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-muted-foreground"
+                >
                   Password
                 </label>
                 <GlassInputWrapper>
                   <div className="relative">
                     <input
+                      id="password"
                       name="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
@@ -214,6 +227,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
             </div>
 
             <button
+              type="button"
               onClick={onAtlassianSignUp}
               className="animate-element animate-delay-800 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary transition-all hover:scale-[1.01] hover:border-border/80"
             >
@@ -223,16 +237,13 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
 
             <p className="animate-element animate-delay-900 text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onSignIn?.();
-                }}
-                className="text-primary hover:underline transition-colors font-medium"
+              <button
+                type="button"
+                onClick={() => onSignIn?.()}
+                className="text-primary hover:underline transition-colors font-medium bg-transparent border-none p-0 cursor-pointer"
               >
                 Sign in instead
-              </a>
+              </button>
             </p>
           </div>
         </div>
