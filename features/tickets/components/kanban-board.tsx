@@ -19,8 +19,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Edit2, GripVertical, Sparkles, Trash2 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { Edit2, GripVertical, Plus, Search, Sparkles, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
   deleteTicket,
@@ -40,6 +40,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { InlineEditableText } from '@/components/ui/inline-editable-text';
+import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+import { CreateTicketDialog } from './create-ticket-dialog';
+import { TicketDetailsSheet } from './ticket-details-sheet';
 
 interface Ticket {
   id: number;
@@ -62,6 +73,33 @@ export function KanbanBoard({
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [loading, setLoading] = useState(initialTickets.length === 0);
   const [activeId, setActiveId] = useState<number | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'epic' | 'task' | 'subtask'>('all');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useKeyboardShortcuts([
+    {
+      combo: { key: 'c' },
+      handler: (e) => {
+        e.preventDefault();
+        setIsCreateOpen(true);
+      },
+    },
+    {
+      combo: { key: '/' },
+      handler: (e) => {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      },
+    },
+    {
+      combo: { key: 'Escape' },
+      handler: () => setIsSheetOpen(false),
+    },
+  ]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -73,6 +111,11 @@ export function KanbanBoard({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
+  const handleTicketClick = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+    setIsSheetOpen(true);
+  };
 
   const loadTickets = useCallback(async () => {
     setLoading(true);
@@ -93,6 +136,16 @@ export function KanbanBoard({
       setLoading(false);
     }
   }, [initialTickets, loadTickets]);
+
+  const filteredTickets = tickets.filter((ticket) => {
+    const matchesSearch =
+      (ticket.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+      (ticket.description?.toLowerCase() || '').includes(
+        searchQuery.toLowerCase(),
+      );
+    const matchesType = typeFilter === 'all' || ticket.type === typeFilter;
+    return matchesSearch && matchesType;
+  });
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id as number);
@@ -165,6 +218,45 @@ export function KanbanBoard({
       onDragCancel={handleDragCancel}
     >
       <div className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              ref={searchInputRef}
+              placeholder="Search tickets..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+          <Select
+            value={typeFilter}
+            onValueChange={(v: any) => setTypeFilter(v)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="epic">Epic</SelectItem>
+              <SelectItem value="task">Task</SelectItem>
+              <SelectItem value="subtask">Subtask</SelectItem>
+            </SelectContent>
+          </Select>
+          <CreateTicketDialog
+            projectId={projectId}
+            onSuccess={loadTickets}
+            open={isCreateOpen}
+            onOpenChange={setIsCreateOpen}
+            trigger={
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Ticket
+              </Button>
+            }
+          />
+        </div>
+
         {loading ? (
           <div className="p-4">
             <KanbanBoardSkeleton />
@@ -172,10 +264,11 @@ export function KanbanBoard({
         ) : (
           <div className="space-y-4">
             <TicketList
-              tickets={tickets}
+              tickets={filteredTickets}
               parentId={null}
               level={0}
               onTicketUpdate={loadTickets}
+              onTicketClick={handleTicketClick}
             />
           </div>
         )}
@@ -189,6 +282,12 @@ export function KanbanBoard({
           </div>
         ) : null}
       </DragOverlay>
+      <TicketDetailsSheet
+        ticket={selectedTicket}
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
+        onUpdate={loadTickets}
+      />
     </DndContext>
   );
 }
@@ -198,11 +297,13 @@ function TicketList({
   parentId,
   level,
   onTicketUpdate,
+  onTicketClick,
 }: {
   tickets: Ticket[];
   parentId: number | null;
   level: number;
   onTicketUpdate: () => void;
+  onTicketClick: (ticket: Ticket) => void;
 }) {
   const items = tickets
     .filter((t) => t.parentId === parentId)
@@ -221,6 +322,7 @@ function TicketList({
             allTickets={tickets}
             level={level}
             onUpdate={onTicketUpdate}
+            onClick={onTicketClick}
           />
         ))}
       </div>
@@ -233,11 +335,13 @@ function SortableTicketItem({
   allTickets,
   level,
   onUpdate,
+  onClick,
 }: {
   ticket: Ticket;
   allTickets: Ticket[];
   level: number;
   onUpdate: () => void;
+  onClick: (ticket: Ticket) => void;
 }) {
   const {
     attributes,
@@ -261,6 +365,7 @@ function SortableTicketItem({
         isDragging={isDragging}
         dragHandleProps={{ ...attributes, ...listeners }}
         onUpdate={onUpdate}
+        onClick={() => onClick(ticket)}
       />
       {/* Render Children - NOT sortable as part of this list, but as their own list */}
       <TicketList
@@ -268,6 +373,7 @@ function SortableTicketItem({
         parentId={ticket.id}
         level={level + 1}
         onTicketUpdate={onUpdate}
+        onTicketClick={onClick}
       />
     </div>
   );
@@ -282,32 +388,16 @@ function TicketItemContent({
   isDragging,
   dragHandleProps,
   onUpdate,
+  onClick,
 }: {
   ticket: Ticket;
   isDragging: boolean;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
   onUpdate?: () => void;
+  onClick?: () => void;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(ticket.title || '');
-  const [description, setDescription] = useState(ticket.description || '');
-  const [saving, setSaving] = useState(false);
-
-  const handleSave = async () => {
-    if (!onUpdate) return;
-    setSaving(true);
-    const res = await updateTicket(ticket.id, { title, description });
-    if (res.success) {
-      toast.success('Saved');
-      setIsEditing(false);
-      onUpdate();
-    } else {
-      toast.error(res.error);
-    }
-    setSaving(false);
-  };
-
-  const handleDelete = async () => {
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!onUpdate) return;
     if (!confirm('Are you sure? This will delete all children tickets too.'))
       return;
@@ -331,6 +421,17 @@ function TicketItemContent({
     }
   };
 
+  const handleTitleSave = async (newTitle: string) => {
+    if (!onUpdate) return;
+    const res = await updateTicket(ticket.id, { title: newTitle });
+    if (res.success) {
+      toast.success('Title updated');
+      onUpdate();
+    } else {
+      toast.error(res.error);
+    }
+  };
+
   const typeColors = {
     epic: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800',
     task: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800',
@@ -340,18 +441,20 @@ function TicketItemContent({
 
   return (
     <div
+      onClick={onClick}
       className={cn(
         'group relative flex items-start p-4 rounded-xl border bg-card text-card-foreground transition-all duration-200',
         'hover:shadow-md hover:border-primary/20',
         isDragging
           ? 'shadow-2xl ring-2 ring-primary rotate-1 scale-105 z-50'
           : 'shadow-sm',
-        isEditing && 'ring-2 ring-primary shadow-lg',
+        onClick && 'cursor-pointer',
       )}
     >
       <div
         {...dragHandleProps}
         className="cursor-grab p-1.5 mr-3 text-muted-foreground/40 hover:text-foreground transition-colors mt-0.5 rounded-md hover:bg-muted"
+        onClick={(e) => e.stopPropagation()}
       >
         <GripVertical className="h-5 w-5" />
       </div>
@@ -361,6 +464,7 @@ function TicketItemContent({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div
+                onClick={(e) => e.stopPropagation()}
                 className={cn(
                   'px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border shadow-sm cursor-pointer hover:opacity-80 transition-opacity',
                   typeColors[ticket.type || 'task'],
@@ -388,71 +492,39 @@ function TicketItemContent({
           )}
         </div>
 
-        {isEditing ? (
-          <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="font-semibold text-base h-10"
+        <div className="space-y-1.5">
+          <div className="text-base font-semibold leading-snug tracking-tight text-foreground/90">
+            <InlineEditableText
+              value={ticket.title || ''}
+              onSave={handleTitleSave}
               placeholder="Ticket Title"
-              autoFocus
             />
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="text-sm min-h-[80px] resize-none"
-              placeholder="Description..."
-            />
-            <div className="flex space-x-2 justify-end pt-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setIsEditing(false)}
-              >
-                Cancel
-              </Button>
-              <Button size="sm" onClick={handleSave} disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </div>
           </div>
-        ) : (
-          <div className="space-y-1.5">
-            <h4 className="text-base font-semibold leading-snug tracking-tight text-foreground/90">
-              {ticket.title}
-            </h4>
-            {ticket.description && (
-              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                {ticket.description}
-              </p>
-            )}
-          </div>
-        )}
+          {ticket.description && (
+            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+              {ticket.description}
+            </p>
+          )}
+        </div>
       </div>
 
-      {!isEditing && onUpdate && (
+      {!isDragging && onUpdate && (
         <div className="absolute top-3 right-3 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0">
-          <TicketTweakDialog
-            ticketId={ticket.id}
-            onSuccess={onUpdate}
-            trigger={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-              >
-                <Sparkles className="h-4 w-4" />
-              </Button>
-            }
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={() => setIsEditing(true)}
-          >
-            <Edit2 className="h-4 w-4" />
-          </Button>
+          <div onClick={(e) => e.stopPropagation()}>
+            <TicketTweakDialog
+              ticketId={ticket.id}
+              onSuccess={onUpdate}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                >
+                  <Sparkles className="h-4 w-4" />
+                </Button>
+              }
+            />
+          </div>
           <Button
             variant="ghost"
             size="icon"

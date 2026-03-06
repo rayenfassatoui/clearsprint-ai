@@ -98,6 +98,45 @@ export async function getValidJiraToken(userId: string) {
   return acct.accessToken;
 }
 
+export async function createJiraProject(
+  accessToken: string,
+  cloudId: string,
+  data: {
+    key: string;
+    name: string;
+    projectTypeKey: string;
+    projectTemplateKey: string;
+    description?: string;
+    leadAccountId: string;
+    url?: string;
+    assigneeType?: 'PROJECT_LEAD' | 'UNASSIGNED';
+    avatarId?: number;
+    categoryId?: number;
+  }
+) {
+  const response = await fetch(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Failed to create Jira project:', errorText);
+    throw new Error(`Failed to create Jira project: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export function isValidJiraKey(key: string): boolean {
+  return /^[A-Z][A-Z0-9]+$/.test(key);
+}
+
 export async function getJiraResources(accessToken: string) {
   const res = await fetch(
     `${ATLASSIAN_API_URL}/oauth/token/accessible-resources`,

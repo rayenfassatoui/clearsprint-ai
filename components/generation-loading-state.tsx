@@ -17,8 +17,9 @@ interface LoadingStateProps {
 
 const steps = [
   { id: 'analyzing', label: 'Analyzing Document', icon: BrainCircuit },
-  { id: 'drafting', label: 'Drafting Epics', icon: PenTool },
-  { id: 'finalizing', label: 'Structuring Backlog', icon: ListTodo },
+  { id: 'drafting', label: 'Drafting Epics & Stories', icon: PenTool },
+  { id: 'refining', label: 'Refining Acceptance Criteria', icon: Sparkles },
+  { id: 'finalizing', label: 'Finalizing Project Structure', icon: ListTodo },
 ];
 
 export function GenerationLoadingState({ status }: LoadingStateProps) {
@@ -26,9 +27,13 @@ export function GenerationLoadingState({ status }: LoadingStateProps) {
 
   useEffect(() => {
     if (status === 'loading') {
+      setCurrentStepIndex(0);
       const interval = setInterval(() => {
-        setCurrentStepIndex((prev) => (prev + 1) % steps.length);
-      }, 2000);
+        setCurrentStepIndex((prev) => {
+          if (prev < steps.length - 1) return prev + 1;
+          return prev;
+        });
+      }, 2500);
       return () => clearInterval(interval);
     }
   }, [status]);

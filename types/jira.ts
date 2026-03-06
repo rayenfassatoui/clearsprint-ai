@@ -57,3 +57,16 @@ export interface JiraIssueUpdateData {
     [key: string]: unknown;
   };
 }
+
+export type ProjectSyncStatus = 'synced' | 'available' | 'syncing' | 'error';
+
+export interface JiraProjectDiscovery {
+  id: string;
+  key: string;
+  name: string;
+  avatarUrl: string;
+  projectTypeKey: string;
+  cloudId: string;
+  syncStatus: ProjectSyncStatus;
+  localProjectId?: string;
+}

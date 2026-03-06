@@ -3,10 +3,9 @@ import { ChevronLeft } from 'lucide-react';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { KanbanBoard } from '@/features/tickets/components/kanban-board';
-import { SyncWithJiraModal } from '@/features/jira/components/push-to-jira-modal';
 import { GeneralAiEditDialog } from '@/features/tickets/components/refine-all-dialog';
 import { EmptyProjectState } from '@/features/projects/components/empty-project-state';
-import { PullFromJiraModal } from '@/features/jira/components/pull-from-jira-modal';
+import { ProjectHeaderSyncBadge } from '@/features/projects/components/project-header-sync-badge';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
@@ -80,18 +79,10 @@ export default async function ProjectPage({
               {/* GenerateButton removed from here as it should only be visible when no tickets exist */}
               <GeneralAiEditDialog projectId={projectId} />
               {jiraCloudId && project.jiraProjectKey && (
-                <>
-                  <PullFromJiraModal
-                    projectId={projectId}
-                    cloudId={jiraCloudId}
-                    jiraProjectKey={project.jiraProjectKey}
-                  />
-                  <SyncWithJiraModal
-                    projectId={projectId}
-                    cloudId={jiraCloudId}
-                    jiraProjectKey={project.jiraProjectKey}
-                  />
-                </>
+                <ProjectHeaderSyncBadge
+                  projectId={projectId}
+                  jiraProjectKey={project.jiraProjectKey}
+                />
               )}
             </>
           )}

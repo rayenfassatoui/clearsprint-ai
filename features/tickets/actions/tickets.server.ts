@@ -6,6 +6,51 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { tickets } from '@/lib/db/schema';
 
+export async function createTicket(data: {
+  projectId: number;
+  title: string;
+  description?: string;
+  type: 'epic' | 'task' | 'subtask';
+  parentId?: number | null;
+}) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return { error: 'Unauthorized' };
+  }
+
+  try {
+    // Get max order index
+    const existing = await db
+      .select()
+      .from(tickets)
+      .where(eq(tickets.projectId, data.projectId));
+    const maxOrder = existing.reduce(
+      (max, t) => Math.max(max, t.orderIndex || 0),
+      0,
+    );
+
+    const [newTicket] = await db
+      .insert(tickets)
+      .values({
+        projectId: data.projectId,
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        parentId: data.parentId,
+        orderIndex: maxOrder + 1000, // Add to end
+      })
+      .returning();
+
+    return { success: true, ticket: newTicket };
+  } catch (error) {
+    console.error('Create Ticket Error:', error);
+    return { error: 'Failed to create ticket' };
+  }
+}
+
 export async function getProjectTickets(projectId: number) {
   const session = await auth.api.getSession({
     headers: await headers(),
