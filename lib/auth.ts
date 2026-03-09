@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { genericOAuth } from 'better-auth/plugins';
 import { db } from '@/lib/db';
 import * as schema from './db/schema';
 
@@ -8,6 +9,43 @@ export const auth = betterAuth({
     provider: 'pg',
     schema: schema,
   }),
+  plugins: [
+    genericOAuth({
+      config: [
+        {
+          providerId: 'linear',
+          clientId: process.env.LINEAR_CLIENT_ID || '',
+          clientSecret: process.env.LINEAR_CLIENT_SECRET || '',
+          authorizationUrl: 'https://linear.app/oauth/authorize',
+          tokenUrl: 'https://api.linear.app/oauth/token',
+          userInfoUrl: 'https://api.linear.app/graphql',
+          scopes: ['read', 'write', 'issues:create', 'comments:create'],
+          getUserInfo: async ({ accessToken }) => {
+            const res = await fetch('https://api.linear.app/graphql', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                query: '{ viewer { id name email avatarUrl } }',
+              }),
+            });
+            const data = await res.json();
+            const viewer = data.data?.viewer;
+            if (!viewer) return null;
+            return {
+              id: viewer.id,
+              name: viewer.name,
+              email: viewer.email,
+              avatar: viewer.avatarUrl,
+              emailVerified: true,
+            };
+          },
+        },
+      ],
+    }),
+  ],
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
   trustedOrigins: [
     process.env.BETTER_AUTH_URL || 'http://localhost:3000',
@@ -27,22 +65,7 @@ export const auth = betterAuth({
       // Allow linking social accounts with different emails
       allowDifferentEmails: true,
       // Required to allow linking this provider
-      trustedProviders: ['atlassian'],
-    },
-  },
-  socialProviders: {
-    atlassian: {
-      clientId: process.env.ATLASSIAN_CLIENT_ID as string,
-      clientSecret: process.env.ATLASSIAN_CLIENT_SECRET as string,
-      scope: [
-        'read:jira-user',
-        'read:jira-work',
-        'write:jira-work',
-        'read:me',
-        'manage:jira-project',
-        'manage:jira-configuration',
-        'offline_access',
-      ],
+      trustedProviders: [],
     },
   },
 });

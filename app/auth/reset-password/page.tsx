@@ -50,7 +50,7 @@ function ResetPasswordContent() {
         toast.success('Password reset successfully');
         router.push('/auth/sign-in');
       }
-    } catch (err) {
+    } catch (_err) {
       toast.error('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
@@ -59,15 +59,15 @@ function ResetPasswordContent() {
 
   if (!token) {
     return (
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-destructive">Invalid Link</h1>
-        <p className="text-muted-foreground mt-2">
+      <div className='text-center'>
+        <h1 className='text-2xl font-bold text-destructive'>Invalid Link</h1>
+        <p className='text-muted-foreground mt-2'>
           This password reset link is invalid or has expired.
         </p>
         <Button
-          variant="link"
+          variant='link'
           onClick={() => router.push('/auth/forgot-password')}
-          className="mt-4"
+          className='mt-4'
         >
           Request a new link
         </Button>
@@ -76,41 +76,41 @@ function ResetPasswordContent() {
   }
 
   return (
-    <div className="w-full max-w-md space-y-8">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Reset Password</h1>
-        <p className="text-muted-foreground">Enter your new password below.</p>
+    <div className='w-full max-w-md space-y-8'>
+      <div className='space-y-2 text-center'>
+        <h1 className='text-3xl font-bold tracking-tight'>Reset Password</h1>
+        <p className='text-muted-foreground'>Enter your new password below.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="password">New Password</Label>
+      <form onSubmit={handleSubmit} className='space-y-6'>
+        <div className='space-y-2'>
+          <Label htmlFor='password'>New Password</Label>
           <Input
-            id="password"
-            type="password"
+            id='password'
+            type='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="bg-background"
+            className='bg-background'
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <div className='space-y-2'>
+          <Label htmlFor='confirmPassword'>Confirm Password</Label>
           <Input
-            id="confirmPassword"
-            type="password"
+            id='confirmPassword'
+            type='password'
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className="bg-background"
+            className='bg-background'
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type='submit' className='w-full' disabled={isLoading}>
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
               Resetting...
             </>
           ) : (
@@ -124,9 +124,9 @@ function ResetPasswordContent() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
+    <div className='min-h-screen flex flex-col items-center justify-center bg-background px-4'>
       <Suspense
-        fallback={<Loader2 className="h-8 w-8 animate-spin text-primary" />}
+        fallback={<Loader2 className='h-8 w-8 animate-spin text-primary' />}
       >
         <ResetPasswordContent />
       </Suspense>
