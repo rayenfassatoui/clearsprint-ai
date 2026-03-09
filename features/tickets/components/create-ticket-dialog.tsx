@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -73,7 +72,7 @@ export function CreateTicketDialog({
       } else {
         toast.error(res.error);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to create ticket');
     } finally {
       setLoading(false);
@@ -83,49 +82,46 @@ export function CreateTicketDialog({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Create Ticket</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+        <form onSubmit={handleSubmit} className='space-y-4 mt-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='title'>Title</Label>
             <Input
-              id="title"
+              id='title'
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ticket title"
+              placeholder='Ticket title'
               autoFocus
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select
-              value={type}
-              onValueChange={(v: any) => setType(v)}
-            >
+          <div className='space-y-2'>
+            <Label htmlFor='type'>Type</Label>
+            <Select value={type} onValueChange={(v: any) => setType(v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="epic">Epic</SelectItem>
-                <SelectItem value="task">Task</SelectItem>
-                <SelectItem value="subtask">Subtask</SelectItem>
+                <SelectItem value='epic'>Epic</SelectItem>
+                <SelectItem value='task'>Task</SelectItem>
+                <SelectItem value='subtask'>Subtask</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='description'>Description</Label>
             <Textarea
-              id="description"
+              id='description'
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description..."
-              className="min-h-[100px]"
+              placeholder='Description...'
+              className='min-h-[100px]'
             />
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={loading}>
+            <Button type='submit' disabled={loading}>
               {loading ? 'Creating...' : 'Create Ticket'}
             </Button>
           </DialogFooter>

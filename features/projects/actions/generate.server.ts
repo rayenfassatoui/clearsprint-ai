@@ -106,25 +106,11 @@ export async function generateBacklog(projectId: number, prompt?: string) {
 
     // 3. Insert into DB with Smart Merge
 
-    // Fetch existing tickets to preserve Jira IDs
-    const existingTickets = await db
-      .select({ title: tickets.title, jiraId: tickets.jiraId })
-      .from(tickets)
-      .where(eq(tickets.projectId, projectId));
-
-    const titleToJiraId = new Map<string, string>();
-    existingTickets.forEach((t) => {
-      if (t.title && t.jiraId) {
-        titleToJiraId.set(t.title, t.jiraId);
-      }
-    });
-
     // Clear existing tickets
     await db.delete(tickets).where(eq(tickets.projectId, projectId));
 
     let epicOrder = 0;
     for (const epic of backlog.epics) {
-      const jiraId = titleToJiraId.get(epic.title);
       const [newEpic] = await db
         .insert(tickets)
         .values({
@@ -133,14 +119,12 @@ export async function generateBacklog(projectId: number, prompt?: string) {
           title: epic.title,
           description: epic.description,
           orderIndex: epicOrder++,
-          jiraId: jiraId || null,
         })
         .returning();
 
       if (epic.tasks) {
         let taskOrder = 0;
         for (const task of epic.tasks) {
-          const taskJiraId = titleToJiraId.get(task.title);
           const [newTask] = await db
             .insert(tickets)
             .values({
@@ -150,14 +134,12 @@ export async function generateBacklog(projectId: number, prompt?: string) {
               description: task.description,
               parentId: newEpic.id,
               orderIndex: taskOrder++,
-              jiraId: taskJiraId || null,
             })
             .returning();
 
           if (task.subtasks) {
             let subtaskOrder = 0;
             for (const subtask of task.subtasks) {
-              const subtaskJiraId = titleToJiraId.get(subtask.title);
               await db.insert(tickets).values({
                 projectId: projectId,
                 type: 'subtask',
@@ -165,7 +147,6 @@ export async function generateBacklog(projectId: number, prompt?: string) {
                 description: subtask.description,
                 parentId: newTask.id,
                 orderIndex: subtaskOrder++,
-                jiraId: subtaskJiraId || null,
               });
             }
           }

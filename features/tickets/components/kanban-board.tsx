@@ -19,7 +19,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Edit2, GripVertical, Plus, Search, Sparkles, Trash2 } from 'lucide-react';
+import { GripVertical, Plus, Search, Sparkles, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -32,7 +32,6 @@ import { KanbanBoardSkeleton } from '@/components/skeletons';
 import { TicketTweakDialog } from '@/features/tickets/components/ticket-tweak-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -60,7 +59,7 @@ interface Ticket {
   description: string | null;
   parentId: number | null;
   orderIndex: number | null;
-  jiraId: string | null;
+  jiraId?: string | null;
 }
 
 export function KanbanBoard({
@@ -77,7 +76,9 @@ export function KanbanBoard({
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<'all' | 'epic' | 'task' | 'subtask'>('all');
+  const [typeFilter, setTypeFilter] = useState<
+    'all' | 'epic' | 'task' | 'subtask'
+  >('all');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useKeyboardShortcuts([
@@ -217,30 +218,30 @@ export function KanbanBoard({
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className='space-y-4'>
+        <div className='flex items-center space-x-2'>
+          <div className='relative flex-1 max-w-sm'>
+            <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
             <Input
               ref={searchInputRef}
-              placeholder="Search tickets..."
+              placeholder='Search tickets...'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8"
+              className='pl-8'
             />
           </div>
           <Select
             value={typeFilter}
             onValueChange={(v: any) => setTypeFilter(v)}
           >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by type" />
+            <SelectTrigger className='w-[180px]'>
+              <SelectValue placeholder='Filter by type' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="epic">Epic</SelectItem>
-              <SelectItem value="task">Task</SelectItem>
-              <SelectItem value="subtask">Subtask</SelectItem>
+              <SelectItem value='all'>All Types</SelectItem>
+              <SelectItem value='epic'>Epic</SelectItem>
+              <SelectItem value='task'>Task</SelectItem>
+              <SelectItem value='subtask'>Subtask</SelectItem>
             </SelectContent>
           </Select>
           <CreateTicketDialog
@@ -250,7 +251,7 @@ export function KanbanBoard({
             onOpenChange={setIsCreateOpen}
             trigger={
               <Button>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className='mr-2 h-4 w-4' />
                 Add Ticket
               </Button>
             }
@@ -258,11 +259,11 @@ export function KanbanBoard({
         </div>
 
         {loading ? (
-          <div className="p-4">
+          <div className='p-4'>
             <KanbanBoardSkeleton />
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className='space-y-4'>
             <TicketList
               tickets={filteredTickets}
               parentId={null}
@@ -275,7 +276,7 @@ export function KanbanBoard({
       </div>
       <DragOverlay>
         {activeId ? (
-          <div className="opacity-80">
+          <div className='opacity-80'>
             <TicketItemOverlay
               ticket={tickets.find((t) => t.id === activeId) || tickets[0]}
             />
@@ -359,7 +360,7 @@ function SortableTicketItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="group">
+    <div ref={setNodeRef} style={style} className='group'>
       <TicketItemContent
         ticket={ticket}
         isDragging={isDragging}
@@ -440,6 +441,7 @@ function TicketItemContent({
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: dnd wrapper
     <div
       onClick={onClick}
       className={cn(
@@ -451,19 +453,21 @@ function TicketItemContent({
         onClick && 'cursor-pointer',
       )}
     >
-      <div
-        {...dragHandleProps}
-        className="cursor-grab p-1.5 mr-3 text-muted-foreground/40 hover:text-foreground transition-colors mt-0.5 rounded-md hover:bg-muted"
+      <button
+        type='button'
+        {...(dragHandleProps as any)}
+        className='cursor-grab p-1.5 mr-3 text-muted-foreground/40 hover:text-foreground transition-colors mt-0.5 rounded-md hover:bg-muted'
         onClick={(e) => e.stopPropagation()}
       >
-        <GripVertical className="h-5 w-5" />
-      </div>
+        <GripVertical className='h-5 w-5' />
+      </button>
 
-      <div className="flex-1 min-w-0 space-y-2">
-        <div className="flex items-center mb-1">
+      <div className='flex-1 min-w-0 space-y-2'>
+        <div className='flex items-center mb-1'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div
+              <button
+                type='button'
                 onClick={(e) => e.stopPropagation()}
                 className={cn(
                   'px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border shadow-sm cursor-pointer hover:opacity-80 transition-opacity',
@@ -471,9 +475,9 @@ function TicketItemContent({
                 )}
               >
                 {ticket.type}
-              </div>
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align='start'>
               <DropdownMenuItem onClick={() => handleTypeChange('epic')}>
                 Epic
               </DropdownMenuItem>
@@ -486,22 +490,22 @@ function TicketItemContent({
             </DropdownMenuContent>
           </DropdownMenu>
           {ticket.jiraId && (
-            <span className="ml-2 text-[10px] text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">
+            <span className='ml-2 text-[10px] text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded'>
               {ticket.jiraId}
             </span>
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <div className="text-base font-semibold leading-snug tracking-tight text-foreground/90">
+        <div className='space-y-1.5'>
+          <div className='text-base font-semibold leading-snug tracking-tight text-foreground/90'>
             <InlineEditableText
               value={ticket.title || ''}
               onSave={handleTitleSave}
-              placeholder="Ticket Title"
+              placeholder='Ticket Title'
             />
           </div>
           {ticket.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+            <p className='text-sm text-muted-foreground leading-relaxed line-clamp-3'>
               {ticket.description}
             </p>
           )}
@@ -509,29 +513,29 @@ function TicketItemContent({
       </div>
 
       {!isDragging && onUpdate && (
-        <div className="absolute top-3 right-3 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0">
-          <div onClick={(e) => e.stopPropagation()}>
+        <div className='absolute top-3 right-3 flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0'>
+          <button type='button' onClick={(e) => e.stopPropagation()}>
             <TicketTweakDialog
               ticketId={ticket.id}
               onSuccess={onUpdate}
               trigger={
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  variant='ghost'
+                  size='icon'
+                  className='h-8 w-8 text-purple-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20'
                 >
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className='h-4 w-4' />
                 </Button>
               }
             />
-          </div>
+          </button>
           <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10'
             onClick={handleDelete}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className='h-4 w-4' />
           </Button>
         </div>
       )}
