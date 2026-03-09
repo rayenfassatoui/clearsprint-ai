@@ -60,14 +60,6 @@ export const verification = pgTable('verification', {
 });
 
 // App Specific Tables
-export const jiraTokens = pgTable('jira_tokens', {
-  id: serial('id').primaryKey(),
-  userId: text('user_id').references(() => user.id),
-  accessToken: text('access_token'),
-  refreshToken: text('refresh_token'),
-  instanceUrl: text('instance_url'),
-});
-
 export const projects = pgTable('projects', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id),
@@ -75,7 +67,6 @@ export const projects = pgTable('projects', {
   description: text('description'),
   docUrl: text('doc_url'),
   rawText: text('raw_text'),
-  jiraProjectKey: text('jira_project_key'),
 });
 
 export const tickets = pgTable('tickets', {
@@ -86,7 +77,6 @@ export const tickets = pgTable('tickets', {
   description: text('description'),
   parentId: integer('parent_id'),
   orderIndex: integer('order_index'),
-  jiraId: text('jira_id'),
 });
 
 export const ticketHistory = pgTable('ticket_history', {
@@ -102,4 +92,45 @@ export const ticketHistory = pgTable('ticket_history', {
   newValue: json('new_value'),
   prompt: text('prompt'),
   createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const workspaceProjects = pgTable('workspace_projects', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id),
+  linearProjectId: text('linear_project_id').notNull(),
+  linearTeamId: text('linear_team_id').notNull(),
+  linearProjectName: text('linear_project_name').notNull(),
+  linearProjectKey: text('linear_project_key'),
+  lastSyncedAt: timestamp('last_synced_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const workspaceTickets = pgTable('workspace_tickets', {
+  id: serial('id').primaryKey(),
+  workspaceProjectId: integer('workspace_project_id')
+    .notNull()
+    .references(() => workspaceProjects.id, { onDelete: 'cascade' }),
+  linearIssueId: text('linear_issue_id'), // null for new_local tickets
+  linearIdentifier: text('linear_identifier'), // e.g., "PROJ-123"
+  originalData: json('original_data'), // raw Linear issue snapshot
+  originalHash: text('original_hash'), // SHA-256 of core fields
+  draftData: json('draft_data'), // local modifications (null = no changes)
+  syncStatus: text('sync_status')
+    .$type<
+      | 'synced'
+      | 'modified'
+      | 'new_local'
+      | 'new_remote'
+      | 'remote_updated'
+      | 'remote_deleted'
+      | 'push_failed'
+    >()
+    .notNull()
+    .default('synced'),
+  parentLinearIdentifier: text('parent_linear_identifier'), // for sub-issue linking
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
