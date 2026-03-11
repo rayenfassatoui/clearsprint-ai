@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { WorkspaceProject, WorkspaceTicket } from '@/lib/types';
 import { WorkspaceHeader } from './workspace-header';
@@ -32,6 +32,11 @@ export function WorkspaceClient({
   const [tickets, setTickets] = useState(initialTickets);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [search, setSearch] = useState('');
+
+  // Critical: Sync server data with local state when router.refresh() fetches new data
+  useEffect(() => {
+    setTickets(initialTickets);
+  }, [initialTickets]);
   const [pushing, setPushing] = useState(false);
   const [activeTicket, setActiveTicket] = useState<WorkspaceTicket | null>(
     null,

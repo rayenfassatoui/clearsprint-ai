@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import * as motion from 'framer-motion/client';
 import { CreateProjectDialog } from '@/features/projects/components/create-project-dialog';
-import { LinearProjectPicker } from '@/features/linear-sync/components/linear-project-picker';
 import { checkLinearConnectionStatus } from '@/features/auth/actions/user.server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { auth } from '@/lib/auth';
@@ -95,15 +94,14 @@ export default async function DashboardPage() {
           </p>
 
           <div className='flex flex-col sm:flex-row flex-wrap gap-4'>
-            {linearStatus.connected && <LinearProjectPicker />}
             <CreateProjectDialog
               trigger={
                 <Button
                   size='lg'
-                  className='rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25'
+                  className='rounded-full bg-linear-to-r from-[--linear] to-indigo-600 text-white hover:opacity-90 shadow-lg shadow-indigo-500/25 border border-indigo-500/20 px-8 font-medium'
                 >
-                  <Plus className='mr-2 h-4 w-4' />
-                  New Project
+                  <Sparkles className='mr-2 h-4 w-4' />
+                  Import Linear Project
                 </Button>
               }
             />

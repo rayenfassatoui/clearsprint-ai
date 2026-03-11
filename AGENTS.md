@@ -65,6 +65,8 @@ You are an expert Full-Stack Engineer building ClearSprint AI.
 - **Feature Isolation**: All business logic belongs in `features/`.
 - **UI Primitives**: Only generic components go in `components/ui`.
 - **Server Actions**: Use for all mutations.
+- **Client State Sync**: When a Client Component receives initial data as props (e.g., from a Server Component), and you expect `router.refresh()` to update that data after a mutation, you MUST sync the prop to local state using a `useEffect` hook. `useState(initialProp)` alone will NOT update when the server re-renders because the component does not unmount.
+  - *Example*: `useEffect(() => setTickets(initialTickets), [initialTickets])`
 
 ### Code Style
 - **Naming**:

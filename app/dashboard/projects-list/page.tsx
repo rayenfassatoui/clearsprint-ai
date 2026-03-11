@@ -4,8 +4,6 @@ import { auth } from '@/lib/auth';
 import { NewProjectModal } from '@/features/projects/components/new-project-modal';
 import { ProjectList } from '@/features/projects/components/project-list';
 import { ProjectCardSkeleton } from '@/components/skeletons';
-import { checkLinearConnectionStatus } from '@/features/auth/actions/user.server';
-import { LinearProjectPicker } from '@/features/linear-sync/components/linear-project-picker';
 
 export default async function ProjectsPage() {
   const session = await auth.api.getSession({
@@ -15,8 +13,6 @@ export default async function ProjectsPage() {
   if (!session?.user) {
     return null;
   }
-
-  const linearStatus = await checkLinearConnectionStatus();
 
   return (
     <div className='space-y-8'>
@@ -28,7 +24,6 @@ export default async function ProjectsPage() {
           </p>
         </div>
         <div className='flex gap-2'>
-          {linearStatus.connected && <LinearProjectPicker />}
           <NewProjectModal />
         </div>
       </div>
