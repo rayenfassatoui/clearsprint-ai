@@ -10,6 +10,8 @@ import type { LinearIssueData, TicketDraftData } from '../types';
 import { computeTicketHash } from '../utils/hash';
 import { revalidatePath } from 'next/cache';
 import type { Issue } from '@linear/sdk';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -132,11 +134,14 @@ async function refreshIssueData(issue: Issue): Promise<LinearIssueData> {
 // ─── Main Action ─────────────────────────────────────────────────────────────
 
 export async function pushToLinear(
-  userId: string,
   workspaceProjectId: number,
   ticketIds?: number[],
 ): Promise<ActionResponse<{ pushed: number; failed: number }>> {
   try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    const userId = session?.user?.id;
+    if (!userId) return { success: false, error: 'Unauthorized' };
+
     const client = await getLinearClient(userId);
     if (!client)
       return { success: false, error: 'Linear account not connected' };

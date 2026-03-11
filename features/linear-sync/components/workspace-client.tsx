@@ -61,7 +61,6 @@ export function WorkspaceClient({
       setPushing(true);
       try {
         const res = await pushToLinear(
-          project.userId,
           project.id,
           selectedIdsToPush,
         );
@@ -99,7 +98,7 @@ export function WorkspaceClient({
         setPushing(false);
       }
     },
-    [pendingChanges.length, project.userId, project.id],
+    [pendingChanges.length, project.id],
   );
 
   const handlePullSuccess = useCallback(() => {

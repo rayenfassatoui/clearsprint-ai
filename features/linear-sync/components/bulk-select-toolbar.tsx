@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X, Wand2, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface BulkSelectToolbarProps {
   selectedIds: number[];
@@ -88,6 +89,7 @@ export function BulkSelectToolbar({
       onRefresh(); // Refresh UI smoothly to show modified items
     } catch (err) {
       console.error(err);
+      toast.error(err instanceof Error ? err.message : 'Bulk edit failed unexpectedly');
     } finally {
       setBulkProgress((p) => ({ ...p, streaming: false }));
       setTimeout(() => {

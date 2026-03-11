@@ -27,7 +27,7 @@ export function WorkspaceHeader({
   const handlePull = async () => {
     setPulling(true);
     try {
-      const res = await pullFromLinear(project.userId, project.id);
+      const res = await pullFromLinear(project.id);
       if (res.success && res.data) {
         toast.success(
           `Pulled ${res.data.added} new, updated ${res.data.updated}, deleted ${res.data.deleted}`,

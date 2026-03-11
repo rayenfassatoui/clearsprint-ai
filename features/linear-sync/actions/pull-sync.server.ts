@@ -7,6 +7,8 @@ import { getLinearClient } from '@/lib/linear';
 import { computeTicketHash } from '../utils/hash';
 import type { LinearIssueData } from '../types';
 import type { Issue } from '@linear/sdk';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 // Maximum issues per page (Linear's documented maximum)
 const PAGE_SIZE = 250;
@@ -61,11 +63,12 @@ async function normalizeIssue(issue: Issue): Promise<LinearIssueData> {
   };
 }
 
-export async function pullFromLinear(
-  userId: string,
-  workspaceProjectId: number,
-) {
+export async function pullFromLinear(workspaceProjectId: number) {
   try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    const userId = session?.user?.id;
+    if (!userId) return { success: false, error: 'Unauthorized' };
+
     const client = await getLinearClient(userId);
     if (!client) {
       return { success: false, error: 'Linear account not connected' };
