@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  BeakerIcon,
   FolderKanban,
   LayoutDashboard,
+  Layers,
   LogOut,
   Menu,
   Settings,
@@ -44,14 +44,9 @@ const navigation = [
     icon: FolderKanban,
   },
   {
-    name: 'Integration',
-    href: '/dashboard/integration',
-    icon: Settings,
-  },
-  {
-    name: 'Test Jira API',
-    href: '/dashboard/test',
-    icon: BeakerIcon,
+    name: 'Linear Workspace',
+    href: '/dashboard',
+    icon: Layers,
   },
 ];
 
@@ -154,7 +149,7 @@ export function Sidebar({ className, user }: SidebarProps) {
                 <h3 className="font-semibold text-sm">Go Premium</h3>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Unlock unlimited AI generations and advanced Jira sync.
+                Unlock unlimited AI generations and advanced Linear sync.
               </p>
               <Button
                 size="sm"

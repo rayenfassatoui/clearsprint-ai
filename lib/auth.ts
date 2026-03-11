@@ -19,6 +19,7 @@ export const auth = betterAuth({
           authorizationUrl: 'https://linear.app/oauth/authorize',
           tokenUrl: 'https://api.linear.app/oauth/token',
           userInfoUrl: 'https://api.linear.app/graphql',
+          redirectURI: `${process.env.BETTER_AUTH_URL || 'http://localhost:3000'}/api/auth/callback/linear`,
           scopes: ['read', 'write', 'issues:create', 'comments:create'],
           getUserInfo: async ({ accessToken }) => {
             const res = await fetch('https://api.linear.app/graphql', {
