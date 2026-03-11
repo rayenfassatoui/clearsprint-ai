@@ -75,18 +75,8 @@ export default function SignUp() {
     }
   };
 
-  const handleAtlassianSignUp = async () => {
-    setLoading(true);
-    try {
-      await authClient.signIn.social({
-        provider: 'atlassian',
-        callbackURL: '/dashboard',
-      });
-    } catch (error) {
-      console.error('Atlassian sign-up error:', error);
-      toast.error('Failed to sign up with Atlassian');
-      setLoading(false);
-    }
+  const handleGoogleSignUp = async () => {
+    // Disabled for now
   };
 
   const handleSignIn = () => {
@@ -108,7 +98,7 @@ export default function SignUp() {
       heroImageSrc="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=2160&q=80"
       testimonials={sampleTestimonials}
       onSignUp={handleSignUp}
-      onAtlassianSignUp={handleAtlassianSignUp}
+      onGoogleSignUp={handleGoogleSignUp}
       onSignIn={handleSignIn}
       onGoBack={handleGoBack}
       isLoading={loading}
