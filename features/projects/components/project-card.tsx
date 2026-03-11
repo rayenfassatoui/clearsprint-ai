@@ -43,7 +43,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       transition={{ type: 'spring', stiffness: 300 }}
     >
       <Link
-        href={`/dashboard/projects/${project.id}`}
+        href={`/dashboard/workspace/${project.id}`}
         className="block group h-full"
       >
         <Card className="group relative flex h-full flex-col overflow-hidden border-muted/40 bg-card transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5">

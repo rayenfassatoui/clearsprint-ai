@@ -10,7 +10,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/db/schema';
 import { eq, count, desc } from 'drizzle-orm';
-import { ArrowRight, FolderKanban, Plus, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, FolderKanban, Plus, Sparkles, Zap, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import { Badge } from '@/components/ui/badge';
@@ -94,7 +94,7 @@ export default async function DashboardPage() {
             have {stats.projectCount} active projects.
           </p>
 
-          <div className='flex flex-wrap gap-4'>
+          <div className='flex flex-col sm:flex-row flex-wrap gap-4'>
             {linearStatus.connected && <LinearProjectPicker />}
             <CreateProjectDialog
               trigger={
@@ -108,6 +108,25 @@ export default async function DashboardPage() {
               }
             />
           </div>
+
+          {!linearStatus.connected && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ delay: 0.2 }}
+              className='mt-6 p-4 flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl max-w-lg'
+            >
+              <AlertCircle className='h-5 w-5 text-amber-500 shrink-0 mt-0.5' />
+              <div className='text-sm'>
+                <p className='font-medium text-amber-600 dark:text-amber-400'>
+                  Linear is not connected
+                </p>
+                <p className='text-amber-600/80 dark:text-amber-400/80 mt-1'>
+                  Connect your workspace to generate and sync AI tickets. <Link href="/dashboard/settings" className="font-semibold underline underline-offset-2 hover:text-amber-700 dark:hover:text-amber-300">Go to Settings &rarr;</Link>
+                </p>
+              </div>
+            </motion.div>
+          )}
         </div>
       </motion.div>
 
@@ -177,7 +196,7 @@ export default async function DashboardPage() {
               stats.recentProjects.map((project) => (
                 <Link
                   key={project.id}
-                  href={`/dashboard/projects/${project.id}`}
+                  href={`/dashboard/workspace/${project.id}`}
                 >
                   <Card className='group hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 bg-card/50 backdrop-blur-sm'>
                     <CardContent className='p-6 flex items-center justify-between'>
