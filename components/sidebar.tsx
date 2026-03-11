@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import {
   FolderKanban,
   LayoutDashboard,
-  Layers,
   LogOut,
   Menu,
   Settings,
@@ -44,9 +43,9 @@ const navigation = [
     icon: FolderKanban,
   },
   {
-    name: 'Linear Workspace',
-    href: '/dashboard',
-    icon: Layers,
+    name: 'Settings',
+    href: '/dashboard/settings',
+    icon: Settings,
   },
 ];
 
