@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     };
 
     const { object } = await generateObject({
-      model: openai('gpt-4o-mini'),
+      model: openai(process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini'),
       schema: z.object({
         subtasks: z.array(TicketCreateSchema),
       }),

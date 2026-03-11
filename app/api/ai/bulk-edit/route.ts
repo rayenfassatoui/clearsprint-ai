@@ -69,7 +69,7 @@ export async function POST(req: Request) {
             });
 
             const { object } = await generateObject({
-              model: openai('gpt-4o-mini'),
+              model: openai(process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini'),
               schema: TicketUpdateSchema,
               prompt: `Bulk edit operation. You are editing Linear tickets.
 Only modify fields requested by the user. If the user request does not apply to this ticket, return empty or unmodified fields.
