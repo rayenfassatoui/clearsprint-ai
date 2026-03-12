@@ -7,14 +7,21 @@ import {
   SYNC_STATUS_LABELS,
   SYNC_STATUS_STYLES,
   getDisplayData,
-  getPriorityMeta,
 } from '../utils/status';
+import { InlineStatusPicker } from './inline-status-picker';
+import { InlinePriorityPicker } from './inline-priority-picker';
+import { InlineEstimatePicker } from './inline-estimate-picker';
+import { EmptyState } from './empty-state';
+import { updateTicketDraft } from '../actions/tickets.server';
+import { toast } from 'sonner';
+import { LayoutDashboard, Sparkles } from 'lucide-react';
 
 interface WorkspaceListViewProps {
   tickets: WorkspaceTicket[];
   selectedIds: number[];
   onToggleSelect: (id: number) => void;
   onClick: (ticket: WorkspaceTicket) => void;
+  onUpdateTicket: (ticket: WorkspaceTicket) => void;
 }
 
 export function WorkspaceListView({
@@ -22,12 +29,36 @@ export function WorkspaceListView({
   selectedIds,
   onToggleSelect,
   onClick,
+  onUpdateTicket,
 }: WorkspaceListViewProps) {
+  const handleInlineUpdate = async (ticket: WorkspaceTicket, draftPatch: Record<string, unknown>) => {
+    const optimisticTicket = {
+      ...ticket,
+      draftData: {
+        ...(ticket.draftData as Record<string, unknown> | null),
+        ...draftPatch,
+      },
+      syncStatus: ticket.syncStatus === 'synced' ? 'modified' : ticket.syncStatus,
+    } as WorkspaceTicket;
+    
+    onUpdateTicket(optimisticTicket);
+
+    const res = await updateTicketDraft(ticket.id, draftPatch);
+    if (res.success && res.data) {
+      onUpdateTicket(res.data);
+    } else {
+      toast.error(res.error || 'Failed to update ticket');
+      onUpdateTicket(ticket); // revert
+    }
+  };
+
   if (tickets.length === 0) {
     return (
-      <div className='flex flex-col items-center justify-center p-12 text-muted-foreground bg-card/10 rounded-xl border border-dashed border-border/50'>
-        <p className='text-sm font-medium'>No tickets found</p>
-      </div>
+      <EmptyState
+        icon={LayoutDashboard}
+        title='No tickets found'
+        description='Try adjusting your filters or search query. If the project is new, sync from Linear to load tickets.'
+      />
     );
   }
 
@@ -42,6 +73,7 @@ export function WorkspaceListView({
               </th>
               <th className='p-4 font-semibold w-24'>Identifier</th>
               <th className='p-4 font-semibold min-w-[300px] w-full'>Title</th>
+              <th className='p-4 font-semibold w-8 text-center'><span className='sr-only'>AI</span></th>
               <th className='p-4 font-semibold w-32'>Status</th>
               <th className='p-4 font-semibold w-32'>Priority</th>
               <th className='p-4 font-semibold w-32'>Estimate</th>
@@ -65,7 +97,6 @@ export function WorkspaceListView({
                 'NEW';
 
               const priority = data?.priority ?? 0;
-              const priorityMeta = getPriorityMeta(priority);
 
               return (
                 <tr
@@ -103,35 +134,49 @@ export function WorkspaceListView({
                     </div>
                   </td>
 
-                  {/* Title */}
+                  {/* Title + AI indicator */}
                   <td className={`p-4 truncate max-w-sm whitespace-normal ${isRemoteDeleted ? 'line-through text-muted-foreground' : 'font-medium'}`}>
                     <div className="line-clamp-2">
                       {title}
                     </div>
                   </td>
 
-                  {/* Status */}
-                  <td className='p-4'>
-                     {data?.statusName ? (
-                      <span className='inline-flex text-[11px] font-medium text-muted-foreground bg-muted/60 border border-border/40 px-2 py-0.5 rounded-full'>
-                        {data.statusName}
+                  {/* AI Provenance Indicator */}
+                  <td className='p-4 text-center' onClick={(e) => e.stopPropagation()}>
+                    {ticket.draftData !== null && statusBadge !== 'new_local' && (
+                      <span
+                        title='Modified by AI'
+                        className='inline-flex items-center justify-center h-5 w-5 rounded-full bg-[--linear]/10 text-[--linear]'
+                      >
+                        <Sparkles className='w-3 h-3' />
                       </span>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
                     )}
                   </td>
 
+                  <td className='p-4' onClick={(e) => e.stopPropagation()}>
+                    <InlineStatusPicker
+                      statusName={data?.statusName || 'Todo'}
+                      disabled={isRemoteDeleted}
+                      onUpdate={(newStatus) => handleInlineUpdate(ticket, { statusName: newStatus })}
+                    />
+                  </td>
+
                   {/* Priority */}
-                  <td className='p-4'>
-                    <div className={`flex items-center gap-1.5 text-xs font-semibold ${priorityMeta.color}`} title={priorityMeta.label}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${priorityMeta.dotColor}`} />
-                      <span>{priorityMeta.label}</span>
-                    </div>
+                  <td className='p-4' onClick={(e) => e.stopPropagation()}>
+                    <InlinePriorityPicker
+                      priority={priority}
+                      disabled={isRemoteDeleted}
+                      onUpdate={(newPriority) => handleInlineUpdate(ticket, { priority: newPriority })}
+                    />
                   </td>
 
                   {/* Estimate */}
-                  <td className='p-4 text-muted-foreground text-xs'>
-                     {data?.estimate != null ? `${data.estimate} pts` : '-'}
+                  <td className='p-4' onClick={(e) => e.stopPropagation()}>
+                    <InlineEstimatePicker
+                      estimate={data?.estimate ?? null}
+                      disabled={isRemoteDeleted}
+                      onUpdate={(newEstimate) => handleInlineUpdate(ticket, { estimate: newEstimate })}
+                    />
                   </td>
 
                 </tr>

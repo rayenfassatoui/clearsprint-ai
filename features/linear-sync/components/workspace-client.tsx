@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import type { WorkspaceProject, WorkspaceTicket } from '@/lib/types';
 import { WorkspaceHeader } from './workspace-header';
 import { WorkspaceListView } from './workspace-list-view';
-import { WorkspaceKanbanView } from './workspace-kanban-view';
 import { WorkspaceToolbar } from './workspace-toolbar';
 import { TicketDetailSheet } from './ticket-detail-sheet';
 import { BulkSelectToolbar } from './bulk-select-toolbar';
@@ -41,7 +40,6 @@ export function WorkspaceClient({
   const [activeTicket, setActiveTicket] = useState<WorkspaceTicket | null>(
     null,
   );
-  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban');
   const [statusFilter, setStatusFilter] = useState('all');
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
 
@@ -109,7 +107,7 @@ export function WorkspaceClient({
   const filtered = filterTickets(tickets, search, statusFilter);
 
   return (
-    <div className='space-y-6 animate-in fade-in zoom-in-95 duration-500 max-w-[1200px] mx-auto pb-24 relative'>
+    <div className='space-y-6 animate-in fade-in zoom-in-95 duration-500 max-w-[1600px] px-4 sm:px-6 lg:px-8 mx-auto pb-24 relative min-h-screen'>
       <WorkspaceHeader
         project={project}
         pendingChangesCount={pendingChanges.length}
@@ -131,11 +129,6 @@ export function WorkspaceClient({
 
         <div className='flex gap-2'>
           <WorkspaceToolbar
-            viewMode={viewMode}
-            onViewModeChange={(mode) => {
-              setViewMode(mode);
-              setStatusFilter('all'); // reset filter when switching views
-            }}
             statusFilter={statusFilter}
             onStatusFilterChange={setStatusFilter}
           />
@@ -162,7 +155,7 @@ export function WorkspaceClient({
                 : "This project doesn't have any tickets yet. Sync from Linear or create new ones."}
             </p>
           </motion.div>
-        ) : viewMode === 'list' ? (
+        ) : (
           <motion.div
             key='list-view'
             initial={{ opacity: 0, scale: 0.98 }}
@@ -175,21 +168,11 @@ export function WorkspaceClient({
               selectedIds={selectedIds}
               onToggleSelect={handleToggleSelect}
               onClick={(ticket) => setActiveTicket(ticket)}
-            />
-          </motion.div>
-        ) : (
-          <motion.div
-            key='kanban-view'
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-          >
-            <WorkspaceKanbanView
-              tickets={filtered}
-              selectedIds={selectedIds}
-              onToggleSelect={handleToggleSelect}
-              onClick={(ticket) => setActiveTicket(ticket)}
+              onUpdateTicket={(updatedTicket) => {
+                setTickets((prev) =>
+                  prev.map((t) => (t.id === updatedTicket.id ? updatedTicket : t))
+                );
+              }}
             />
           </motion.div>
         )}

@@ -60,8 +60,70 @@ export const PRIORITY_MAP: Record<number, PriorityMeta> = {
   4: { label: 'Low', color: 'text-sky-400', dotColor: 'bg-sky-400' },
 };
 
+import {
+  Circle,
+  CheckCircle2,
+  CircleDashed,
+  ArrowRightCircle,
+  XCircle,
+  AlertCircle,
+  SignalHigh,
+  SignalMedium,
+  SignalLow,
+  Ban,
+  type LucideIcon,
+} from 'lucide-react';
+
 export function getPriorityMeta(priority: number): PriorityMeta {
   return PRIORITY_MAP[priority] ?? PRIORITY_MAP[0];
+}
+
+export function getPriorityIcon(priority: number): LucideIcon {
+  switch (priority) {
+    case 1: return AlertCircle;
+    case 2: return SignalHigh;
+    case 3: return SignalMedium;
+    case 4: return SignalLow;
+    default: return Ban;
+  }
+}
+
+export function getPriorityLabel(priority: number): string {
+  return PRIORITY_MAP[priority]?.label ?? 'No Priority';
+}
+
+export function getStatusColor(statusName: string): string {
+  switch (statusName.toLowerCase()) {
+    case 'done':
+      return 'text-emerald-500 bg-emerald-500/10';
+    case 'in progress':
+      return 'text-amber-500 bg-amber-500/10';
+    case 'in review':
+      return 'text-purple-500 bg-purple-500/10';
+    case 'canceled':
+      return 'text-rose-500 bg-rose-500/10';
+    case 'todo':
+      return 'text-sky-500 bg-sky-500/10';
+    default:
+      return 'text-muted-foreground bg-muted/20'; // backlog
+  }
+}
+
+export function getStatusIcon(statusName: string): LucideIcon {
+  switch (statusName.toLowerCase()) {
+    case 'done':
+      return CheckCircle2;
+    case 'in progress':
+      return ArrowRightCircle;
+    case 'in review':
+      return AlertCircle;
+    case 'canceled':
+      return XCircle;
+    case 'todo':
+      return Circle;
+    default:
+      return CircleDashed; // backlog
+  }
 }
 
 // ─── Merged display data helper ───────────────────────────────────────────────

@@ -43,13 +43,13 @@ export default async function SettingsPage() {
       className='space-y-8 max-w-5xl mx-auto'
     >
       {/* Header */}
-      <motion.div variants={item} className='space-y-2'>
+      <motion.div variants={item} className='space-y-2 max-w-3xl'>
         <div className='flex items-center gap-2 mb-2'>
           <Badge
             variant='outline'
-            className='bg-background/50 backdrop-blur-md border-primary/20 text-primary'
+            className='bg-muted/50 backdrop-blur-md border-border/50 text-muted-foreground'
           >
-            <SettingsIcon className='mr-1 h-3 w-3' />
+            <SettingsIcon className='mr-1.5 h-3 w-3 text-[--linear]' />
             Settings
           </Badge>
         </div>
@@ -61,26 +61,26 @@ export default async function SettingsPage() {
 
       <div className='grid gap-8 md:grid-cols-[250px_1fr] lg:grid-cols-[300px_1fr]'>
         {/* Sidebar Nav (Static for now, but gives the settings page structure) */}
-        <motion.nav variants={item} className='flex flex-col gap-2'>
-          <Button variant='secondary' className='justify-start bg-secondary/50'>
-            <LinkIcon className='mr-2 h-4 w-4' />
+        <motion.nav variants={item} className='flex flex-col gap-1 pr-4'>
+          <Button variant='secondary' className='justify-start bg-[--linear]/10 text-[--linear] hover:bg-[--linear]/20 font-medium'>
+            <LinkIcon className='mr-2.5 h-4 w-4' />
             Integrations
           </Button>
-          <Button variant='ghost' className='justify-start text-muted-foreground'>
-            <Shield className='mr-2 h-4 w-4' />
+          <Button variant='ghost' className='justify-start text-muted-foreground hover:text-foreground hover:bg-muted/50'>
+            <Shield className='mr-2.5 h-4 w-4' />
             Profile & Security
           </Button>
-          <Button variant='ghost' className='justify-start text-muted-foreground'>
-            <Sparkles className='mr-2 h-4 w-4' />
+          <Button variant='ghost' className='justify-start text-muted-foreground hover:text-foreground hover:bg-muted/50'>
+            <Sparkles className='mr-2.5 h-4 w-4' />
             Subscription
           </Button>
         </motion.nav>
 
         {/* Settings Content */}
-        <motion.div variants={item} className='space-y-6'>
+        <motion.div variants={item} className='space-y-6 max-w-3xl'>
           {/* Linear Integration Card */}
-          <Card className='border-primary/10 overflow-hidden relative bg-card/50 backdrop-blur-sm'>
-            <div className='absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-primary/10 blur-3xl opacity-50' />
+          <Card className='border-border/50 overflow-hidden relative bg-card shadow-sm'>
+            <div className='absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-[--linear]/10 blur-3xl opacity-60' />
             
             <CardHeader>
               <div className='flex items-center justify-between'>
@@ -141,7 +141,7 @@ export default async function SettingsPage() {
           </Card>
 
           {/* Profile Quick Settings (Read-Only Preview) */}
-          <Card className='border-muted/60 bg-card/50 backdrop-blur-sm opacity-60'>
+          <Card className='border-border/50 bg-card shadow-sm'>
             <CardHeader>
               <CardTitle className='text-xl'>Account Email</CardTitle>
               <CardDescription>

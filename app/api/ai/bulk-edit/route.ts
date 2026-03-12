@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { openrouter } from '@/lib/openrouter';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { db } from '@/lib/db';
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
             });
 
             const { object } = await generateObject({
-              model: openai(process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini'),
+              model: openrouter(process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini'),
               schema: TicketUpdateSchema,
               prompt: `Bulk edit operation. You are editing Linear tickets.
 Only modify fields requested by the user. If the user request does not apply to this ticket, return empty or unmodified fields.

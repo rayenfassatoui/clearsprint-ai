@@ -70,18 +70,18 @@ export default async function DashboardPage() {
       {/* Hero Section */}
       <motion.div
         variants={item}
-        className='relative overflow-hidden rounded-3xl bg-linear-to-r from-primary/20 via-primary/10 to-background p-8 md:p-12 border border-primary/10'
+        className='relative overflow-hidden rounded-3xl bg-card p-8 md:p-12 border border-border/50 shadow-sm'
       >
-        <div className='absolute top-0 right-0 -mt-16 -mr-16 h-64 w-64 rounded-full bg-primary/20 blur-3xl opacity-50' />
-        <div className='absolute bottom-0 left-0 -mb-16 -ml-16 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl opacity-50' />
+        <div className='absolute top-0 right-0 -mt-16 -mr-16 h-64 w-64 rounded-full bg-[--linear]/10 blur-3xl opacity-60' />
+        <div className='absolute bottom-0 left-0 -mb-16 -ml-16 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl opacity-60' />
 
         <div className='relative z-10 max-w-2xl'>
           <div className='flex items-center gap-2 mb-4'>
             <Badge
               variant='outline'
-              className='bg-background/50 backdrop-blur-md border-primary/20 text-primary'
+              className='bg-muted/50 backdrop-blur-md border-border/50 text-muted-foreground'
             >
-              <Sparkles className='mr-1 h-3 w-3' />
+              <Sparkles className='mr-1.5 h-3 w-3 text-[--linear]' />
               AI-Powered Dashboard
             </Badge>
           </div>
@@ -98,9 +98,9 @@ export default async function DashboardPage() {
               trigger={
                 <Button
                   size='lg'
-                  className='rounded-full bg-linear-to-r from-[--linear] to-indigo-600 text-white hover:opacity-90 shadow-lg shadow-indigo-500/25 border border-indigo-500/20 px-8 font-medium'
+                  className='rounded-xl bg-[--linear] text-white hover:bg-[--linear]/90 px-8 font-medium'
                 >
-                  <Sparkles className='mr-2 h-4 w-4' />
+                  <Sparkles className='mr-2 h-4 w-4 opacity-80' />
                   Import Linear Project
                 </Button>
               }
@@ -112,15 +112,15 @@ export default async function DashboardPage() {
               initial={{ opacity: 0, y: 10 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ delay: 0.2 }}
-              className='mt-6 p-4 flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl max-w-lg'
+              className='mt-6 p-4 flex items-start gap-3 bg-muted/40 border border-border/50 rounded-2xl max-w-lg'
             >
-              <AlertCircle className='h-5 w-5 text-amber-500 shrink-0 mt-0.5' />
+              <AlertCircle className='h-5 w-5 text-muted-foreground shrink-0 mt-0.5' />
               <div className='text-sm'>
-                <p className='font-medium text-amber-600 dark:text-amber-400'>
+                <p className='font-medium text-foreground'>
                   Linear is not connected
                 </p>
-                <p className='text-amber-600/80 dark:text-amber-400/80 mt-1'>
-                  Connect your workspace to generate and sync AI tickets. <Link href="/dashboard/settings" className="font-semibold underline underline-offset-2 hover:text-amber-700 dark:hover:text-amber-300">Go to Settings &rarr;</Link>
+                <p className='text-muted-foreground mt-1'>
+                  Connect your workspace to generate and sync AI tickets. <Link href="/dashboard/settings" className="font-medium text-[--linear] hover:underline underline-offset-4">Go to Settings &rarr;</Link>
                 </p>
               </div>
             </motion.div>
@@ -199,7 +199,7 @@ export default async function DashboardPage() {
                   <Card className='group hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 bg-card/50 backdrop-blur-sm'>
                     <CardContent className='p-6 flex items-center justify-between'>
                       <div className='flex items-center gap-4'>
-                        <div className='h-12 w-12 rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:scale-105 transition-transform'>
+                        <div className='h-12 w-12 rounded-2xl bg-muted/80 flex items-center justify-center group-hover:scale-105 transition-transform border border-border/40'>
                           <FolderKanban className='h-6 w-6 text-primary' />
                         </div>
                         <div>
@@ -226,22 +226,21 @@ export default async function DashboardPage() {
               ))
             ) : (
               <Card className='border-dashed border-2 bg-transparent'>
-                <CardContent className='flex flex-col items-center justify-center py-12 text-center'>
-                  <div className='h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4'>
-                    <FolderKanban className='h-6 w-6 text-muted-foreground' />
+                <CardContent className='flex flex-col items-center justify-center py-16 text-center'>
+                  <div className='h-14 w-14 rounded-2xl bg-muted/60 border border-border/50 flex items-center justify-center mb-4'>
+                    <FolderKanban className='h-7 w-7 text-muted-foreground/60' />
                   </div>
-                  <h3 className='font-semibold text-lg mb-1'>
+                  <h3 className='font-semibold text-lg mb-2 tracking-tight'>
                     No projects yet
                   </h3>
-                  <p className='text-muted-foreground mb-4 max-w-xs'>
-                    Create your first project to start generating tickets with
-                    AI.
+                  <p className='text-muted-foreground mb-6 max-w-xs text-sm leading-relaxed'>
+                    Import your first Linear project to start editing tickets with AI.
                   </p>
                   <CreateProjectDialog
                     trigger={
-                      <Button>
+                      <Button size='sm' variant='outline' className='rounded-xl border-border/50 hover:border-[--linear]/50 hover:text-[--linear] transition-colors'>
                         <Plus className='mr-2 h-4 w-4' />
-                        Create Project
+                        Import Project
                       </Button>
                     }
                   />

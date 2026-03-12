@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { openrouter } from '@/lib/openrouter';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     };
 
     const { object } = await generateObject({
-      model: openai(process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini'),
+      model: openrouter(process.env.OPENAI_MODEL_NAME || 'gpt-4o-mini'),
       schema: z.object({
         subtasks: z.array(TicketCreateSchema),
       }),

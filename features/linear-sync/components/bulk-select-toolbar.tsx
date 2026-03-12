@@ -107,12 +107,24 @@ export function BulkSelectToolbar({
   };
 
   return (
-    <div className='fixed top-6 left-1/2 -translate-x-1/2 bg-card text-foreground border shadow-2xl rounded-full flex items-center min-w-[340px] z-60 overflow-hidden animate-in slide-in-from-top-4 fade-in duration-300'>
-      <div className='flex items-center gap-3 px-4 py-2 bg-muted/40 font-medium text-sm'>
-        <span className='flex h-5 items-center justify-center rounded bg-[#5E6AD2] px-1.5 text-[11px] font-bold text-white'>
-          {selectedIds.length}
-        </span>
-        selected
+    <div className='fixed bottom-24 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-xl text-foreground border border-border/50 shadow-2xl rounded-2xl flex flex-col items-center min-w-[400px] z-50 overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300'>
+      <div className='flex w-full items-center justify-between gap-3 px-4 py-2 border-b border-border/30 bg-muted/20 font-medium text-sm'>
+        <div className='flex items-center gap-2'>
+          <span className='flex h-5 items-center justify-center rounded bg-[--linear] px-1.5 text-[11px] font-bold text-white'>
+            {selectedIds.length}
+          </span>
+          <span className='text-muted-foreground'>selected</span>
+        </div>
+        {promptOpen && (
+          <Button
+            size='icon'
+            variant='ghost'
+            className='h-6 w-6 rounded-full text-muted-foreground hover:text-foreground'
+            onClick={() => setPromptOpen(false)}
+          >
+            <X className='w-3 h-3' />
+          </Button>
+        )}
       </div>
 
       <div className='flex-1 flex items-center px-2 py-1.5 overflow-hidden transition-all duration-300 relative'>
@@ -161,33 +173,39 @@ export function BulkSelectToolbar({
             </div>
           </div>
         ) : (
-          <div className='flex w-full gap-2 p-1 animate-in slide-in-from-right-2'>
-            <Input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder='e.g. Set priority to High'
-              className='h-8 text-sm focus-visible:ring-purple-500'
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleBulkEdit();
-                if (e.key === 'Escape') setPromptOpen(false);
-              }}
-            />
-            <Button
-              size='sm'
-              className='h-8 shrink-0 bg-purple-600 hover:bg-purple-700 text-white'
-              onClick={handleBulkEdit}
-            >
-              Apply
-            </Button>
-            <Button
-              size='icon'
-              variant='ghost'
-              className='h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground'
-              onClick={() => setPromptOpen(false)}
-            >
-              <X className='w-4 h-4' />
-            </Button>
+          <div className='flex flex-col w-full p-2 animate-in slide-in-from-bottom-2'>
+            <div className='flex w-full gap-2 mb-2'>
+              <Input
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder='e.g. Set priority to High'
+                className='h-10 text-sm focus-visible:ring-purple-500 bg-muted/40 border-border/50 rounded-xl'
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleBulkEdit();
+                  if (e.key === 'Escape') setPromptOpen(false);
+                }}
+              />
+              <Button
+                size='sm'
+                className='h-10 shrink-0 bg-purple-600 hover:bg-purple-700 text-white rounded-xl px-4'
+                onClick={handleBulkEdit}
+              >
+                Apply
+              </Button>
+            </div>
+            <div className='flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide px-1'>
+              {['Mark Done', 'Set High Priority', 'Cancel tickets'].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => setPrompt(suggestion)}
+                  className='text-xs whitespace-nowrap px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors border border-border/50'
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>

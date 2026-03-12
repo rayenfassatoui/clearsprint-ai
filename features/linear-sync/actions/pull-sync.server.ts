@@ -108,11 +108,17 @@ export async function pullFromLinear(workspaceProjectId: number) {
 
     // Paginate through all remote issues (up to PAGE_SIZE per request)
     while (hasNextPage) {
-      const response = await client.issues({
+      const issuesPromise = client.issues({
         filter: { project: { id: { eq: project.linearProjectId } } },
         first: PAGE_SIZE,
         after: endCursor,
       });
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Linear API Timeout (>10s)')), 10000)
+      );
+
+      const response = await Promise.race([issuesPromise, timeoutPromise]);
 
       // Normalize all issues on this page in parallel
       const normalizedIssues = await Promise.all(
